@@ -141,8 +141,8 @@ for (let id = 0; id < articles.length; id++) {
 
 function loadUri() {
     let uri = decodeURI(window.location.pathname).split("/"); uri.shift()
-    if (uri[0] == "?") { uri.shift() }
-    if (uri[0] == "") { homepage() }
+    while (uri[0] == "") { uri.shift() }
+    if (uri[0] == undefined) { homepage() }
     else if (uri[0] == "k" && uri.length == 2) { articlesList(uri[1]) }
     else if (uri[0] == "k" && uri.length == 3) { articleText(uri[1], uri[2]) }
     else { page("404") }
