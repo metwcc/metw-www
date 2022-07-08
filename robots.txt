@@ -1,7 +1,4 @@
 user-agent:*
-Allow: /
-Allow: /k/0
-Allow: /k/1
-Allow: /k/2
 Disallow: /k/3
-Sitemap: https://metw.cc/sitemap.xml
+Disallow: /?/k/3
+Sitemap: https://metw.cc/sitemap.txt
