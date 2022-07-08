@@ -2,7 +2,7 @@
 articles = ["mütalaa", "matbuat", "muhtıra"]
 commentCount = 0, commentPage = 0, comments = []
 captchaKey = false, captchaValidationKey = false
-disableStateUpdates = false
+var disableStateUpdates = false
 
 pages_list = document.getElementsByClassName("pages"), pages = []
 for (x = 0; x < pages_list.length; x++) { pages[pages_list[x].id] = pages_list[x] }; pages_in_str = Object.keys(pages)
