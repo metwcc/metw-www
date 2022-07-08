@@ -61,7 +61,8 @@ input, button, textarea { border: none; border-radius: 5px; padding: 5px }
 #article-comments { margin-bottom: 0 }
 #article-comments-list > div, #article-send-comment > div { margin-top: 10px; background-color: var(--comments-inner-background-color); width: 100%; border-radius: 10px; padding: 5px }
 #article-comments-list > div > a:first-of-type { float: right; font-size: 10px }
-#article-comments > a, #article-send-comment > a { display: inline-block; margin-top: 10px; }
+#article-comments > a, #article-send-comment > a:last-of-type { display: inline-block; margin-top: 10px; }
+#article-send-comment > a:first-of-type { float: right }
 #article-send-comment > div > * { resize: vertical; display: block; width: 100%; background-color: var(--comments-background-color) }
 #article-send-comment > div > a { background-color: var(--comments-inner-background-color); height: 5px; padding: 0 }
 #article-views { float: right; margin-right: 40px }
