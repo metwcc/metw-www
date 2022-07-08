@@ -73,8 +73,15 @@ function articleText(article, textId) {
         success: function (json) {
             if (json) {
                 let commentsDiv = document.getElementById("article-comments-list")
-                function appendComment(sender, content, date) { let t = ""; if (date != "") { t = new Date(date * 1000).toLocaleString("tr-TR") }; comment = document.createElement("div"); comment.innerHTML += `<a>${t}</a>${sender}<br>${content}`; commentsDiv.appendChild(comment) }
-                document.getElementById("article-text").innerHTML = `<br>${json["content"].replaceAll("  ", "&nbsp;&nbsp;").replaceAll("\n", "<br>")}`
+                function appendComment(sender, content, date) {
+                    let t = ""; if (date != "") { t = new Date(date * 1000).toLocaleString("tr-TR") };
+                    let comment = document.createElement("div"), commentSender = document.createElement("b"), commentContent = document.createElement("a")
+                    comment.innerHTML = `<a>${t}</a>`, commentSender.innerText = sender, commentContent.innerText = content, commentSender.style.display = "flex"
+                    if (sender.includes("*")) { commentSender.className = "moderator-comment" }
+                    comment.appendChild(commentSender); comment.appendChild(commentContent)
+                    commentsDiv.appendChild(comment)
+                }
+                document.getElementById("article-text").innerHTML = `<br>${json["content"].replaceAll("  ", "&nbsp;&nbsp;").replaceAll("\n", "<br>")}<br>&nbsp;`
                 let articleDetails = document.getElementById("article-details"); articleDetails.innerHTML = ""
                 let articleTitle = document.createElement("b"); articleTitle.innerHTML = `${json["title"]}<br>`, articleTitle.className = "title"
                 let articleAuthor = document.createElement("a"); articleAuthor.innerHTML = `<b>Yazar:</b> ${json["author"]}<br>`
@@ -105,6 +112,7 @@ function articleText(article, textId) {
                     let name = document.getElementById("article-send-comment-name").value, content = document.getElementById("article-send-comment-content").value
                     if (name.length < 4) { alert("İsim 4 karakterden kısa olamaz"); return }; if (name.length > 20) { alert("İsim 20 karakterden uzun olamaz"); return }
                     if (content.length < 4) { alert("İçerik 4 karakterden kısa olamaz"); return }; if (content.length > 2000) { alert("İçerik 2000 karakterden uzun olamaz"); return }
+                    if (name.includes("*")) { alert("İsim * içeremez"); return }
                     if (state == 0) { captcha(state = 0, callback = function a() { articleSendComment(state = 1) }) }
                     else {
                         let xhr = new XMLHttpRequest();

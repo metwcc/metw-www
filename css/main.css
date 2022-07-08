@@ -3,6 +3,7 @@
 :root {
     --color: white;
     --href-color: aqua;
+    --moderator-color: aqua;
     --body-background-color: #202225;
     --title-background-color: #2F3136;
     --content-background-color: #36393F;
@@ -25,6 +26,7 @@ input, button, textarea { border: none; border-radius: 5px; padding: 5px }
 .title { font-size: 120% }
 
 .href { color: var(--href-color); text-decoration: underline; cursor: pointer; user-select: none; outline: inherit }
+.moderator-comment { color: var(--moderator-color); text-decoration: underline }
 
 .titlebar { margin-left: 20px; margin-right: 20px; margin-top: 16px; margin-bottom: 16px; user-select: none; }
 .titlebar > div { overflow: auto; height: 32px; white-space: nowrap; }
