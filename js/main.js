@@ -9,7 +9,7 @@ for (x = 0; x < pages_list.length; x++) { pages[pages_list[x].id] = pages_list[x
 
 function page(page_name) { for (x in pages_in_str) { pages[pages_in_str[x]].style.display = ["none", "block"][(page_name == pages_in_str[x]) + 1 - 1] } }
 function loading(state) { document.getElementById("loading").style.display = ["none", "block"][state + 1 - 1] }
-function windowState(title, path, description = "") { if (disableStateUpdates) return; gtag('set', 'page_path', path); gtag('event', 'page_view'); document.getElementById("title").innerHTML = title; document.getElementById("og-title").content = title; document.getElementById("og-description").content = description; window.history.pushState({ "pageTitle": title }, title, url + path) }
+function windowState(title, path, description = "") { if (disableStateUpdates) { disableStateUpdates = false; return }; gtag('set', 'page_path', path); gtag('event', 'page_view'); document.getElementById("title").innerHTML = title; document.getElementById("og-title").content = title; document.getElementById("og-description").content = description; window.history.pushState({ "pageTitle": title }, title, url + path) }
 function captcha(state = 0, callback = null) {
     if (state == 0) {
         loading(1)
@@ -161,7 +161,7 @@ function loadUri() {
     if (uri[0] == undefined) { homepage() }
     else if (uri[0] == "k" && uri.length == 2) { articlesList(uri[1]) }
     else if (uri[0] == "k" && uri.length == 3) { articleText(uri[1], uri[2]) }
-    else { page("404") }; disableStateUpdates = false
+    else { page("404") }
 }
 
 loadUri()
