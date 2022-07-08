@@ -1,8 +1,13 @@
-{
-  "name": "metw",
+﻿{
   "short_name": "metw",
-  "start_url": "",
+  "name": "metw.cc",
+  "start_url": "/",
+  "background_color": "#000000",
   "display": "standalone",
-  "background_color": "#2F3136",
-  "theme_color": "#2F3136"
+  "orientation": "portrait",
+  "scope": "/",
+  "theme_color": "#000000",
+  "description": "metw",
+  "gcm_sender_id": "482941778795",
+  "gcm_sender_id_comment": "Do not change the GCM Sender ID"
 }
