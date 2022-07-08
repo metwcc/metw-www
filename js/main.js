@@ -134,7 +134,7 @@ for (let id = 0; id < articles.length; id++) {
     button.className = "href"
     button.addEventListener("click", function () { articlesList(id) })
     button.innerText = articles[id]
-    if (id != articles.length - 1) { a.innerText = ", " }
+    if (id != articles.length - 1) { a.innerText = " " }
     else { a.innerText = " " }
     titleBar.appendChild(button)
     titleBar.appendChild(a)
