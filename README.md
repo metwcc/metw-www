@@ -1,4 +1,4 @@
 ﻿# [metw.cc](https://metw.cc)
-Kişisel blog tarzı bir site
+Açık kaynaklı blog sitesi
 
 Yazı yayımlamak isteyen pull request açabilir
