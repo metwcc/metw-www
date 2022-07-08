@@ -1,6 +1,5 @@
 ﻿backEndUrl = "https://api.metw.cc/", url = window.location.protocol + "//" + window.location.host + "/"
 articles = ["mütalaa", "matbuat", "muhtıra"]
-commentCount = 0, commentPage = 0, comments = []
 captchaKey = false, captchaValidationKey = false
 var disableStateUpdates = false
 
@@ -82,20 +81,31 @@ function articleText(article, textId) {
                     comment.appendChild(commentSender); comment.appendChild(commentContent)
                     commentsDiv.appendChild(comment)
                 }
+
                 document.getElementById("article-text").innerHTML = `<br>${json["content"].replaceAll("  ", "&nbsp;&nbsp;").replaceAll("\n", "<br>")}<br>&nbsp;`
                 let articleDetails = document.getElementById("article-details"); articleDetails.innerHTML = ""
                 let articleTitle = document.createElement("b"); articleTitle.innerHTML = `${json["title"]}<br>`, articleTitle.className = "title"
                 let articleAuthor = document.createElement("a"); articleAuthor.innerHTML = `<b>Yazar:</b> ${json["author"]}<br>`
                 document.getElementById("article-views").innerHTML = "👁 " + json["views"]
                 articleDetails.appendChild(articleTitle); articleDetails.appendChild(articleAuthor)
+
+                let comments = json["comments"], commentCount = json["comment_count"], commentsPage = 0
+                let commentsTitleElement, commentsPageElement = document.getElementById("article-comments-page")
+                if (comments.length > 0) {
+                    commentsTitleElement = `Yorumlar (${commentCount})`
+                    if (Math.ceil(commentCount / 10) != 1) { commentsPageElement.style.display = "inline-block" }
+                    else { commentsPageElement.style.display = "none" }
+                } else { commentsTitleElement = "Yorumlar", commentsPageElement.style.display = "none" }
+                document.querySelector("#article-comments > b:first-of-type").innerHTML = commentsTitleElement
+
                 if (json["editor"]) { let articleEditor = document.createElement("a"); articleEditor.innerHTML = `<b>Editör:</b> ${json["editor"]}<br>`; articleDetails.appendChild(articleEditor) }
                 if (json["comments"].length == 0) { commentsDiv.innerHTML = ""; appendComment("henüz hiç yorum yapılmamış", "", ""); document.getElementById("article-comments-next").style.display = "none", document.getElementById("article-comments-previous").style.display = "none" }
                 else {
-                    let comments = json["comments"], commentCount = json["comment_count"], commentsPage = 0
                     let commentsNext = clearListeners("#article-comments-next"), commentsPrevious = clearListeners("#article-comments-previous")
                     commentsNext.addEventListener("click", function () { commentsPage += 1; articleTextCommentsLoad() })
                     commentsPrevious.addEventListener("click", function () { commentsPage -= 1; articleTextCommentsLoad() })
                     function articleTextCommentsLoad() {
+                        commentsPageElement.innerHTML = `sayfa ${commentsPage + 1}/${Math.ceil(commentCount / 10)}`
                         if (commentCount > (commentsPage * 10 + 10)) { commentsNext.style.display = "inline-block" } else { commentsNext.style.display = "none" }
                         if (commentsPage != 0) { commentsPrevious.style.display = "inline-block" } else { commentsPrevious.style.display = "none" }
                         if (comments.length < commentsPage * 10 + 1) {
@@ -109,6 +119,7 @@ function articleText(article, textId) {
                     }
                     articleTextCommentsLoad()
                 }
+
                 function articleSendComment(state = 0) {
                     let name = document.getElementById("article-send-comment-name").value, content = document.getElementById("article-send-comment-content").value
                     if (name.length < 4) { alert("İsim 4 karakterden kısa olamaz"); return }; if (name.length > 20) { alert("İsim 20 karakterden uzun olamaz"); return }
