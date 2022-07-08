@@ -114,7 +114,7 @@ function articleText(article, textId) {
                     if (name.length < 4) { alert("İsim 4 karakterden kısa olamaz"); return }; if (name.length > 20) { alert("İsim 20 karakterden uzun olamaz"); return }
                     if (content.length < 4) { alert("İçerik 4 karakterden kısa olamaz"); return }; if (content.length > 2000) { alert("İçerik 2000 karakterden uzun olamaz"); return }
                     if (name.includes("*")) { alert("İsim * içeremez"); return }
-                    if (state == 0) { captcha(state = 0, callback = function a() { articleSendComment(state = 1) }) }
+                    if (state == 0) { localStorage.setItem("name", name); captcha(state = 0, callback = function a() { articleSendComment(state = 1) }) }
                     else {
                         let xhr = new XMLHttpRequest();
                         xhr.open("POST", backEndUrl + `articles/${article}/${textId}/comments`);
@@ -124,7 +124,8 @@ function articleText(article, textId) {
                                 loading(0)
                                 if (xhr.status === 200) { let json = JSON.parse(xhr.responseText); if (json) { alert("Yorum eklendi"); articleText(article, textId) } else { alert("Yorum eklenemedi") } }
                                 else if (xhr.status === 429) { alert(xhr.responseText) }
-                                else { alert("Sunucuya bağlanılamadı")  }
+                                else { alert("Sunucuya bağlanılamadı") }
+                                document.getElementById("article-send-comment-content").value = ""
                             }
                         };
                         let data = JSON.stringify({ "name": name, "content": content, "captcha_key": captchaKey, "captcha_validation_key": captchaValidationKey });
@@ -164,5 +165,5 @@ function loadUri() {
     else { page("404") }
 }
 
-loadUri()
+document.getElementById("article-send-comment-name").value = localStorage.getItem("name"); loadUri()
 window.onpopstate = function (event) { disableStateUpdates = true; loadUri() }
