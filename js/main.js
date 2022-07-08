@@ -99,7 +99,7 @@ function articleText(article, textId) {
                 document.querySelector("#article-comments > b:first-of-type").innerHTML = commentsTitleElement
 
                 if (json["editor"]) { let articleEditor = document.createElement("a"); articleEditor.innerHTML = `<b>Editör:</b> ${json["editor"]}<br>`; articleDetails.appendChild(articleEditor) }
-                if (json["comments"].length == 0) { commentsDiv.innerHTML = ""; appendComment("henüz hiç yorum yapılmamış", "", ""); document.getElementById("article-comments-next").style.display = "none", document.getElementById("article-comments-previous").style.display = "none" }
+                if (json["comments"].length == 0) { commentsDiv.innerHTML = ""; appendComment("", "henüz hiç yorum yapılmamış", ""); document.getElementById("article-comments-next").style.display = "none", document.getElementById("article-comments-previous").style.display = "none" }
                 else {
                     let commentsNext = clearListeners("#article-comments-next"), commentsPrevious = clearListeners("#article-comments-previous")
                     commentsNext.addEventListener("click", function () { commentsPage += 1; articleTextCommentsLoad() })
