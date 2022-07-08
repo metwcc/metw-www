@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html>
+<head prefix="og: https://ogp.me/ns#">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="title">metw</title>
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="metw.cc">
+    <meta property="og:title" content="metw.cc" id="og-title">
+    <meta property="og:description" content="" id="og-description">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <style> @import url("/css/main.css"); @import url("/css/loading.css"); </style>
+</head>
+<body>
+    <div id="loading" class="full-size" style="display: none"><div class="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
+    <div id="captcha" class="full-size" style="display: none">
+        <div class="center">
+            <img src=""><br>
+            <input placeholder="yukarıdaki sayıları yazınız"><br>
+            <a class="href" onclick="captcha(state = 1)">iptal</a> 
+        </div>
+    </div>
+    <div class="app center full-size">
+        <div id="titlebar" class="titlebar">
+            <a onclick="homepage()"><b>metw</b>.cc</a> |
+        </div>
+        <div class="content">
+            <div id="homepage" class="pages">
+                <b>Metehan Selvi, over-stack web & back-end geliştiricisi</b><br>
+                Yazı listesi için başlık çubuğundan bir konuya tıklayınız.<br><br>
+                <i>Diğer projeler;</i>
+                <ul style="margin: 0">
+                    <li> <a class="href" href="https://aga.metw.cc">aga.metw.cc</a>
+                    <li> <a class="href" href="https://schat.app">schat.app</a> (henüz bitmedi)
+                    <li> <a class="href" href="https://anonimsin.net">anonimsin.net</a> (henüz yayımlanmadı)
+                </ul>
+                <a class="center-x">© 2022 metehan selvi, tüm hakları saklıdır</a>
+            </div>
+            <div id="articles" class="pages"><b id="article-name" class="title"></b> <ul id="articles-list"></ul></div>
+            <div id="article" class="pages">
+                <div id="article-details"></div>
+                <div id="article-text"></div>
+                <a id="article-views">👁</a><br>
+                <div id="article-comments">
+                    <b>Yorumlar</b>
+                    <div id="article-comments-list">
+                        <div><a>date</a>sender<br>content</div>
+                        <div><a>date</a>sender<br>content</div>
+                    </div>
+                    <a id="article-comments-previous" class="href">◀ önceki sayfa</a> <a id="article-comments-next" class="href">sonraki sayfa ▶</a>
+                </div>
+                <div id="article-send-comment">
+                    <b>Yorum yaz</b>
+                    <div>
+                        <input id="article-send-comment-name" placeholder="isim"><a></a>
+                        <textarea id="article-send-comment-content" placeholder="içerik" rows="5"></textarea>
+                    </div>
+                    <a id="article-comment-send" class="href">gönder ▶</a>
+                </div>
+            </div>
+            <div id="404" class="pages">Sayfa bulunamadı<br><a class="href" onclick="homepage()">< ana sayfaya dön</a></div>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="/js/main.js"></script>
+    </div>
+</body>
+</html>
