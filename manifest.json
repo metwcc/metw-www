@@ -1,0 +1,8 @@
+{
+  "name": "metw",
+  "short_name": "metw",
+  "start_url": "",
+  "display": "standalone",
+  "background_color": "#2F3136",
+  "theme_color": "#2F3136"
+}
