@@ -1,15 +1,13 @@
 ﻿const static = "metw-cc-v1"
 const assets = [
-    "/",
-    "/index.html",
     "/css/main.css",
     "/css/loading.css",
     "/js/main.js",
-    "/icons/icon-32.jpg",
-    "/icons/icon-64.jpg",
-    "/icons/icon-128.jpg",
-    "/icons/icon-256.jpg",
-    "/icons/icon-512.jpg"
+    "/icons/icon-32.png",
+    "/icons/icon-64.png",
+    "/icons/icon-128.png",
+    "/icons/icon-256.png",
+    "/icons/icon-512.png"
 ]
 
 self.addEventListener("install", installEvent => {
