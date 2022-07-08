@@ -58,7 +58,7 @@
       "purpose": "maskable"
     }
   ],
-  "start_url": "/?/",
+  "start_url": "/",
   "scope": "/",
   "display": "fullscreen",
   "theme_color": "#B12A34",
