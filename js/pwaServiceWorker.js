@@ -1,5 +1,7 @@
 ﻿const static = "metw-cc-v1"
 const assets = [
+    "/",
+    "/?/",
     "/css/main.css",
     "/css/loading.css",
     "/js/main.js",
