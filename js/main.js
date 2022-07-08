@@ -140,7 +140,9 @@ for (let id = 0; id < articles.length; id++) {
 }
 
 function loadUri() {
-    let uri = decodeURI(window.location.search).split("/"); uri.shift()
+    let uri = decodeURI(window.location.search).split("/")
+    if (uri.length == 1) { uri = decodeURI(window.location.pathname).split("/"); uri.shift() }
+    else { uri.shift(); }
     while (uri[0] == "") { uri.shift() }
     if (uri[0] == undefined) { homepage() }
     else if (uri[0] == "k" && uri.length == 2) { articlesList(uri[1]) }
@@ -149,3 +151,4 @@ function loadUri() {
 }
 
 loadUri()
+window.onpopstate = function (event) { loadUri(); };

@@ -57,7 +57,7 @@ input, button, textarea { border: none; border-radius: 5px; padding: 5px }
 #topic-name { font-size: 120% }
 
 /* article */
-#article-comments, #article-send-comment  { padding: 15px; background-color: var(--comments-background-color); width: calc(100% - 80px); margin: 40px; border-radius: 10px }
+#article-comments, #article-send-comment  { padding: 15px; background-color: var(--comments-background-color); width: calc(100% - 40px); margin: 20px; border-radius: 10px }
 #article-comments { margin-bottom: 0 }
 #article-comments-list > div, #article-send-comment > div { margin-top: 10px; background-color: var(--comments-inner-background-color); width: 100%; border-radius: 10px; padding: 5px }
 #article-comments-list > div > a:first-of-type { float: right; font-size: 10px }
