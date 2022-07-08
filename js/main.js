@@ -39,8 +39,6 @@ function captcha(state = 0, callback = null) {
     }
 }
 
-titleBar = document.getElementById("titlebar")
-
 function homepage() { page("homepage"); windowState("metw", "") }
 
 function articlesList(article) {
@@ -128,6 +126,7 @@ function articleText(article, textId) {
     })
 }
 
+titleBar = document.getElementById("title-buttons")
 for (let id = 0; id < articles.length; id++) {
     let button = document.createElement("a")
     let a = document.createElement("a")
