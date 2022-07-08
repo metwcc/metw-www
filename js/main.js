@@ -164,4 +164,4 @@ function loadUri() {
 }
 
 loadUri()
-window.onpopstate = function (event) { loadUri(); };
+window.onpopstate = function (event) { loadUri(); history.back(); };
