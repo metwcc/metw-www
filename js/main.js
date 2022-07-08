@@ -161,8 +161,8 @@ function loadUri() {
     if (uri[0] == undefined) { homepage() }
     else if (uri[0] == "k" && uri.length == 2) { articlesList(uri[1]) }
     else if (uri[0] == "k" && uri.length == 3) { articleText(uri[1], uri[2]) }
-    else { page("404") }
+    else { page("404") }; disableStateUpdates = false
 }
 
 loadUri()
-window.onpopstate = function (event) { disableStateUpdates = true; loadUri(); disableStateUpdates = false }
+window.onpopstate = function (event) { disableStateUpdates = true; loadUri() }
