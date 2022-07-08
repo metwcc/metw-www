@@ -21,9 +21,7 @@ function captcha(state = 0, callback = null) {
                 document.querySelector("#captcha > div > img").src = "data:image/png;base64," + json[1]
                 document.querySelector("#captcha > div > input").value = ""
                 document.querySelector("#captcha > div > input").focus()
-                try { document.getElementById("captcha-send").remove() } catch { }
-                let send = document.createElement("a"); send.className = "href"; send.id = "captcha-send", send.innerHTML = "gönder"; send.addEventListener("click", function onclick(event) { captcha(state = 2, callback = callback) }, false)
-                document.querySelector("#captcha > div").appendChild(send)
+                clearListeners("#captcha-send").addEventListener("click", function onclick(event) { captcha(state = 2, callback = callback) }, false)
                 document.getElementById("captcha").style.display = "block"
                 setTimeout(function () { if (document.getElementById("captcha").style.display == "block" && tempCaptchaKey == captchaKey) { alert("Captcha geçerlilik süresi doldu, lütfen tekrar deneyin"); captcha(state = 1) } }, 50000);
             }, error: function (jqXHR, error, errorThrown) { loading(0); if (jqXHR.status && jqXHR.status == 429) { alert(jqXHR.responseText); } else { alert("Sunucuya baplanılamadı") } }
@@ -37,6 +35,10 @@ function captcha(state = 0, callback = null) {
             error: function (jqXHR, error, errorThrown) { loading(0); if (jqXHR.status && jqXHR.status == 429) { alert(jqXHR.responseText); } else { alert("Sunucuya baplanılamadı") } }
         })
     }
+}
+function clearListeners(query) {
+    let oldElement = document.querySelector(query), newElement = oldElement.cloneNode(true)
+    oldElement.parentNode.replaceChild(newElement, oldElement); oldElement.remove(); return newElement
 }
 
 function homepage() { page("homepage"); windowState("metw", "") }
@@ -82,7 +84,7 @@ function articleText(article, textId) {
                 if (json["comments"].length == 0) { commentsDiv.innerHTML = ""; appendComment("henüz hiç yorum yapılmamış", "", ""); document.getElementById("article-comments-next").style.display = "none", document.getElementById("article-comments-previous").style.display = "none" }
                 else {
                     let comments = json["comments"], commentCount = json["comment_count"], commentsPage = 0
-                    let commentsNext = document.getElementById("article-comments-next"), commentsPrevious = document.getElementById("article-comments-previous")
+                    let commentsNext = clearListeners("#article-comments-next"), commentsPrevious = clearListeners("#article-comments-previous")
                     commentsNext.addEventListener("click", function () { commentsPage += 1; articleTextCommentsLoad() })
                     commentsPrevious.addEventListener("click", function () { commentsPage -= 1; articleTextCommentsLoad() })
                     function articleTextCommentsLoad() {
@@ -109,17 +111,20 @@ function articleText(article, textId) {
                         xhr.open("POST", backEndUrl + `articles/${article}/${textId}/comments`);
                         xhr.setRequestHeader("Content-Type", "application/json");
                         xhr.onreadystatechange = function () {
-                            if (xhr.readyState === 4 && xhr.status === 200) {
-                                let json = JSON.parse(xhr.responseText);
-                                if (json) { alert("Yorum eklendi"); articleText(article, textId) }
-                                else { alert("Yorum eklenemedi") }
+                            if (xhr.readyState === 4) {
+                                loading(0)
+                                if (xhr.status === 200) { let json = JSON.parse(xhr.responseText); if (json) { alert("Yorum eklendi"); articleText(article, textId) } else { alert("Yorum eklenemedi") } }
+                                else if (xhr.status === 429) { alert(xhr.responseText) }
+                                else { alert("Sunucuya bağlanılamadı")  }
                             }
                         };
                         let data = JSON.stringify({ "name": name, "content": content, "captcha_key": captchaKey, "captcha_validation_key": captchaValidationKey });
-                        xhr.send(data);
+                        xhr.send(data); loading(1)
                     }
                 }
-                document.getElementById("article-comment-send").addEventListener("click", function () { articleSendComment(state = 0) })
+
+                clearListeners("#article-comment-send"); document.getElementById("article-comment-send").addEventListener("click", function () { articleSendComment(state = 0) })
+
                 loading(0); page("article"); windowState(`${json["title"]} • metw`, `k/${article}/${textId}`)
             } else { alert("Yazı bulunamadı"); articlesList(article) }
         }, error: function (jqXHR, error, errorThrown) { loading(0); if (jqXHR.status && jqXHR.status == 429) { alert(jqXHR.responseText); } else { alert("Sunucuya baplanılamadı") } }
