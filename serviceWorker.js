@@ -1,11 +1,9 @@
 ﻿const static = "metw-cc-v1"
 const assets = [
-    "/",
-    "/css/main.css",
-    "/css/loading.css",
-    "/js/main.js",
-    "/images/logo/circle-192.png",
-    "/images/logo/maskable-512.png"
+    "/offline.html",
+    "https://code.jquery.com/jquery-3.4.1.min.js",
+    "https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,700;1,400;1,700&display=swap",
+    "https://fonts.googleapis.com", "https://fonts.gstatic.com"
 ]
 
 self.addEventListener("install", event => { event.waitUntil(precache()); }); function precache() { return caches.open(static).then(cache => cache.addAll(assets)); }
@@ -22,7 +20,7 @@ self.addEventListener("fetch", event => {
                     return networkResponse;
                 } catch (error) {
                     const cache = await caches.open(static);
-                    const cachedResponse = await cache.match("/");
+                    const cachedResponse = await cache.match("/offline.html");
                     return cachedResponse;
                 }
             })()

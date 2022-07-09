@@ -173,10 +173,10 @@ function loadUri() {
     if (uri[0] == undefined) { homepage() }
     else if (uri[0] == "k" && uri.length == 2) { articlesList(uri[1]) }
     else if (uri[0] == "k" && uri.length == 3) { articleText(uri[1], uri[2]) }
+    else if (uri[0] == "offline") { page("offline") }
     else { page("404") }
 }
 
+if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("/serviceWorker.js") }) }
 document.getElementById("article-send-comment-name").value = localStorage.getItem("name"); loadUri()
 window.onpopstate = function (event) { disableStateUpdates = true; loadUri() }
-
-if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("/serviceWorker.js") }) }
