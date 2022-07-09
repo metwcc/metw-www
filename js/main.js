@@ -179,4 +179,4 @@ function loadUri() {
 document.getElementById("article-send-comment-name").value = localStorage.getItem("name"); loadUri()
 window.onpopstate = function (event) { disableStateUpdates = true; loadUri() }
 
-if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("/js/serviceWorker.js", { scope: "/js/" }) }) }
+if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("/serviceWorker.js", { scope: "/js/" }) }) }
