@@ -1,4 +1,4 @@
-﻿const static = "metw-cc-v2"
+﻿const static = "metw-cc-v3"
 const assets = [ "/offline.html", "/favicon.ico" ]
 
 self.addEventListener("install", event => { event.waitUntil(precache()); }); function precache() { return caches.open(static).then(cache => cache.addAll(assets)); }
