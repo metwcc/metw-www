@@ -16,7 +16,7 @@
       "purpose": "maskable"
     }
   ],
-  "start_url": "/?v=1",
+  "start_url": "/?utm_source=pwa",
   "scope": ".",
   "display": "standalone",
   "theme_color": "#000000",
