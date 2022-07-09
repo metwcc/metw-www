@@ -4,8 +4,8 @@ const assets = [
     "/css/main.css",
     "/css/loading.css",
     "/js/main.js",
-    "/images/logo/circle/192.png",
-    "/images/logo/maskable/512.png"
+    "/images/logo/circle-192.png",
+    "/images/logo/maskable-512.png"
 ]
 
 self.addEventListener("install", event => { event.waitUntil(precache()); }); function precache() { return caches.open(static).then(cache => cache.addAll(assets)); }
