@@ -4,12 +4,7 @@ const assets = [
     "/css/main.css",
     "/css/loading.css",
     "/js/main.js",
-    "/images/logo/circle/32.png",
-    "/images/logo/circle/48.png",
-    "/images/logo/circle/72.png",
-    "/images/logo/circle/128.png",
-    "/images/logo/circle/256.png",
-    "/images/logo/circle/512.png",
+    "/images/logo/circle/192.png",
     "/images/logo/maskable/512.png"
 ]
 
