@@ -1,7 +1,7 @@
 ﻿{
   "name": "metw.cc",
   "short_name": "metw",
-  "description": "Metehan Selvi, over-stack web & back-end geliştiricisi",
+  "description": "Açık kaynak kodlu bir blog sitesi",
   "icons": [
     {
       "src": "/images/logo/circle-192.png",
