@@ -1,4 +1,4 @@
-﻿backEndUrl = "https://api.metw.cc/", url = window.location.protocol + "//" + window.location.host + "/"
+﻿backEndUrl = "https://api.metw.cc/v1/", url = window.location.protocol + "//" + window.location.host + "/"
 articles = ["mütalaa", "matbuat", "muhtıra"]
 captchaKey = false, captchaValidationKey = false
 var disableStateUpdates = false
