@@ -95,17 +95,19 @@ const app = {
     template: {
         data: {},
         async render(name) {
-            if (this.data[name]) {
-                var scripts = [[], []], oldPage = d.getElementById('page')
-                page = p = d.getElementById('page').cloneNode(true)
-                page.innerHTML = this.data[name].replace(/<script init>([\s\S]*?)<\/script>/g, (raw, data) => { scripts[0].push(data); return '' })
-                    .replace(/<script>([\s\S]*?)<\/script>/g, (raw, data) => { scripts[1].push(data); return '' })
-                    .replace(/<template>([\s\S]*?)<\/template>/g, (raw, data) => data)
-                await load(async () => { for (let script of scripts[0]) await new Promise(resolve => eval(`(async resolve => { ${script}; resolve() })`)(resolve)) })
-                setTimeout(() => d.getElementById('loading-bar').style.height = '0', 2) 
-                for (let script of scripts[1]) { var e = d.createElement('script'); e.innerHTML = script; page.appendChild(e) }
-                oldPage.parentNode.replaceChild(page, oldPage)
-            } else { this.data[name] = await fetch.stream(`/pages/${name}.html`, progress).then(r => r.text()); await this.render(name) }
+            await load(async () => {
+                if (this.data[name]) {
+                    var scripts = [[], []], oldPage = d.getElementById('page')
+                    page = p = d.getElementById('page').cloneNode(true)
+                    page.innerHTML = this.data[name].replace(/<script init>([\s\S]*?)<\/script>/g, (raw, data) => { scripts[0].push(data); return '' })
+                        .replace(/<script>([\s\S]*?)<\/script>/g, (raw, data) => { scripts[1].push(data); return '' })
+                        .replace(/<template>([\s\S]*?)<\/template>/g, (raw, data) => data)
+                    for (let script of scripts[0]) await new Promise(resolve => eval(`(async resolve => { ${script}; resolve() })`)(resolve))
+                    setTimeout(() => d.getElementById('loading-bar').style.height = '0', 2)
+                    for (let script of scripts[1]) { var e = d.createElement('script'); e.innerHTML = script; page.appendChild(e) }
+                    oldPage.parentNode.replaceChild(page, oldPage)
+                } else { this.data[name] = await fetch.stream(`/pages/${name}.html`, progress).then(r => r.text()); await this.render(name) }
+            })
         }
     },
     async redirect(path, title) {
