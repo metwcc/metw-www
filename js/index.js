@@ -77,7 +77,7 @@ fetch.stream = async (url, progress, fetchInit) => {
                 }
             }
         })
-    }).then(stream => { progress(100); return new Response(stream) })
+    }).then(stream => { setTimeout(() => progress(100), 40); return new Response(stream) })
 }
 //#endregion
 
@@ -203,11 +203,12 @@ session.onlogin = () => {
     for (e of d.getElementsByClassName('@username')) e.innerText = session.user.name
     for (e of d.getElementsByClassName('@avatar')) e.src = session.user.avatarURL
 }
-session.onlogout = session.onloginfailed = () => {
+session.onloginfailed = () => {
     for (e of d.getElementsByClassName('@logged')) e.style.display = 'none'
     for (e of d.getElementsByClassName('@non-logged')) e.style.display = ''
     localStorage.removeItem('SID')
 }
+session.onlogout = () => { session.onloginfailed(); app.redirect('') }
 session.onavatarchange = () => { for (e of d.getElementsByClassName('@avatar')) e.src = session.user.avatarURL }
 session.onbannerchange = () => { for (e of d.getElementsByClassName('@banner')) e.src = session.user.bannerURL }
 session.etc = {
@@ -221,6 +222,7 @@ session.etc = {
 w.onload = async () => {
     SID = localStorage.getItem('SID')
     if (SID) await session.connect(SID)
+    else session.onloginfailed()
     await app.load()
     d.getElementById('initial-load').style = 'opacity: 0'
     setTimeout(() => d.getElementById('initial-load').remove(), 300)
