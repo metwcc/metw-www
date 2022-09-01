@@ -2,9 +2,9 @@
     post(post) {
         var _post = d.createElement('li')
         _post.innerHTML = `
-            <img class="avatar" onclick="app.redirect('/@${post.user.name}')" src="${post.user.avatarURL}" />
+            <img class="avatar" onclick="if (app.location.pathname[0] != '@${post.user.name}' || app.location.pathname.lenght > 1) app.redirect('/@${post.user.name}')" src="${post.user.avatarURL}" />
             <div>
-                <span class="username" onclick="app.redirect('/@${post.user.name}')">${post.user.displayName}</span><span class="date">&nbsp;·&nbsp;${timeSince(post.sentOn)}</span>
+                <span class="username" onclick="if (app.location.pathname[0] != '@${post.user.name}' || app.location.pathname.lenght > 1) app.redirect('/@${post.user.name}')">${post.user.displayName}</span><span class="date">&nbsp;·&nbsp;${timeSince(post.sentOn)}</span>
                 <p class="content"></p>
                 <div class="buttons">
                     <span class="_inline-img comment" onclick="app.redirect('/gönderi/${post.id}')" comment"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>&nbsp;${post.commentCount}</span>
@@ -23,6 +23,7 @@
         var ul = d.createElement('ul'); ul.className = '_p-c _post'
         if (posts) for (let post of posts) ul.appendChild(this.post(post))
         ul.append = posts => { for (let post of posts) ul.appendChild(this.post(post)) }
+        ul.unshift = post => ul.insertBefore(this.post(post), ul.firstChild)
         ul.clear = () => { ul.innerHTML = '' }
         return ul
     },
@@ -84,7 +85,7 @@
 
             _addReply.querySelector('.cancel').onclick = () => { _addReply.style.height = _addReply.clientHeight + 'px';  setTimeout(() => _addReply.style = '', 20) }
             _addReply.querySelector('.send').onclick = async () => {
-                if (_addReply.textarea.value.match(/[\S]*/g).join('').length < 4) return alert.error('Yorum 4 karakterden kısa olamaz')
+                if (_addReply.textarea.value.match(/[\S]*/g).join('').length < 2) return alert.error('Yorum 2 karakterden kısa olamaz')
                 data = await load(async () => await comment.reply(_addReply.textarea.value))
                 if (Array.isArray(data)) return alert.error(data[0])
                 _replies.insertBefore(this.comment(data), _replies.firstChild)
@@ -125,15 +126,14 @@
             _addComment.textarea.addEventListener('focus', () => _addComment.buttons.style.height = '2em')
             _addComment.textarea.addEventListener('focusout', () => { if (!_addComment.textarea.value.length) _addComment.buttons.style.height = '0' })
 
-            _addComment.querySelector('.cancel').onclick = () => _addComment.textarea.value = ''
+            _addComment.querySelector('.cancel').onclick = () => { _addComment.textarea.value = '', _addComment.buttons.style.height = '0' }
             _addComment.querySelector('.send').onclick = async () => {
-                if (_addComment.textarea.value.match(/[\S]*/g).join('').length < 4) return alert.error('Yorum 4 karakterden kısa olamaz')
+                if (_addComment.textarea.value.match(/[\S]*/g).join('').length < 2) return alert.error('Yorum 2 karakterden kısa olamaz')
                 data = await load(async () => await post.comment(_addComment.textarea.value))
                 if (Array.isArray(data)) return alert.error(data[0])
                 _comments.insertBefore(this.comment(data), _comments.children[1])
                 _addComment.textarea.value = '', _addComment.textarea.style.height = '0'
-                setTimeout(() => target.style.height = target.scrollHeight + 'px', 50)
-                addComment.buttons.style.height = '0'
+                _addComment.buttons.style.height = '0'
                 _comments.querySelector('h2').innerHTML = `Yorumlar (${post.commentCount})`
             }
         }

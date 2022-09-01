@@ -121,7 +121,8 @@
         loadMore: p.followList.querySelector('.load-more')
     })
     Object.assign(p.posts, {
-        page: p.posts.querySelector('.page')
+        page: p.posts.querySelector('.page'),
+        pageNo: 0
     })
 
 
@@ -179,31 +180,32 @@
 
     // posts
     if (p.user.postCount > 30) {
-        var pageNo = 0, pageCount = Math.ceil(p.user.postCount / 30)
+        p.posts.pageCount = Math.ceil(p.user.postCount / 30)
         var refresh = () => {
-            for (let [index, element] of Array.from(p.posts.page.children).entries()) element.style = index == pageNo + 1 ? 'color: white; font-weight: bold' : ''
-            p.posts.page.querySelector('li:first-of-type').style = pageNo == 0 ? 'color: white; font-weight: bold' : ''
-            p.posts.page.querySelector('li:last-of-type').style = pageNo == pageCount - 1 ? 'color: white; font-weight: bold' : ''
+            for (let [index, element] of Array.from(p.posts.page.children).entries()) element.style = index == p.posts.pageNo + 1 ? 'color: white; font-weight: bold' : ''
+            p.posts.page.querySelector('li:first-of-type').style = p.posts.pageNo == 0 ? 'color: white; font-weight: bold' : ''
+            p.posts.page.querySelector('li:last-of-type').style = p.posts.pageNo == p.posts.pageCount - 1 ? 'color: white; font-weight: bold' : ''
         }
         var renderPage = async () => {
-            if (pageNo > pageCount - 1) return pageNo = pageCount - 1
-            if (pageNo < 0) return pageNo = 0
+            if (p.posts.pageNo > p.posts.pageCount - 1) return p.posts.pageNo = p.posts.pageCount - 1
+            if (p.posts.pageNo < 0) return p.posts.pageNo = 0
             refresh()
-            var data = await load(async () => await p.user.get('posts', pageNo * 30))
+            var data = await load(async () => await p.user.get('posts', p.posts.pageNo * 30))
             p.posts.list.clear(); p.posts.list.append(data)
             p.posts.appendChild(metw.gui.posts())
         }
-        for (let i = 0; i < pageCount + 2; i++) {
+        for (let i = 0; i < p.posts.pageCount + 2; i++) {
             let li = d.createElement('li')
             switch (i) {
-                case 0: li.onclick = () => { pageNo--; setTimeout(renderPage, 20) };  li.innerText = 'sonraki ››';  break
-                case pageCount + 1: li.onclick = () => { pageNo++; setTimeout(renderPage, 20) }; li.innerText = '‹‹ önceki';  break
-                default: li.onclick = () => { if (pageNo == i - 1) return; pageNo = i - 1; setTimeout(renderPage, 20) }; li.innerText = i
+                case 0: li.onclick = () => { p.posts.pageNo--; setTimeout(renderPage, 20) };  li.innerText = 'sonraki ››';  break
+                case p.posts.pageCount + 1: li.onclick = () => { p.posts.pageNo++; setTimeout(renderPage, 20) }; li.innerText = '‹‹ önceki';  break
+                default: li.onclick = () => { if (p.posts.pageNo == i - 1) return; p.posts.pageNo = i - 1; setTimeout(renderPage, 20) }; li.innerText = i
             }
             p.posts.page.appendChild(li)
         }
         refresh()
     }
-    else { try { p.post.page.remove() } catch (err) { } }
+    else p.posts.page.remove()
     if (p._posts) p.posts.list = metw.gui.posts(p._posts); p.posts.appendChild(p.posts.list)
+    session.onpost = (post) => { if (p.posts.pageNo == 0) p.posts.list.unshift(post) }
 </script>

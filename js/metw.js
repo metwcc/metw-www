@@ -6,8 +6,8 @@ class Session {
         this.user = { id: 0 }
         this.indexed = { users: [], posts: [], comments: [], rawComments: [] }
     }
-    async event(name) {
-        if (this['on' + name]) this['on' + name]()
+    async event(name, ...args) {
+        if (this['on' + name]) this['on' + name](...args)
     }
 
     async request(options) {
@@ -19,6 +19,7 @@ class Session {
             var raw, ok, res = await fetch(url.backend + options.path, { method: options.method || 'get', headers: headers, body: body })
                 .then(res => { ok = res.ok, raw = res; return res.json() }).then(json => [json, ok, raw])
             if (res[2].status == 429 && options.retry != false) setTimeout(async () => resolve(await this.request(options)), (parseInt(res[2].headers.get('RateLimit-Reset'))) * 1000)
+            if (res[2].status == 401) this.event('loginfailed')
             else resolve(res)
         })
     }
@@ -77,13 +78,12 @@ class Session {
         this.event('logout')
     }
     async post(content) {
-        var [id, ok] = await this.request({ path: '/posts', json: { content: content } })
-        if (ok) this.indexed.posts.push(new Post({
-            id: id, user_id: this.user.id, user: this.user,
-            like_count: 0, comment_count: 0, liked: false, sent_on: new Date(),
-            content: content, flags: 0
-        }, session))
-        return ok
+        var [id, ok] = await this.request({ path: '/posts', json: { content: content }, retry: false })
+        if (!ok) return id
+        var post = new Post({ id, user_id: this.user.id, user: this.user, content }, session)
+        this.indexed.posts.push(post)
+        this.event('post', post)
+        return post
     }
 
     async index(data) {
@@ -167,8 +167,7 @@ class User {
         var comment = new Comment(
             {
                 id: (await this._session.request({ path: `/comments?type=0&parent_id=${this.id}`, json: { content: content } }))[0],
-                user_id: this._session.user.id, user: this._session.user, parent_id: this.id, type: 1,
-                content: content
+                user_id: this._session.user.id, user: this._session.user, parent_id: this.id, type: 1, content: content
             }, this._session)
         this.commentCount++
         this._session.indexed.comments.push(comment); this.comments.unshift(comment)
@@ -179,11 +178,11 @@ class User {
 class Post {
     constructor(data, session) {
         this.id = data.id, this.userId = data.user_id, this.user = data.user
-        this.likeCount = parseInt(data.like_count), this.liked = data.liked
-        this.commentCount = parseInt(data.comment_count)
-        this.sentOn = new Date(data.sent_on)
-        this.content = data.content
-        this.flags = data.flags
+        this.likeCount = parseInt(data.like_count) || 0, this.liked = data.liked || false
+        this.commentCount = parseInt(data.comment_count) || 0
+        this.sentOn = new Date(data.sent_on) || new Date()
+        this.content = data.content || ''
+        this.flags = data.flags || 0
         this.comments = []
         this._session = session
     }
@@ -201,14 +200,9 @@ class Post {
     async comment(content) {
         var id = (await this._session.request({ path: `/comments?type=1&parent_id=${this.id}`, json: { content: content }, retry: false }))[0]
         if (Array.isArray(id)) return id
-        var comment = new Comment(
-            {
-                id: id,
-                user_id: this._session.user.id, user: this._session.user, parent_id: this.id, type: 1, reply_count: 0,
-                content: content
-            }, this._session)
+        var comment = new Comment({ id: id, user_id: this._session.user.id, user: this._session.user, parent_id: this.id, type: 1, content: content }, this._session)
         this.commentCount++
-        this._session.indexed.comments.push(comment); this.comments.unshift(comment)
+        this._session.indexed.rawComments.push(comment); this._session.indexed.comments.push(comment); this.comments.unshift(comment)
         return comment
     }
 }
@@ -216,11 +210,11 @@ class Post {
 class Comment {
     constructor(data, session) {
         this.id = data.id, this.userId = data.user_id, this.user = data.user
-        this.type = data.type; this.parentId = data.parent_id; this.topParentId = data.top_parent_id
-        this.replyCount = parseInt(data.reply_count)
-        this.sentOn = new Date(data.sent_on)
+        this.type = data.type; this.parentId = data.parent_id; this.topParentId = data.top_parent_id || 0
+        this.replyCount = parseInt(data.reply_count) || 0
+        this.sentOn = new Date(data.sent_on) || new Date()
         this.content = data.content
-        this.flags = data.flags
+        this.flags = data.flags || 0
         this.replies = []
         this._session = session
     }

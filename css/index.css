@@ -7,6 +7,7 @@
 .bg-n { background: var(--bg-n) }
 .bg-1 { background: var(--bg-1) }
 .bd-1 { border: .125em solid var(--bd-1) }
+.bd-2 { border: .125em solid var(--bd-2) }
 
 a { cursor: pointer }
 body { background: var(--bg-g) }
@@ -34,7 +35,7 @@ input:-webkit-autofill { border-color: var(--bd-2); -webkit-text-fill-color: var
 #alerts   svg { display: flex; width: 1em; margin-left: .25em; flex-shrink: 0; align-self: start }
 #alerts   div { width: 0; height: .25em; position: absolute; left: 0; bottom: 0; background: var(--color); transition: 2s linear }
 
-#image-crop { background: var(--bg-1a); z-index: 2; display: none; z-index: 21; place-items: center; transform: scale(.8); opacity: 0; transition: .3s; outline: max(100vw, 100vh) solid var(--bg-1a) }
+#image-crop { display: none; background: var(--bg-1a); z-index: 21; place-items: center; transform: scale(.8); opacity: 0; transition: .3s; outline: max(100vw, 100vh) solid var(--bg-1a) }
 #image-crop * { grid-area: 1 / 1 / 2 / 2 }
 #image-crop .range{ width: min(60%, 20em); height: 1.25em; margin-bottom: 1.25em; padding: 0; z-index: 4; -webkit-appearance: none; border-radius: 1em; outline: .05em solid var(--bg-b-2); align-self: end }
 #image-crop  .range::-webkit-slider-thumb { width: 1.25em; height: 1.25em; margin: 0; -webkit-appearance: none; border-radius: 50%; background: var(--bg-b-2); cursor: pointer; outline: .75em solid var(--bg-b-2); outline-offset: -.5em }
@@ -44,6 +45,13 @@ input:-webkit-autofill { border-color: var(--bd-2); -webkit-text-fill-color: var
 #image-crop .main { display: grid; width: 80%; height: 80%; position: relative; place-items: center; border-radius: 1em; user-select: none; overflow: hidden; outline: max(100vw, 100vh) solid var(--bg-1a) }
 #image-crop  .frame { border: .125em solid var(--bd-2); border-radius: .5em; outline: max(100vw, 100vh) solid var(--bg-1a); z-index: 3 }
 #image-crop  .img { position: absolute; transform: translate(-50%, -50%) }
+
+#compose-button { width: 4em; height: 4em; margin: 0 0 1em 1em; padding: 1em; bottom: 0; left: 0; position: absolute; border-radius: 50%; background: var(--bg-b-1); z-index: 40 }
+#compose { display: none; background: var(--bg-1a); z-index: 41; transform: scale(.8); place-items: center; opacity: 0; transition: .3s; outline: max(100vw, 100vh) solid var(--bg-1a) }
+#compose div { display: flex; width: min(85%, 600px); height: min(85%, 400px); padding: 1em; flex-direction: column; background: var(--bg-1); border-radius: .5em }
+#compose  textarea { flex-grow: 1; resize: none; background-color: var(--bg-2); border-radius: .5em }
+#compose   button { margin: .5em 0 0 .5em; padding: .25em 1em; float: right }
+#compose   button.send { background-color: var(--bg-b-1) }
 
 /*  APP   */
 main { display: flex; flex-direction: column }
@@ -104,7 +112,7 @@ nav  .n-buttons  div:first-of-type a span:first-of-type { margin-left: .25em }
 
 ._p-c  .buttons { display: flex; align-items: center; justify-content: space-between }
 ._p-c  .buttons svg { stroke: inherit; height: 1em; width: 1em }
-._p-c  .buttons span { height: 1.25em; opacity: .5; transition: .3s; stroke: var(--color); user-select: none }
+._p-c  .buttons span { height: 1.25em; opacity: .5; display: inline-flex; align-items: center; transition: .3s; stroke: var(--color); user-select: none }
 ._p-c  .buttons  span:hover { transform: scale(1.05); opacity: .75; cursor: pointer }
 ._p-c  .buttons  span:active { transform: scale(1.1); opacity: 1 }
 ._p-c  .buttons  .comment:hover { color: #1B8BD7; stroke: #1B8BD7 }

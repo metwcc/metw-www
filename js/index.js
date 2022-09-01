@@ -114,15 +114,16 @@ const app = {
     },
     async load() {
         this.location.format()
-        if (this.location.pathname[0]?.[0] == '@') return await this.template.render(this.location.pathname[1] == 'duvar' ? 'wall' : 'profile')
+        var composeEnabled = (e) => d.getElementById('compose-button').style.marginLeft = e ? '' : '-5em'
+        if (this.location.pathname[0]?.[0] == '@') { composeEnabled(true); return await this.template.render(this.location.pathname[1] == 'duvar' ? 'wall' : 'profile') }
         switch (this.location.pathname[0]) {
-            case 'keşfet': return await this.template.render('explore')
-            case 'katıl': return await this.template.render('gateway')
-            case 'giriş': return await this.template.render('gateway')
-            case 'ayarlar': return await this.template.render('settings')
-            case 'gönderi': return await this.template.render('post')
-            case undefined: return await this.template.render('homepage')
-            default: return await this.template.render('404')
+            case 'keşfet': composeEnabled(true); return await this.template.render('explore')
+            case 'katıl': composeEnabled(false); return await this.template.render('gateway')
+            case 'giriş': composeEnabled(false); return await this.template.render('gateway')
+            case 'ayarlar': composeEnabled(false); return await this.template.render('settings')
+            case 'gönderi': composeEnabled(true); return await this.template.render('post')
+            case undefined: composeEnabled(true); return await this.template.render('homepage')
+            default: composeEnabled(false); return await this.template.render('404')
         }
     }
 }
@@ -215,6 +216,20 @@ session.etc = {
     async upload(t, d) { return await load(async () => await session.upload(t, d)) },
     async changeAvatar() { return this.upload('avatar', await crop.start('1:1', '128x128')) },
     async changeBanner() { return this.upload('banner', await crop.start('16:9', '640x360'))  }
+}
+d.getElementById('compose-button').onclick = () => {
+    var div = d.getElementById('compose'), textarea = div.querySelector('textarea')
+    textarea.value = ''
+    div.style.display = 'grid'
+    setTimeout(() => { div.style = 'display: grid; transform: none; opacity: 1'; textarea.focus() }, 20)
+    div.querySelector('button.cancel').onclick = () => { div.style = 'display: grid'; setTimeout(() => div.style = '', 320) }
+    div.querySelector('button.send').onclick = async () => {
+        var content = div.querySelector('textarea').value
+        if (content.length < 2) return alert.error('Gönderi 2 karakterden kısa olamaz')
+        var response = await load(async () => await session.post(content))
+        if (Array.isArray(response)) return alert.error(response[0])
+        div.querySelector('button.cancel').click()
+    }
 }
 //#endregion
 

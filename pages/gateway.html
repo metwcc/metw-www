@@ -27,8 +27,8 @@
      .p  button,
      .p  .captcha { display: flex; font-size: 1.25em; margin: 0 auto }
     .p  button svg { margin-left: .1em }
-    .p  .captcha  { display: grid; place-items: center; overflow: auto }
-    .p   .captcha::-webkit-scrollbar { height: 0 }
+    .p form > .captcha  { display: grid; place-items: center; overflow: auto hidden }
+    .p form > .captcha::-webkit-scrollbar { height: 0 }
 
     @media (max-width:310px) { .p form { font-size: .8em } }
 </style>
@@ -47,6 +47,7 @@
         if (p.signup) {
             if (!data.captcha) return alert.error('"Ben robot değilim"i işaretleyiniz')
             if (data.password != data.confirmPassword) return alert.error('Şifreler uyuşmuyor')
+            grecaptcha.reset(p.captcha)
         }
         r = (await load(async () => await session[p.signup ? 'signup' : 'login'](data.username, data.password, data.captcha)))
         if (Array.isArray(r)) alert.error(r[0])
