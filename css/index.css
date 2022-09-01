@@ -1,0 +1,139 @@
+* { box-sizing: border-box }
+
+.href { color: var(--link); font-weight: bold; text-decoration: underline .125em }
+.href:hover { cursor: pointer }
+
+.bg-g { background: var(--bg-g) }
+.bg-n { background: var(--bg-n) }
+.bg-1 { background: var(--bg-1) }
+.bd-1 { border: .125em solid var(--bd-1) }
+
+a { cursor: pointer }
+body { background: var(--bg-g) }
+
+button, input, textarea { padding: .25em; outline: none; background: var(--bg-1); border-radius: .25em; transition: .3s; border: none; outline: none }
+button { user-select: none }
+button:hover { filter: brightness(110%); cursor: pointer }
+button:active { filter: brightness(120%) }
+input:-webkit-autofill { border-color: var(--bd-2); -webkit-text-fill-color: var(--color); box-shadow: 0 0 0 100vh inset var(--bg-2) }
+
+/*  MISC   */
+@keyframes loading-bar { 0% { margin-left: -4em } 100% { margin-left: 100% } }
+#progress-bar, #loading-bar { opacity: .5; background: var(--color); position: absolute; top: 0; left: 0; z-index: 99; transition: height .3s }
+#progress-bar { height: 0 }
+#loading-bar { display: none; width: 4em; height: 2px; animation: loading-bar .8s ease-in-out infinite alternate }
+
+#disable-mouse { display: none; z-index: 99; cursor: wait }
+
+#alerts { display: block; z-index: 99; width: fit-content; height: fit-content; place-self: end }
+#alerts ul { max-width: calc(100vw - 4em); max-height: 50vh; padding: 0; overflow: hidden auto }
+#alerts  ul::-webkit-scrollbar { width: 0 }
+#alerts  li { display: flex; width: fit-content; padding: .5em .5em .75em; margin: .5em 2em 0 auto; background: var(--bg-a-d); position: relative; flex-direction: row-reverse; list-style: none; border-radius: .25em; font-size: 1em; max-width: 75vw; overflow: hidden; transform: translateX(3em); opacity: 0; transition: transform .3s, opacity .3s }
+#alerts  li:first-of-type { display: none }
+#alerts  li:last-of-type { margin-bottom: 1em }
+#alerts   svg { display: flex; width: 1em; margin-left: .25em; flex-shrink: 0; align-self: start }
+#alerts   div { width: 0; height: .25em; position: absolute; left: 0; bottom: 0; background: var(--color); transition: 2s linear }
+
+#image-crop { background: var(--bg-1a); z-index: 2; display: none; z-index: 21; place-items: center; transform: scale(.8); opacity: 0; transition: .3s; outline: max(100vw, 100vh) solid var(--bg-1a) }
+#image-crop * { grid-area: 1 / 1 / 2 / 2 }
+#image-crop .range{ width: min(60%, 20em); height: 1.25em; margin-bottom: 1.25em; padding: 0; z-index: 4; -webkit-appearance: none; border-radius: 1em; outline: .05em solid var(--bg-b-2); align-self: end }
+#image-crop  .range::-webkit-slider-thumb { width: 1.25em; height: 1.25em; margin: 0; -webkit-appearance: none; border-radius: 50%; background: var(--bg-b-2); cursor: pointer; outline: .75em solid var(--bg-b-2); outline-offset: -.5em }
+#image-crop .buttons { margin-top: 1.25em; z-index: 4; font-size: 1.25em; align-self: start }
+#image-crop .buttons > * { padding: .25em 1em }
+#image-crop .buttons .ok { background-color: var(--bg-b-1) }
+#image-crop .main { display: grid; width: 80%; height: 80%; position: relative; place-items: center; border-radius: 1em; user-select: none; overflow: hidden; outline: max(100vw, 100vh) solid var(--bg-1a) }
+#image-crop  .frame { border: .125em solid var(--bd-2); border-radius: .5em; outline: max(100vw, 100vh) solid var(--bg-1a); z-index: 3 }
+#image-crop  .img { position: absolute; transform: translate(-50%, -50%) }
+
+/*  APP   */
+main { display: flex; flex-direction: column }
+
+nav { background: var(--bg-n); user-select: none; box-shadow: var(--shadow-1); z-index: 20 }
+nav > div { display: flex; padding: .3125em; margin: 0 auto; max-width: 1200px; justify-content: space-between; align-items: center }
+nav  .n-name { font-size: 2em; margin-left: .3125em }
+nav  .n-buttons { display: flex; align-items: center; gap: .5em }
+nav  .n-buttons a { display: inline-flex; padding: .6em; align-items: center; align-content: center; font-size: 1.25em; background: var(--bg-n); transition: .3s; border-radius: .25em }
+nav  .n-buttons  a:hover { filter: brightness(110%) } nav  .n-buttons  a:active { filter: brightness(120%) }
+nav  .n-buttons a svg, nav .n-buttons a img { width: 1em; height: 1em; margin-top: .125em }
+nav  .n-buttons > a span { display: none }
+nav  .n-buttons div { display: flex; gap: .5em }
+nav  .n-buttons div a img { border-radius: 50% }
+nav  .n-buttons  div:first-of-type a span:first-of-type { margin-left: .25em }
+
+.page-outer { height: 100%; overflow: hidden auto }
+.page-outer::-webkit-scrollbar-thumb { background-color: var(--bg-1) }
+.page { max-width: 1200px; padding: 2em; margin: auto }
+@supports (overflow: overlay) { .page-outer { overflow-y: overlay } }
+
+@media screen and (max-width: 775px) {
+    nav > div { flex-direction: column }
+    nav  .n-name { font-size: 1.8em; margin: 0 }
+    nav  .n-buttons a { padding: .3em; font-size: 1.2em }
+    nav  .n-buttons { width: 100%; justify-content: space-around }
+}
+@media screen and (max-width: 480px) {
+    nav  .n-buttons div span { display: none }
+}
+@media screen and (min-width: 600px) {
+    nav  .n-buttons > a span { display: block }
+    nav  .n-buttons > a svg { display: none }
+}
+
+::-webkit-scrollbar { width: 16px }
+::-webkit-scrollbar-thumb { background-color: var(--bg-2); border-radius: 8px; border: 4px solid transparent; background-clip: padding-box }
+
+
+/*  GLOBAL CLASSES  */
+._inline-img { display: inline-flex; align-items: center }
+._inline-img img, ._inline-img svg { height: 1em }
+._load-more { width: 100%; background: var(--bg-b-1); font-size: 1.25em }
+
+._p-c { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2em }
+._p-c li { display: flex; width: min(600px, 100%); margin-top: 1em; padding: 1.5em 2.5em; border: .05em solid var(--bd-1); border-radius: 1em }
+._p-c  li:first-of-type { margin: 0 }
+._p-c > * > div { flex-grow: 1; overflow: hidden }
+._p-c  div { flex-basis: 100% }
+._p-c  .avatar { width: 2.75em; height: 2.75em; margin-right: .5em; border-radius: 50%; cursor: pointer }
+._p-c   .avatar:hover,
+._p-c   .username:hover { cursor: pointer }
+._p-c  .date { opacity: .5; font-size: .8em }
+._p-c  .content {  max-height: 500px; overflow-y: auto; margin: 0 0 .25em }
+._p-c  .content::-webkit-scrollbar { width: .25em }
+._p-c  .content::-webkit-scrollbar-thumb { background: var(--bg-1) }
+@media screen and (max-width: 600px) { ._p-c li { padding: 1.5em 1.5em } }
+
+._p-c  .buttons { display: flex; align-items: center; justify-content: space-between }
+._p-c  .buttons svg { stroke: inherit; height: 1em; width: 1em }
+._p-c  .buttons span { height: 1.25em; opacity: .5; transition: .3s; stroke: var(--color); user-select: none }
+._p-c  .buttons  span:hover { transform: scale(1.05); opacity: .75; cursor: pointer }
+._p-c  .buttons  span:active { transform: scale(1.1); opacity: 1 }
+._p-c  .buttons  .comment:hover { color: #1B8BD7; stroke: #1B8BD7 }
+._p-c  .buttons  .like:hover { color: #F91880; stroke: #F91880 }
+._p-c  .buttons  .like .count { color: inherit }
+._p-c  .buttons  .share:hover { stroke: #75bbf5 }
+._p-c  .buttons  .dots:hover { stroke: #00BA7C }
+._p-c  .buttons  .reply:hover { stroke: var(--bg-b-1) }
+
+._comments .a-c-r { display: grid; margin-top: 1em; grid-template: 1fr auto / auto 1fr }
+._comments .a-c-r img { height: 3em; width: 3em; margin: .5em; border-radius: 50% }
+._comments .a-c-r textarea { min-height: 100%; padding: .5em; background: inherit; border: .05em solid var(--bd-1); border-width: .05em 0; flex-basis: 100%; resize: none }
+._comments .a-c-r .buttons-2 { margin-top: .25em; grid-column: 2 / auto; transition: .3s; height: 0; overflow: hidden }
+._comments .a-c-r button { padding-left: .5em }
+._comments .a-c-r button:last-of-type { background: var(--bg-b-1) }
+._comments .a-c-r svg { width: 1em; height: 1em; margin-left: .25em }
+
+._comments { width: min(600px, 100%); margin: 0 auto }
+._comments .top h2 { font-weight: normal; font-size: 1em; margin-top: 1em }
+._comments > div { width: 100% }
+._comments  .comment { display: flex; width: 100%; margin: 1em 0 0; padding: 1.5em 2.5em; border: .125px solid var(--bd-1); border-radius: 1em }
+._comments  .comment  .content { max-height: 250px }
+._comments  .comment  .buttons { justify-content: flex-end; gap: 2em }
+._comments  .add-reply { height: 0; margin: 0; padding-left: 2em; transition: .3s; overflow: hidden }
+._comments  .add-reply .buttons-2 { height: unset !important }
+._comments  .replies { padding-left: 2em }
+._comments  .replies .load-more { margin-top: 1em; min-width: 300px }
+._comments  .replies .comment { min-width: 300px }
+._comments > div > .replies { overflow-x: auto !important }
+._comments > div > .replies::-webkit-scrollbar { height: .25em }
+._comments > div > .replies::-webkit-scrollbar-thumb { background: var(--color) }
+@media screen and (max-width: 600px) { ._comments  .comment { padding: 1.5em 1.5em } }

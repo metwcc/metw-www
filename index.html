@@ -1,81 +1,92 @@
-﻿<!DOCTYPE html>
-<html>
-<head prefix="og: https://ogp.me/ns#">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=0">
-    <title id="title">metw</title>
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="metw.cc">
-    <meta property="og:title" content="metw.cc" id="og-title">
-    <meta property="og:description" content="" id="og-description">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=0" />
+    <meta name="apple-mobile-web-app-capable" content="yes">  <meta name="description" content="This short description describes my website.">
+    <meta name="description" content="Bir hesap oluşturun veya metw.cc'uye giriş yapın - Arkadaşlarınız ve ailenizle bağlantıda kalmanın basit bir yolu!">
+    <meta name="page-type" content="Sosyal Medya">
+    <title>metw.cc</title>
+    
     <link rel="apple-touch-icon" sizes="192x192" href="/images/logo/circle-192.png">
-    <meta name="theme-color" content="#000000">
-    <link rel="canonical" href="https://metw.cc" />
     <link rel="manifest" href="/manifest.json">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GGJ9ZP80M5"></script>
-    <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag("js", new Date()); gtag("config", "G-GGJ9ZP80M5");</script>
+    
+    <script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag('js', new Date()); gtag('config', 'G-CYZ4QC3JH8')</script>
     <style>
-        @import url("/css/main.css");
-        @import url("/css/loading.css");
+        @import "https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap";
+        @import "/css/dark-theme.css";
+        * { box-sizing: border-box; color: var(--color); font-family: "Source Code Pro", monospace; -webkit-tap-highlight-color: rgba(255, 255, 255, 0) !important; font-size: inherit }
+        html { font-size: 1rem }
+        body { display: grid; margin: 0; place-items: center; overflow: hidden }
+        body > * { grid-area: 1 / 1; width: 100vw; height: 100vh }
+        #initial-load { padding-top: 10vh; font-size: 1rem; transition: opacity linear .3s; background: var(--bg-g); z-index: 100 }
+        #initial-load h1 { width: min-content; margin: auto; font-weight: normal; font-size: 2em }
+        #initial-load div { width: min(16em, 75%); height: .2em; margin: .1em auto; background: var(--color); overflow: hidden; display: none }
+        #initial-load noscript { display: block; width: 100%; margin: 0 auto; text-align: center }
+        @keyframes initial-load { 0% { margin-left: -2em } 100% { margin-left: calc(100% - 2em) } }
+        #initial-load div:after { content: ""; display: block; width: 4em; height: 100%; background: var(--bg-1); animation: initial-load .8s ease-in-out infinite alternate }
     </style>
+    <script src="/js/metw.js" defer></script>
+    <script src="/js/metw-gui.js" defer></script>
+    <script src="/js/index.js" defer></script>
+    <script src="https://www.google.com/recaptcha/api.js" defer=""></script>
 </head>
 <body>
-    <div id="loading" class="full-size" style="display: none"><div class="lds-grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>
-    <div id="captcha" class="full-size" style="display: none">
-        <div class="center">
-            <img src=""><br>
-            <input placeholder="yukarıdaki sayıları yazınız"><br>
-            <a class="href" id="captcha-send">gönder</a> <a class="href" onclick="captcha(state = 1)">iptal</a>
+    <div id="initial-load">
+        <h1><b>metw</b>.cc</h1>
+        <div></div>
+        <noscript>Devam etmek için JavaScript'i aktif edin</noscript>
+        <script>document.querySelector('#initial-load div').style.display = 'block'</script>
+    </div>
+    <div id="progress-bar"></div>
+    <div id="loading-bar"></div>
+    <div id="disable-mouse"></div>
+    <div id="alerts">
+        <ul>
+            <li><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg><div></div></li>
+        </ul>
+    </div>
+    <div id="image-crop">
+        <div class="main">
+            <div class="buttons"> 
+                <button class="_inline-img ok">
+                    onayla&nbsp;
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                </button>
+                <button class="cancel">iptal</button>
+            </div>
+            <input class="range" type="range" min="100" max="400" />
+            <img class="img" draggable="false" />
+            <div class="frame"></div>
         </div>
     </div>
-    <div class="app center full-size">
-        <div id="titlebar" class="titlebar">
-            <div> <a onclick="homepage()"><b>metw</b>.cc</a> | <a id="title-buttons"></a> </div>
-        </div>
-        <div class="content">
-            <div id="homepage" class="pages">
-                <b>Metehan Selvi, over-stack web & back-end geliştiricisi</b><br>
-                Yazı listesi için başlık çubuğundan bir konuya tıklayınız.<br><br><br>
-                Beta versiyonunu <a class="href" href="https://ptb.metw.cc">deneyimleyin</a>!<br>
-                metw.cc kaynak kodları <a class="href" href="https://github.com/metwse/metw.cc">GitHub</a>'da!<br>
-                <i>Diğer projeler;</i>
-                <ul style="margin: 0">
-                    <li> <a class="href" href="https://aga.metw.cc">aga.metw.cc</a> (kullanımdan kaldırılacak)
-                    <li> <a class="href" href="https://schat.app">schat.app</a> (henüz bitmedi)
-                    <li> <a class="href" href="https://anonimsin.net">anonimsin.net</a> (henüz yayımlanmadı)
-                </ul>
-                <a class="center-x">© 2022 metehan selvi, tüm hakları saklıdır</a>
-            </div>
-            <div id="articles" class="pages"><b id="article-name" class="title"></b> <ul id="articles-list"></ul></div>
-            <div id="article" class="pages">
-                <div id="article-details"></div>
-                <div id="article-text"></div>
-                <a id="article-views">👁</a><br>
-                <div id="article-comments">
-                    <b>Yorumlar</b>
-                    <div id="article-comments-list">
-                        <div><a>date</a>sender<br>content</div>
-                        <div><a>date</a>sender<br>content</div>
+    <main>
+        <nav>
+            <div>
+                <a class="n-name"><b>metw</b>.cc</a>
+                <div class="n-buttons">
+                    <a onclick="app.redirect('/')"><span>ev</span><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></a>
+                    <a onclick="app.redirect('/keşfet')"><span>keşfet</span><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></a>
+                    <div class="@logged">
+                        <a onclick="app.redirect(`/@${session.user.name}`)"><img class="@avatar" src="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=" /><span>@</span><span class="@username">user</span></a>
+                        <a onclick="app.redirect('/ayarlar')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></a>
+                        <a onclick="app.redirect('/bildirimler')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>                        </a>
+                        <a onclick="session.disconnect()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg></a>
                     </div>
-                    <a id="article-comments-previous" class="href">◀ önceki sayfa</a> <a id="article-comments-page">1/1</a> <a id="article-comments-next" class="href">sonraki sayfa ▶</a>
-                </div>
-                <div id="article-send-comment">
-                    <b>Yorum yaz</b><a class="href" onclick="articleText(3, 1)">yasal uyarı</a>
-                    <div>
-                        <input id="article-send-comment-name" placeholder="isim"><a></a>
-                        <textarea id="article-send-comment-content" placeholder="içerik" rows="5"></textarea>
+                    <div class="@non-logged">
+                        <a onclick="app.redirect('/giriş')">giriş</a>
+                        <a onclick="app.redirect('/katıl')">katıl</a>
                     </div>
-                    <a id="article-comment-send" class="href">gönder ▶</a>
                 </div>
             </div>
-            <div id="404" class="pages">Sayfa bulunamadı<br><a class="href" onclick="homepage()">< ana sayfaya dön</a></div>
+        </nav>
+        <div class="p-outer p-o page-outer">
+            <div id="page" class="p page">
+            </div>
         </div>
-    </div>
-    <script src="/js/main.js"></script>
+    </main>
+
+    <style>
+        @import "/css/index.css";
+    </style>
 </body>
-</html>

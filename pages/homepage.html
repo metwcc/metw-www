@@ -1,0 +1,49 @@
+﻿<script init>
+    document.title = 'metw'
+    if (session.logged) {
+        p.posts = metw.gui.posts([])
+        p.posts.data = await session.homepage()
+        p.posts.cursor = p.posts.data[30]?.id
+        p.posts.append(p.posts.data)
+    }
+</script>
+
+<template>
+    <div class="default">
+        <h1><b>metw</b>.cc</h1> - dünyanın en iyi web sitesi
+        <br />
+        <br />
+        <a class="href" onclick="app.redirect('giriş')">Giriş yapın</a>, <a class="href" onclick="app.redirect('katıl')">kaydolun</a> veya <a class="href" onclick="app.redirect('keşfet')">keşfedin</a>
+    </div>
+</template>
+
+<style>
+    .p h1 { display: inline-block; margin: 0; font-size: 1.75em; font-weight: normal }
+    .p ul { margin: 0; padding-top: 0 }
+    .p button { display: block; width: min(75%, 500px); margin: auto }
+    .p .quiet { text-align: center }
+</style>
+
+<script>
+    if (session.logged) {
+        p.querySelector('.default').remove()
+        if (p.posts.data.length) {
+            p.appendChild(p.posts)
+            var loadMore = d.createElement('button')
+            loadMore.innerHTML = 'devamını yükle', loadMore.className = '_load-more'
+            if (!(p.posts.data.length % 30)) p.appendChild(loadMore)
+            loadMore.onclick = async () => {
+                var data = await load(async () => await session.homepage(p.posts.cursor))
+                p.posts.cursor = data[30]?.id
+                if (!p.posts.cursor) loadMore.remove()
+                p.posts.append(data)
+            }
+        } else {
+            p.innerHTML += `
+                <div class="quiet">
+                    Burası sizin ana sayfanız. Takip ettiklerinizin gönderileri burada gözükür.<br>
+                    Ancak bir sessizlik... Takip edecek <b class="href" onclick="app.redirect('/keşfet')">birisini bulmaya ne dersiniz?</b>
+                </div>`
+        }
+    }
+</script>

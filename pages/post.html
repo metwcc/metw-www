@@ -1,0 +1,19 @@
+﻿<script init>
+    p.post = await session.get('post', app.location.pathname[1])
+    if (!p.post) resolve(app.template.render('404'))
+    document.title = p.post.content.substring(0, 10) + ' | metw'
+    p._comments = await metw.gui.comments(p.post) 
+</script>
+
+<template>
+</template>
+
+<style>
+    .p ul { margin: 0; padding: 0 }
+</style>
+
+<script>
+    p.appendChild(metw.gui.posts([p.post]))
+    p.appendChild(p._comments)
+    p.querySelector('._post .comment').remove()
+</script>

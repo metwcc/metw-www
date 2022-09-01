@@ -1,0 +1,26 @@
+﻿<script init>
+    p.user = await session.get('user', app.location.pathname[0].substring(1))
+    if (!p.user) resolve(app.template.render('404'))
+    document.title = p.user.displayName + ' | metw'
+    p._comments = await metw.gui.comments(p.user) 
+</script>
+
+<template>
+     <div class="profile" onclick="app.redirect(`/@${p.user.name}`)">
+        <img />
+        <h2></h2>
+     </div>
+</template>
+
+<style>
+    .p .profile { display: flex; justify-content: center; align-items: center }
+    .p .profile:hover { cursor: pointer }
+    .p .profile h2 { margin: 0; font-weight: normal; font-size: 2em }
+    .p .profile img { width: 3em; height: 3em; margin-right: 1em; border-radius: 50% }
+</style>
+
+<script>
+    p.querySelector('img').src = p.user.avatarURL
+    p.querySelector('h2').innerText = p.user.name
+    p.appendChild(p._comments)
+</script>

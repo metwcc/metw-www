@@ -1,0 +1,209 @@
+﻿<script init>
+    p.user = await session.get('user', app.location.pathname[0].substring(1))
+    if (!p.user) resolve(app.template.render('404'))
+    document.title = p.user.displayName + ' | metw'
+    p.user.logged = p.user.id == session.user.id;
+    p._posts = await p.user.get('posts')
+</script>
+
+<template>
+    <div class="bg-1 profile">
+        <div>
+            <div class="user">
+                <div class="avatar"><img /></div>
+                <div>
+                    <h1 class="name">@name</h1>
+                    <div class="bio">
+                        <textarea oninput="acceptInput(event, /[\s\S]*/g, 512)"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="follow">
+                <button class="_inline-img">
+                    <span class="_inline-img follow-span">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                        <span>takip et</span>
+                    </span>
+                    <span class="_inline-img unfollow-span">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6"></path></svg>
+                        <span>takipten çık</span>
+                    </span>
+                </button>
+                <span onclick="p.followList.start('followers')"><span class="follower-count">123</span> takipçi</span>
+                <span onclick="p.followList.start('followings')"><span class="following-count">123</span> takip</span>
+            </div>
+            <div class="buttons">
+                <button onclick="app.redirect(`/@${p.user.name}/duvar`)" class="_inline-img"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path></svg>duvar</button>
+            </div>
+        </div>
+    </div>
+    <div class="posts">
+        <ul class="page"></ul>
+    </div>
+    <div class="follow-list">
+        <div class="bg-1 bd-1">
+            <div class="title">
+                <span>@user kullanıcısının <span></span>leri</span>
+                <button class="_inline-img" onclick="p.followList.exit()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+            <ul></ul>
+            <button class="_load-more load-more">devamını yükle</button>
+        </div>
+    </div>
+</template>
+
+<style>
+    .p { display: grid; max-width: unset !important; width: 100%; margin: 0; padding: 0 !important; grid-template: auto 1fr / 1fr; justify-items: center }
+    .p .profile { display: flex; width: 100%; padding: .75em 1em; position: relative; justify-content: center; z-index: 3 } 
+    .p  .profile:before { display: block; content: ''; width: 100%; height: 100%; position: absolute; inset: 0; opacity: 0.2; background: no-repeat center center; background-image: var(--banner-url); background-size: cover }
+    .p .profile > div { display: grid; width: 100%; max-width: 1200px; grid-template: auto 1fr / 1fr auto; z-index: 23 }
+    .p .posts, .p .follow-list { width: 100%; height: 100%; max-width: 1200px; grid-area: 2 / 1 / 3 / 2 }
+    
+    .p .profile  .user { display: flex; width: 100%; overflow: hidden }
+    .p .profile  .user .avatar { display: grid; width: 5em; height: 5em; align-self: center; border-radius: 50%; overflow: hidden; place-items: center; flex-shrink: 0; user-select: none }
+    .p .profile  .user .avatar img { width: 100%; height: 100%; grid-area: 1 / 1 / 2 / 2 }
+    .p .profile  .user  .avatar:after { display: grid; width: 100%; height: 100%; background: var(--bg-1a); z-index: 2; place-content: center; grid-area: 1 / 1 / 2 / 2; opacity: 0; transition: .3s }
+    .p .profile  .user   .avatar:hover:after { cursor: pointer; opacity: 1 }
+    .p .profile  .user > div:last-of-type { display: flex; margin-left: 1em; flex-grow: 1; flex-direction: column }
+    .p .profile  .user  .name { margin: 0; font-size: 2em; font-weight: normal }
+    .p .profile  .user  .bio { margin: .25em }
+    .p .profile  .user  .bio textarea { width: 100%; margin: .25em 0 0; background: transparent; border: .125em dashed var(--bd-2); border-radius: .25em; flex-grow: 1; resize: none }
+    .p .profile  .user *::-webkit-scrollbar { width: .4em }
+    .p .profile  .user *::-webkit-scrollbar-thumb { background: var(--bg-2); width: .125em }
+    
+    .p .profile  .follow { display: flex; margin: 0 .5em; justify-content: center; align-items: center; flex-direction: column; gap: 0 .5em; user-select: none }
+    .p .profile  .follow button { background: var(--bg-b-f); font-size: 1.1em }
+    .p .profile  .follow button span span { margin-left: .25em }
+    .p .profile  .follow span:hover { cursor: pointer }
+
+    .p .profile  .buttons { margin-top: .5em; grid-column: 1 / 3 }
+    .p .profile  .buttons button { background-color: var(--bg-b-1) }
+    .p .profile  .buttons  svg { margin-right: .25em }
+
+    @media screen and (max-width: 600px){
+        .p .profile > div { grid-template: 1fr auto auto / 1fr }
+        .p .profile  .follow { margin: .5em 0 0; flex-direction: row; justify-content: flex-start }
+        .p .profile  .follow button span span { display: none }
+        .p .profile  .buttons { grid-column: 1 / 2 }
+    }
+
+    .p .follow-list { display: none; width: 100%; height: 100%; max-width: 1100px; background-color: var(--bg-1a); outline: max(100vw, 100vh) solid var(--bg-1a); justify-content: center; transform: scale(.8); transform-origin: top; opacity: 0; transition: .3s; z-index: 2 }
+    .p .follow-list > div { width: calc(100% - 4em); height: fit-content; margin: 2em; padding: 1.25em; border-radius: .5em }
+    .p .follow-list  .title { display: flex; margin: 0 0 1.25em; font-size: 1.25em; justify-content: space-between; align-items: center }
+    .p .follow-list  .title button { background: var(--bg-b-1); padding: .5em; font-size: .8em }
+    .p .follow-list  ul { display: grid; padding: 0; grid-template-columns: 1fr; gap: .5em }
+    .p .follow-list   li { display: flex; height: 4em; padding: .5em; border: .125em solid var(--bd-1); border-radius: .5em; list-style: none; flex-basis: 100%; overflow: hidden; align-items: center; cursor: pointer }
+    .p .follow-list    span { font-size: 1.25em }
+    .p .follow-list    img { height: 100%; margin-right: .5em; aspect-ratio: 1; border-radius: 50% }
+    .p .follow-list  .load-more { display: none }
+
+    .p .page { padding: 0; display: flex; justify-content: center; margin-top: 1.5em; gap: 1em; flex-direction: row-reverse; user-select: none }
+    .p .page li { list-style: none; color: var(--bg-b-1); cursor: pointer }
+    .p ul:last-of-type { margin-top: 0 }
+
+    @media (min-width: 700px) { .p .follow-list  ul { grid-template-columns: 1fr 1fr } }
+    @media (min-width: 1100px) { .p .follow-list  ul { grid-template-columns: 1fr 1fr 1fr } }
+</style>
+
+<script>
+    Object.assign(p, {
+        profile: p.querySelector('.profile'),
+        followList: p.querySelector('.follow-list'),
+        posts: p.querySelector('.posts')
+    })
+    Object.assign(p.profile, {
+        name: p.profile.querySelector('.name'), avatar: p.profile.querySelector('.avatar img'), bio: p.profile.querySelector('.bio'),
+        followerCount: p.querySelector('.follower-count'), followingCount: p.querySelector('.following-count'),
+        follow: Object.assign(p.profile.querySelector('.follow button'), { followSpan: p.profile.querySelector('.follow-span'), unfollowSpan: p.profile.querySelector('.unfollow-span') })
+    })
+    Object.assign(p.followList, {
+        ul: p.followList.querySelector('ul'),
+        loadMore: p.followList.querySelector('.load-more')
+    })
+    Object.assign(p.posts, {
+        page: p.posts.querySelector('.page')
+    })
+
+
+    // load profile
+    p.profile.name.innerText = p.user.displayName
+    p.profile.avatar.src = p.user.avatarURL
+    if (p.user.logged) {
+        var textarea = p.profile.bio.querySelector('textarea'), style = d.createElement('style')
+        p.profile.avatar.classList.add('@avatar')
+        p.profile.avatar.parentElement.onclick = () => session.etc.changeAvatar()
+        textarea.innerText = p.user.bio; textarea.addEventListener('focusout', () => load(async () => await session.settings([{ name: 'update_bio', content: textarea.value }])))
+        p.profile.follow.style.display = 'none'
+        style.innerHTML = '.p .profile  .user  .avatar:after { content: "değiştir" }'; p.appendChild(style)
+    }
+    else p.profile.bio.innerText = p.user.bio
+    p.style.setProperty('--banner-url', `url("${p.user.bannerURL}")`)
+
+
+    // follow & list
+    p.profile.follow.updateState = (n) => {
+        p.profile.followerCount.innerText = p.user.followerCount
+        p.profile.followingCount.innerText = p.user.followingCount
+        p.profile.follow.unfollowSpan.style.display = ['none', ''][+n]
+        p.profile.follow.followSpan.style.display = ['', 'none'][+n]
+        p.profile.follow.style.background = `var(--bg-b-${n ? 'u' : ''}f)`
+    }; p.profile.follow.updateState(p.user.followed)
+    p.profile.follow.onclick = async () => {
+        await load(async () => await p.user.follow(!p.user.followed))
+        p.profile.follow.updateState(p.user.followed)
+    }
+
+    p.followList.render = async (t, after) => {
+        var data = await load(async () => await p.user.get(t, after))
+        p.followList.count += data.data.length
+        if (!after) p.followList.ul.innerHTML = ''
+        p.followList.cursor = data.cursor
+        p.followList.loadMore.style.display = ['block', 'none'][+(p.followList.count >= p.user[`${t.slice(0, -1) }Count`])]
+        for (let user of data.data) {
+            let li = d.createElement('li')
+            li.innerHTML = `<img src="${user.avatarURL}" /><span>${user.name}</span>`
+            li.onclick = () => app.redirect(`/@${user.name}`)
+            p.followList.ul.appendChild(li)
+        }
+    }
+    p.followList.start = async (t) => {
+        if (!p.user[`${t.slice(0, -1) }Count`]) return
+        p.followList.loadMore.onclick = '', p.followList.loadMore.style.display = 'none'
+        p.followList.style = 'display: flex', p.followList.count = 0
+        await p.followList.render(t, 0)
+        p.followList.loadMore.onclick = () => p.followList.render(t, p.followList.cursor), p.followList.style = 'display: flex'
+        setTimeout(() => p.followList.style = 'display: flex; transform: none; opacity: 1', 20)
+    }
+    p.followList.exit = () => { p.followList.style = 'display: flex'; setTimeout(() => { p.followList.style = '', p.followList.ul.innerHTML = '' }, 300) }
+
+
+    // posts
+    if (p.user.postCount > 30) {
+        var pageNo = 0, pageCount = Math.ceil(p.user.postCount / 30)
+        var refresh = () => {
+            for (let [index, element] of Array.from(p.posts.page.children).entries()) element.style = index == pageNo + 1 ? 'color: white; font-weight: bold' : ''
+            p.posts.page.querySelector('li:first-of-type').style = pageNo == 0 ? 'color: white; font-weight: bold' : ''
+            p.posts.page.querySelector('li:last-of-type').style = pageNo == pageCount - 1 ? 'color: white; font-weight: bold' : ''
+        }
+        var renderPage = async () => {
+            if (pageNo > pageCount - 1) return pageNo = pageCount - 1
+            if (pageNo < 0) return pageNo = 0
+            refresh()
+            var data = await load(async () => await p.user.get('posts', pageNo * 30))
+            p.posts.list.clear(); p.posts.list.append(data)
+            p.posts.appendChild(metw.gui.posts())
+        }
+        for (let i = 0; i < pageCount + 2; i++) {
+            let li = d.createElement('li')
+            switch (i) {
+                case 0: li.onclick = () => { pageNo--; setTimeout(renderPage, 20) };  li.innerText = 'sonraki ››';  break
+                case pageCount + 1: li.onclick = () => { pageNo++; setTimeout(renderPage, 20) }; li.innerText = '‹‹ önceki';  break
+                default: li.onclick = () => { if (pageNo == i - 1) return; pageNo = i - 1; setTimeout(renderPage, 20) }; li.innerText = i
+            }
+            p.posts.page.appendChild(li)
+        }
+        refresh()
+    }
+    else { try { p.post.page.remove() } catch (err) { } }
+    if (p._posts) p.posts.list = metw.gui.posts(p._posts); p.posts.appendChild(p.posts.list)
+</script>

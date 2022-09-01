@@ -1,0 +1,55 @@
+﻿<script init>
+    p.signup = app.location.pathname[0] == 'katıl'
+    if (p.signup) p.captcha = grecaptcha.render(p.querySelector('.captcha'))
+    document.title = p.signup ? 'Katıl' : 'Giriş yap'
+</script>
+
+<template>
+    <form class="bg-1 bd-1" action="javascript:p.submit()">
+        <h2>Title</h2>
+        <input class="bd-1" name="username" placeholder="Kullanıcı adı" oninput="acceptInput(event, /[\w\d-]*/g, 20)"/>
+        <input class="bd-1" name="password" placeholder="Şifre" type="password" oninput="acceptInput(event, /[\s\S]*/g, 128)"/>
+        <input class="bd-1" name="confirm-password" placeholder="Şifreyi onayla" type="password" oninput="acceptInput(event, /[\s\S]*/g, 128)"/>
+        <div class="captcha" data-sitekey="6LesMlYhAAAAAGyh8JzrNxbi0DsFTFnyxzLeecXt" data-theme="dark"></div>
+        <button class="bd-1 _inline-img">
+            başla<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </button>
+    </form>
+</template>
+
+<style>
+    .p { display: grid; height: 100%; padding: 2em 0 !important; place-items: center }
+    .p form { width: 75%; max-width: 30em; padding: 2em; border-radius: .5em; overflow: hidden }
+    .p  h2 { margin: 0 0 .5em; font-size: 1.5em; font-weight: normal; text-align: center }
+    .p  input,
+     .p  .captcha { width: 100%; margin: .4em 0 !important }
+    .p  input, 
+     .p  button,
+     .p  .captcha { display: flex; font-size: 1.25em; margin: 0 auto }
+    .p  button svg { margin-left: .1em }
+    .p  .captcha  { display: grid; place-items: center; overflow: auto }
+    .p   .captcha::-webkit-scrollbar { height: 0 }
+
+    @media (max-width:310px) { .p form { font-size: .8em } }
+</style>
+
+<script>
+    Object.assign(p, {
+        form: p.querySelector('form')
+    })
+    p.form.querySelector('h2').innerText = p.signup ? 'Katıl' : 'Giriş'
+    if (!p.signup) p.form['confirm-password'].style.display = 'none'
+    p.submit = async () => {
+        var data = {
+            username: p.form.username.value, password: p.form.password.value, confirmPassword: p.form['confirm-password'].value,
+            captcha: p.signup ? grecaptcha.getResponse(p.captcha) : undefined
+        }
+        if (p.signup) {
+            if (!data.captcha) return alert.error('"Ben robot değilim"i işaretleyiniz')
+            if (data.password != data.confirmPassword) return alert.error('Şifreler uyuşmuyor')
+        }
+        r = (await load(async () => await session[p.signup ? 'signup' : 'login'](data.username, data.password, data.captcha)))
+        if (Array.isArray(r)) alert.error(r[0])
+        else app.redirect('/')
+    }
+</script>

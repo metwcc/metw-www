@@ -1,0 +1,78 @@
+﻿<script init>
+</script>
+
+<template>
+    <div class="profile">
+        <h2>Profil</h2>
+        <div class="avatar">
+            <span>Avatar</span>
+            <div>
+                <img class="@avatar" />
+                <span>
+                    <button class="change" onclick="session.etc.changeAvatar()">değiştir</button>
+                    <button onclick="load(async () => await session.settings([{name: 'remove_avatar'}]))">sil</button>
+                </span>
+            </div>
+        </div>
+        <div class="banner">
+            <span>Banner</span>
+            <div>
+                <img class="@banner" />
+                <span>
+                    <button class="change" onclick="session.etc.changeBanner()">değiştir</button>
+                    <button onclick="load(async () => await session.settings([{name: 'remove_banner'}]))">sil</button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="password">
+        <h2>Şifre</h2>
+        <div>
+            <input class="old-password" placeholder="eski şifre" type="password" />
+            <input class="new-password" placeholder="yeni şifre" type="password" />
+            <input class="confirm-new-password" placeholder="yeni şifreyi onayla" type="password" />
+            <button class="change">değiştir</button>
+        </div>
+    </div>
+</template>
+
+<style>
+    .p > div { margin-bottom: 2em; padding: 1em; background-color: var(--bg-1); border-radius: .5em }
+    .p  h2 { margin: 0 0 .5em; font-size: 1.5em }
+    .p > div > div { padding: .25em }
+    .p > div > div span { font-size: 1.25em }
+    .p > div > div > div { display: flex; flex-wrap: wrap; align-items: end }
+
+    .p .profile div img { height: auto; margin-right: .5em; border: .125em solid var(--bd-1) }
+    .p .profile .avatar img { width: min(5em, 100%); aspect-ratio: 1; border-radius: 50% }
+    .p .profile .banner img { width: min(12em, 100%); aspect-ratio: 1.77; border-radius: .5em }
+    .p .profile button { font-size: .75em }
+
+    .p .password input { margin-bottom: .5em }
+    @media (max-width: 350px) { .p .password input { width: 100% } }
+
+    .p input { display: block; border: .125em solid var(--bd-1) }
+    .p button { padding: .25em; margin-top: .5em }
+    .p button.change { background-color: var(--bg-b-1) }
+</style>
+
+<script>
+    p.querySelector('.avatar img').src = session.user.avatarURL
+    p.querySelector('.banner img').src = session.user.bannerURL
+
+    p.querySelector('.password button').onclick = async () => {
+        var data = {
+            old: p.querySelector('.password .old-password').value,
+            new: p.querySelector('.password .new-password').value,
+            confirm: p.querySelector('.password .confirm-new-password').value
+        }
+        if (data.old.length < 4) return alert.error('Şifre hatalı')
+        if (data.new != data.confirm) return alert.error('Şifreler uyuşmuyor')
+        if (data.new.length < 4) return alert.error('Şifre 4 karakterden kısa olamaz')
+        var response = await load(async () => await session.settings([{ name: 'change_password', old_password: data.old, new_password: data.new }]))
+        if (!response.change_password) return alert.error('Şifre hatalı')
+        else alert.success('Şifre değiştirildi')
+        for (let i of p.querySelectorAll('.password input')) i.value = ''
+        window.history.pushState(null, null, null)
+    }
+</script>
