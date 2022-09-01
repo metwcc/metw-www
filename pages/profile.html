@@ -137,7 +137,7 @@
         p.profile.follow.style.display = 'none'
         style.innerHTML = '.p .profile  .user  .avatar:after { content: "değiştir" }'; p.appendChild(style)
     }
-    else p.profile.bio.innerText = p.user.bio
+    else { p.profile.bio.innerText = p.user.bio; p.follow.style.display = 'none' }
     p.style.setProperty('--banner-url', `url("${p.user.bannerURL}")`)
 
 
