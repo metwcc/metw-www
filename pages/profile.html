@@ -53,11 +53,11 @@
 </template>
 
 <style>
-    .p { display: grid; max-width: unset !important; width: 100%; margin: 0; padding: 0 !important; grid-template: auto 1fr / 1fr; justify-items: center }
+    .p { display: grid; max-width: unset !important; width: 100vw; margin: 0; padding: 0 !important; grid-template: auto 1fr / 1fr; justify-items: center }
     .p .profile { display: flex; width: 100%; padding: .75em 1em; position: relative; justify-content: center; z-index: 3 } 
     .p  .profile:before { display: block; content: ''; width: 100%; height: 100%; position: absolute; inset: 0; opacity: 0.2; background: no-repeat center center; background-image: var(--banner-url); background-size: cover }
     .p .profile > div { display: grid; width: 100%; max-width: 1200px; grid-template: auto 1fr / 1fr auto; z-index: 23 }
-    .p .posts, .p .follow-list { width: 100%; height: 100%; max-width: 1200px; grid-area: 2 / 1 / 3 / 2 }
+    .p .posts, .p .follow-list { width: 100vw; height: 100%; max-width: 1200px; grid-area: 2 / 1 / 3 / 2 }
     
     .p .profile  .user { display: flex; width: 100%; overflow: hidden }
     .p .profile  .user .avatar { display: grid; width: 5em; height: 5em; align-self: center; border-radius: 50%; overflow: hidden; place-items: center; flex-shrink: 0; user-select: none }
@@ -97,7 +97,7 @@
     .p .follow-list    img { height: 100%; margin-right: .5em; aspect-ratio: 1; border-radius: 50% }
     .p .follow-list  .load-more { display: none }
 
-    .p .page { padding: 0; display: flex; justify-content: center; margin-top: 1.5em; gap: 1em; flex-direction: row-reverse; user-select: none }
+    .p .page { display: flex; margin-top: 1.5em; padding: 0 2em; justify-content: center; gap: .25em .5em; flex-direction: row-reverse; user-select: none ;flex-wrap: wrap }
     .p .page li { list-style: none; color: var(--bg-b-1); cursor: pointer }
     .p ul:last-of-type { margin-top: 0 }
 

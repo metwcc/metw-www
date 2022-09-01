@@ -16,7 +16,7 @@
         _post.querySelector('p').innerText = post.content
         _post.querySelector('.share').onclick = () => navigator.share({ title: 'metw', url: `/gönderi/${post.id}`, text: post.content })
         var uls = () => { _post.querySelector('.buttons .like').style = post.liked ? 'color: #F91880; stroke: #F91880' : ''; _post.querySelector('.buttons .like .count').innerText = post.likeCount }; uls()
-        _post.querySelector('.buttons .like').onclick = async () => { await load(async () => await post.like(!post.liked)); uls() }
+        _post.querySelector('.buttons .like').onclick = async () => { if (!session.logged) return; await load(async () => await post.like(!post.liked)); uls() }
         return _post
     },
     posts(posts) {
@@ -43,7 +43,7 @@
             </div>
             <div class="a-c-r add-reply">
                 <img src="${session?.user.avatarURL}"/>
-                <textarea></textarea>
+                <textarea placeholder="yazmaya başla..."></textarea>
                 <div class="buttons-2">
                     <button class="_inline-img cancel">
                         iptal
@@ -76,6 +76,7 @@
             _addReply.button.onclick = () => {
                 _addReply.style = 'height: unset; margin-top: 1em', _addReply.textarea.value = ''
                 var clientHeight = _addReply.clientHeight; _addReply.style.height = '0'
+                _addReply.textarea.focus()
                 setTimeout(() => _addReply.style.height = clientHeight + 'px', 20)
                 setTimeout(() => _addReply.style.height = 'unset', 320)
             }

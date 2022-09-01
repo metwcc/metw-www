@@ -72,6 +72,7 @@ class Session {
     }
     async disconnect() {
         this.indexed = { users: [], posts: [], comments: [], rawComments: [] }
+        this.user = { id: 0 }
         this.logged = false, this.SID = undefined
         this.event('logout')
     }
