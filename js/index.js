@@ -243,3 +243,6 @@ w.onload = async () => {
     setTimeout(() => d.getElementById('initial-load').remove(), 300)
 }
 w.onpopstate = () => app.load()
+
+const ontitlechanged = new MutationObserver(([{ target }]) => gtag('config', gaId, { page_title: target.text, page_path: w.location.pathname }) )
+ontitlechanged.observe(document.querySelector('title'), { childList: true })

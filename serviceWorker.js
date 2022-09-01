@@ -3,7 +3,7 @@ const assets = [ 'offline.html', 'favicon.ico', '404.html' ]
 
 self.addEventListener("install", event => { event.waitUntil(caches.open(static).then(cache => cache.addAll(assets))) })
 self.addEventListener("fetch", event => {
-    const request = event.request, pathname = decodeURI(event.request.url).matchAll(/https?\:\/\/[\.\w\d]+\/([\s\S]*)/g).next().value[1]
+    const request = event.request, pathname = decodeURI(event.request.url).matchAll(/https?\:\/\/[\.\w\d]+\/([\s\S]*)/g).next().value?.[1]
     if (request.method !== "GET") return
     if (event.request.mode === "navigate") 
         event.respondWith((async () => {
