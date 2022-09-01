@@ -1,4 +1,4 @@
-﻿var url = { backend: 'http://api.metw.cc/v1', cdn: 'https://s3.amazonaws.com/cdn.metw.cc', ws: 'http://api.metw.cc/v1/ws' }
+﻿var url = { backend: 'https://api.metw.cc/v1', cdn: 'https://s3.amazonaws.com/cdn.metw.cc', ws: 'https://api.metw.cc/v1/ws' }
 
 class Session {
     constructor(SID) {
