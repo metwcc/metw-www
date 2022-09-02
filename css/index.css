@@ -142,6 +142,6 @@ nav  .n-buttons  div:first-of-type a span:first-of-type { margin-left: .25em }
 ._comments  .replies .load-more { margin-top: 1em; min-width: 300px }
 ._comments  .replies .comment { min-width: 300px }
 ._comments > div > .replies { overflow-x: auto !important }
-._comments > div > .replies::-webkit-scrollbar { height: .25em }
-._comments > div > .replies::-webkit-scrollbar-thumb { background: var(--color) }
+._comments > div > .replies::-webkit-scrollbar { height: 0 }
+._comments > button { margin-top: 1em }
 @media screen and (max-width: 600px) { ._comments  .comment { padding: 1.5em 1.5em } }
