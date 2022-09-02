@@ -248,3 +248,4 @@ w.onpopstate = () => app.load()
 
 const ontitlechanged = new MutationObserver(([{ target }]) => gtag('config', gaId, { page_title: target.text, page_path: w.location.pathname }) )
 ontitlechanged.observe(document.querySelector('title'), { childList: true })
+if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('/serviceWorker.js?v2') }) }
