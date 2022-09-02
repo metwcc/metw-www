@@ -18,7 +18,7 @@ const load = async (f) => {
     setTimeout(() => bar.style = 'display: block; transition: .3s; loading-bar 1s ease-in-out infinite', 1)
     var data = await f()
     bar.style.height = '0'
-    setTimeout(() => bar.style = 'display: none', 300)
+    setTimeout(() => { if (bar.style.height == '0') bar.style = 'display: none' }, 300)
     mouse.enable()
     return data
 }
@@ -238,7 +238,7 @@ d.getElementById('compose-button').onclick = () => {
 
 w.onload = async () => {
     SID = localStorage.getItem('SID')
-    if (SID) await session.connect(SID)
+    if (SID) try { await session.connect(SID) } catch { }
     else session.onloginfailed()
     await app.load()
     d.getElementById('initial-load').style = 'opacity: 0'
