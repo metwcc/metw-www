@@ -16,7 +16,7 @@ class Session {
             if (options.headers) headers = { ...headers, ...options.headers }
             if (options.json) body = JSON.stringify(options.json), headers['content-type'] = 'application/json', options.method = 'post'
             if (this.SID) headers.SID = this.SID
-            var raw, ok, res = await fetch(url.backend + options.path, { method: options.method || 'get', headers: headers, body: body, timeout: Number.POSITIVE_INFINITY })
+            var raw, ok, res = await fetch(url.backend + options.path, { method: options.method || 'get', headers: headers, body: body })
                 .then(res => { ok = res.ok, raw = res; return res.json() }).catch(() => window.location.replace('/offline.html')).then(json => [json, ok, raw])
             if (res[2].status == 401) this.disconnect()
             if (res[2].status == 429 && options.retry !== false) {
