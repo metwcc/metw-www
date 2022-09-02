@@ -77,7 +77,7 @@ fetch.stream = async (url, progress, fetchInit) => {
                 }
             }
         })
-    }).then(stream => { setTimeout(() => progress(100), 40); return new Response(stream) })
+    }).catch(() => w.location.replace('/offline.html').then(stream => { setTimeout(() => progress(100), 40); return new Response(stream) })
 }
 //#endregion
 
