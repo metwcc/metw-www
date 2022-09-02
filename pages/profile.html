@@ -43,7 +43,7 @@
     <div class="follow-list">
         <div class="bg-1 bd-1">
             <div class="title">
-                <span>@user kullanıcısının <span></span>leri</span>
+                <span class="title">@user kullanıcısının leri</span>
                 <button class="_inline-img" onclick="p.followList.exit()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             </div>
             <ul></ul>
@@ -172,6 +172,7 @@
         if (!p.user[`${t.slice(0, -1) }Count`]) return
         p.followList.loadMore.onclick = '', p.followList.loadMore.style.display = 'none'
         p.followList.style = 'display: flex', p.followList.count = 0
+        p.followList.querySelector('.title').innerText = `${p.user.displayName} kullanıcısının ${t == 'followers' ? 'takipçi' : 'takip'}leri (${p.user[t.slice(0, -1) + 'Count']})`
         await p.followList.render(t, 0)
         p.followList.loadMore.onclick = () => p.followList.render(t, p.followList.cursor), p.followList.style = 'display: flex'
         setTimeout(() => p.followList.style = 'display: flex; transform: none; opacity: 1', 20)
