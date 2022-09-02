@@ -44,7 +44,7 @@ input:-webkit-autofill { border-color: var(--bd-2); -webkit-text-fill-color: var
 #image-crop .buttons .ok { background-color: var(--bg-b-1) }
 #image-crop .main { display: grid; width: 80%; height: 80%; position: relative; place-items: center; border-radius: 1em; user-select: none; overflow: hidden; outline: max(100vw, 100vh) solid var(--bg-1a) }
 #image-crop  .frame { border: .125em solid var(--bd-2); border-radius: .5em; outline: max(100vw, 100vh) solid var(--bg-1a); z-index: 3 }
-#image-crop  .img { position: absolute; transform: translate(-50%, -50%) }
+#image-crop  .img { position: absolute; transform: translate(-50%, -50%); border-radius: .5em }
 
 #compose-button { width: 4em; height: 4em; margin: 0 0 1em 1em; padding: 1em; bottom: 0; left: 0; position: absolute; border-radius: 50%; background: var(--bg-b-1); z-index: 40 }
 #compose { display: none; background: var(--bg-1a); z-index: 41; transform: scale(.8); place-items: center; opacity: 0; transition: .3s; outline: max(100vw, 100vh) solid var(--bg-1a) }
