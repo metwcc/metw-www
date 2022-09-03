@@ -1,5 +1,4 @@
-﻿const url = { backend: 'http://api.metw.cc/v1', cdn: 'https://s3.amazonaws.com/cdn.metw.cc', ws: 'http://api.metw.cc/v1/ws' }
-var info
+﻿var url = { backend: 'https://api.metw.cc/v1', cdn: 'https://s3.amazonaws.com/cdn.metw.cc', ws: 'https://api.metw.cc/v1/ws' }
 
 class Session {
     constructor(SID) {
@@ -18,11 +17,11 @@ class Session {
             if (options.json) body = JSON.stringify(options.json), headers['content-type'] = 'application/json', options.method = 'post'
             if (this.SID) headers.SID = this.SID
             var raw, ok, res = await fetch(url.backend + options.path, { method: options.method || 'get', headers: headers, body: body })
-                .then(res => { ok = res.ok, raw = res; return res.json() }).then(json => [json, ok, raw])
-            if (info && raw.headers.get('Version') != info.version) this.event('upgradefound')
-            if (!res[2].status.toString().startsWith('2')) resolve(this.event('down', res[0]))
-            if (res[2].status == 401 && res[0][1] == 205) this.event('loginfailed')
-            if (res[2].status == 429 && options.retry !== false) setTimeout(async () => resolve(await this.request(options)), (parseInt(res[2].headers.get('RateLimit-Reset'))) * 1000)
+                .then(res => { ok = res.ok, raw = res; return res.json() }).catch(() => window.location.replace('/offline.html')).then(json => [json, ok, raw])
+            if (res[2].status == 401) this.disconnect()
+            if (res[2].status == 429 && options.retry !== false) {
+                setTimeout(async () => resolve(await this.request(options)), (parseInt(res[2].headers.get('RateLimit-Reset'))) * 1000);
+            }
             else resolve(res)
         })
     }
@@ -39,8 +38,8 @@ class Session {
         var resp = {}
         for (var response of Object.keys(responses))
             switch (response) {
-                case 'remove_avatar': this.user.avatar = 0; this.event('changeavatar'); break
-                case 'remove_banner': this.user.banner = 0; this.event('changebanner'); break
+                case 'remove_avatar': this.user.avatar = 0; this.event('avatarchange'); break
+                case 'remove_banner': this.user.banner = 0; this.event('bannerchange'); break
                 case 'update_bio': this.user.bio = actions.find(action => action.name == 'update_bio').content; break
                 case 'change_password':
                     if (responses['change_password'][1]) this.SID = responses['change_password'][0]
@@ -51,7 +50,7 @@ class Session {
     }
     async upload(param, base64) {
         var [_new, ok] = await this.request({ path: `/upload/${param}`, json: { base64: base64 } })
-        if (['avatar', 'banner'].includes(param)) { this.user[param] = _new; this.event(`change${param}`) }
+        if (['avatar', 'banner'].includes(param)) { this.user[param] = _new; this.event(`${param}change`) }
         return ok ? (() => { this.user[param] = _new; return _new })() : ok
     }
 
@@ -87,10 +86,6 @@ class Session {
         this.indexed.posts.push(post)
         this.event('post', post)
         return post
-    }
-
-    async manage(json) {
-        await session.request({ path: '/admin', json: json })
     }
 
     async index(data) {
@@ -180,8 +175,6 @@ class User {
         this._session.indexed.comments.push(comment); this.comments.unshift(comment)
         return comment
     }
-
-    testPermission(permissions) { return (permissions | this.permissions) == this.permissions }
 }
 
 class Post {
