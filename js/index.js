@@ -243,10 +243,10 @@ d.getElementById('compose-button').onclick = () => {
 
 w.onload = async () => {
     var raw; info = await fetch(url.backend + '/').then(r => raw = r).then(r => r.json()); info.version = raw.headers.get('Version'), info.code = raw.status
+    if ('serviceWorker' in navigator)
+        navigator.serviceWorker.register(`/sw.js?v${localStorage.getItem('no-cache') == undefined ? info.version : ~~(Math.random() * 999999)}`)
     if (localStorage.getItem('version') && localStorage.getItem('version') != info.version) w.location.reload()
     localStorage.setItem('version', info.version)
-    if ('serviceWorker' in navigator) 
-        navigator.serviceWorker.register(`/sw.js?v${localStorage.getItem('no-cache') == undefined ? info.version : ~~(Math.random() * 999999)}`)
     if (raw.status.toString().startsWith('5')) session.ondown(info)
 
 
