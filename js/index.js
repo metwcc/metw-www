@@ -247,7 +247,7 @@ w.onload = async () => {
     localStorage.setItem('version', info.version)
     if ('serviceWorker' in navigator) 
         navigator.serviceWorker.register(`/sw.js?v${localStorage.getItem('no-cache') == undefined ? info.version : ~~(Math.random() * 999999)}`)
-    if (!raw.status.toString().startsWith('2')) session.ondown(info)
+    if (raw.status.toString().startsWith('5')) session.ondown(info)
 
 
     SID = localStorage.getItem('SID')

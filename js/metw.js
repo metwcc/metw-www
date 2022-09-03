@@ -1,4 +1,4 @@
-﻿const url = { backend: 'https://api.metw.cc/v1', cdn: 'https://s3.amazonaws.com/cdn.metw.cc', ws: 'https://api.metw.cc/v1/ws' }
+﻿const url = { backend: 'http://api.metw/utb', cdn: 'https://s3.amazonaws.com/cdn.metw.cc/utb', ws: 'ws://192.168.1.200/api/ws' }
 var info
 
 class Session {
@@ -20,7 +20,7 @@ class Session {
             var raw, ok, res = await fetch(url.backend + options.path, { method: options.method || 'get', headers: headers, body: body })
                 .then(res => { ok = res.ok, raw = res; return res.json() }).then(json => [json, ok, raw])
             if (info && raw.headers.get('Version') != info.version) this.event('upgradefound')
-            if (!res[2].status.toString().startsWith('2')) resolve(this.event('down', res[0]))
+            if (res[2].status.toString().startsWith('5')) resolve(this.event('down', res[0]))
             if (res[2].status == 401 && res[0][1] == 205) this.event('loginfailed')
             if (res[2].status == 429 && options.retry !== false) setTimeout(async () => resolve(await this.request(options)), (parseInt(res[2].headers.get('RateLimit-Reset'))) * 1000)
             else resolve(res)
