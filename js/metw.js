@@ -1,4 +1,4 @@
-﻿const url = { backend: 'http://api.metw/utb', cdn: 'https://s3.amazonaws.com/cdn.metw.cc/utb', ws: 'ws://192.168.1.200/api/ws' }
+﻿const url = { backend: 'https://api.metw.cc/v1', cdn: 'https://s3.amazonaws.com/cdn.metw.cc', ws: 'wss://api.metw.cc/v1/ws' }
 var info
 
 class Session {
