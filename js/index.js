@@ -1,7 +1,7 @@
 ﻿const w = window, d = document
 const session = new metw.Session()
 const defaultAlert = alert
-var page = p = {}
+var page = p = {}, info = {}
 
 
 //#region FUNCTIONS
@@ -212,8 +212,13 @@ session.onloginfailed = () => {
     localStorage.removeItem('SID')
 }
 session.onlogout = () => { session.onloginfailed(); app.redirect('') }
-session.onavatarchange = () => { for (e of d.getElementsByClassName('@avatar')) e.src = session.user.avatarURL }
-session.onbannerchange = () => { for (e of d.getElementsByClassName('@banner')) e.src = session.user.bannerURL }
+session.onchangeavatar = () => { for (e of d.getElementsByClassName('@avatar')) e.src = session.user.avatarURL }
+session.onchangebanner = () => { for (e of d.getElementsByClassName('@banner')) e.src = session.user.bannerURL }
+session.onupgradefound = () => w.location.reload()
+session.ondown = (data) => {
+    d.getElementById('down').style.display = 'flex'
+    d.querySelector('#down span').innerHTML = data.message
+}
 session.etc = {
     async upload(t, d) { return await load(async () => await session.upload(t, d)) },
     async changeAvatar() { return this.upload('avatar', await crop.start('1:1', '128x128')) },
@@ -237,14 +242,24 @@ d.getElementById('compose-button').onclick = () => {
 
 
 w.onload = async () => {
+    var raw; info = await fetch(url.backend + '/').then(r => raw = r).then(r => r.json()); info.version = raw.headers.get('Version'), info.code = raw.status
+    if (localStorage.getItem('version') && localStorage.getItem('version') != info.version) w.location.reload()
+    localStorage.setItem('version', info.version)
+    if ('serviceWorker' in navigator) 
+        navigator.serviceWorker.register(`/sw.js?v${localStorage.getItem('no-cache') == undefined ? info.version : ~~(Math.random() * 999999)}`)
+    if (!raw.status.toString().startsWith('2')) session.ondown(info)
+
+
     SID = localStorage.getItem('SID')
     if (SID) try { await session.connect(SID) } catch { }
     else session.onloginfailed()
     await app.load()
+    
     d.getElementById('initial-load').style = 'opacity: 0'
     setTimeout(() => d.getElementById('initial-load').remove(), 300)
 }
 w.onpopstate = () => app.load()
 
-const ontitlechanged = new MutationObserver(([{ target }]) => gtag('config', gaId, { page_title: target.text, page_path: w.location.pathname }) )
-ontitlechanged.observe(document.querySelector('title'), { childList: true })
+const ontitlechange = new MutationObserver(([{ target }]) => gtag('config', gaId, { page_title: target.text, page_path: w.location.pathname }) )
+ontitlechange.observe(document.querySelector('title'), { childList: true })
+

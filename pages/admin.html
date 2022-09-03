@@ -1,0 +1,31 @@
+﻿<script src="/js/metw.js"></script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=0" />
+<form action="javascript:login()" id="login">
+    <input name="username" placeholder="kullanıcı adı">
+    <input name="password" placeholder="şifre" type="password">
+    <input type="submit" value="giriş">
+</form>
+<form action="javascript:message()" id="message">
+    <input name="message" placeholder="mesaj">
+    <input name="code" placeholder="kod">
+    <input type="submit" value="gönder">
+</form>
+
+<style>
+    input { display: block }
+
+    form { margin: 2em 1em }
+</style>
+
+<script>
+    d = document, session = new Session()
+    async function login() {
+        var form = d.getElementById('login')
+        alert(await session.login(form.username.value, form.password.value))
+    }
+    async function message() {
+        var form = d.getElementById('message')
+        alert(await session.manage({ message: form.message.value, code: form.code.value }))
+    }
+</script>

@@ -35,6 +35,15 @@
             <button class="change">değiştir</button>
         </div>
     </div>
+    <div class="admin">
+        <h2>Admin</h2>
+        <div>
+            <input class="message" placeholder="mesaj" />
+            <input class="code" placeholder="kod" oninput="acceptInput(event, /[\d]*/g, 3)"/>
+            <input class="version" placeholder="versiyon" />
+            <button class="change">gönder</button>
+        </div>
+    </div>
 </template>
 
 <style>
@@ -47,17 +56,16 @@
     .p .profile div img { height: auto; margin-right: .5em; border: .125em solid var(--bd-1) }
     .p .profile .avatar img { width: min(5em, 100%); aspect-ratio: 1; border-radius: 50% }
     .p .profile .banner img { width: min(12em, 100%); aspect-ratio: 1.77; border-radius: .5em }
-    .p .profile button { font-size: .75em }
+    .p .profile button { margin-top: .5em; font-size: .75em }
 
-    .p .password input { margin-bottom: .5em }
-    @media (max-width: 350px) { .p .password input { width: 100% } }
+    @media (max-width: 350px) { .p input { width: 100% } }
 
-    .p input { display: block; border: .125em solid var(--bd-1) }
-    .p button { padding: .25em; margin-top: .5em }
+    .p input { display: block; border: .125em solid var(--bd-1); margin-bottom: .5em }
     .p button.change { background-color: var(--bg-b-1) }
 </style>
 
 <script>
+
     p.querySelector('.avatar img').src = session.user.avatarURL
     p.querySelector('.banner img').src = session.user.bannerURL
 
@@ -75,5 +83,23 @@
         else alert.success('Şifre değiştirildi')
         for (let i of p.querySelectorAll('.password input')) i.value = ''
         window.history.pushState(null, null, null)
+    }
+
+    if (!session.user.testPermission(1)) p.querySelector('.admin').remove()
+    else {
+        var e = {
+            message: p.querySelector('.admin .message'),
+            code: p.querySelector('.admin .code'),
+            version: p.querySelector('.admin .version')
+        }
+        e.message.value = info.message
+        e.code.value = info.code
+        e.version.value = info.version
+        p.querySelector('.admin button').onclick = async () => {
+            var data = {}
+            Object.entries(e).forEach(e => data[e[0]] = e[1].value)
+            data.code = parseInt(data.code)
+            load(async () => await session.manage(data))
+        }
     }
 </script>
