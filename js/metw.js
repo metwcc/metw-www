@@ -16,6 +16,7 @@ class Session {
             var headers = {}, body
             if (options.headers) headers = { ...headers, ...options.headers }
             if (options.json) body = JSON.stringify(options.json), headers['content-type'] = 'application/json', options.method = 'post'
+            if (options.form) body = options.form, options.method = 'post'
             if (this.SID) headers.SID = this.SID
             var raw, ok, res = await fetch(url.backend + options.path, { method: options.method || 'get', headers: headers, body: body })
                 .then(res => { ok = res.ok, raw = res; return res.json() }).then(json => [json, ok, raw])
@@ -49,10 +50,16 @@ class Session {
             }
         return resp
     }
-    async upload(param, base64) {
-        var [_new, ok] = await this.request({ path: `/upload/${param}`, json: { base64: base64 } })
-        if (['avatar', 'banner'].includes(param)) { this.user[param] = _new; this.event(`change${param}`) }
-        return ok ? (() => { this.user[param] = _new; return _new })() : ok
+    async upload(param, base64, key) {
+        if (['avatar', 'banner'].includes(param)) {
+            var [_new, ok] = await this.request({ path: `/upload/${param}`, json: { base64: base64 } })
+            if (['avatar', 'banner'].includes(param)) { this.user[param] = _new; this.event(`change${param}`) }
+            return ok ? (() => { this.user[param] = _new; return _new })() : ok
+        } else {
+            var form = new FormData(); form.append('file', base64)
+            var [_new, ok] = await this.request({ path: `/upload/${param}?key=${key}`, form })
+            return _new
+        }
     }
 
     async signup(username, password, captcha) {
@@ -80,10 +87,13 @@ class Session {
         this.logged = false, this.SID = undefined
         this.event('logout')
     }
-    async post(content) {
-        var [id, ok] = await this.request({ path: '/posts', json: { content: content }, retry: false })
+    async post(content, attachment) {
+        var [id, ok] = await this.request({ path: '/posts', json: Object.assign({ content: content }, attachment ? { has_attachment: true } : {}), retry: false })
         if (!ok) return id
-        var post = new Post({ id, user_id: this.user.id, user: this.user, content }, session)
+        if (attachment) {
+            await this.upload('image', attachment, id.upload_key)
+        }
+        var post = new Post({ id: id.id, user_id: this.user.id, user: this.user, content, flags: (attachment ? 1 : 0) }, session)
         this.indexed.posts.push(post)
         this.event('post', post)
         return post

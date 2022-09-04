@@ -224,27 +224,48 @@ session.etc = {
     async changeAvatar() { return this.upload('avatar', await crop.start('1:1', '128x128')) },
     async changeBanner() { return this.upload('banner', await crop.start('16:9', '640x360'))  }
 }
+
+var composeAttachment
 d.getElementById('compose-button').onclick = () => {
     var div = d.getElementById('compose'), textarea = div.querySelector('textarea')
-    textarea.value = ''
+    textarea.value = '', composeAttachment = false
     div.style.display = 'grid'
     setTimeout(() => { div.style = 'display: grid; transform: none; opacity: 1'; textarea.focus() }, 20)
     div.querySelector('button.cancel').onclick = () => { div.style = 'display: grid'; setTimeout(() => div.style = '', 320) }
     div.querySelector('button.send').onclick = async () => {
         var content = div.querySelector('textarea').value
         if (content.length < 2) return alert.error('Gönderi 2 karakterden kısa olamaz')
-        var response = await load(async () => await session.post(content))
+        var response = await load(async () => await session.post(content, composeAttachment))
         if (Array.isArray(response)) return alert.error(response[0])
         div.querySelector('button.cancel').click()
     }
 }
+d.querySelector('#compose .upload').onclick = async () => {
+    var _image = await toBase64((await filedialog('image/*')).files[0]), image = new Image()
+    image.onload = () => {
+        var canvas = d.createElement('canvas'), s = { w: image.width, h: image.height }, m
+        if (image.width > 400) m = 400 / image.width, image.width *= m, image.height *= m
+        if (image.height > 800) m = 800 / image.height, image.width *= m, image.height *= m
+        canvas.width = image.width, canvas.height = image.height
+        var ctx = canvas.getContext('2d')
+        ctx.drawImage(image, 0, 0, s.w, s.h, 0, 0, canvas.width, canvas.height)
+        canvas.toBlob(blob => composeAttachment = blob, 'image/webp', .8)
+        d.querySelector('#compose .image').style.display = 'block'
+        img = d.querySelector('#compose .image img')
+        img.src = canvas.toDataURL('image/webp', .8)
+        img.style.width = `${image.width / image.height * 6}em`
+    }
+    await (image.src = _image)
+}
+d.querySelector('#compose .cancel-upload').onclick = async () => { composeAttachment = undefined; d.querySelector('#compose .image').style.display = 'none' }
 //#endregion
 
 
 w.onload = async () => {
     var raw; info = await fetch(url.backend + '/').then(r => raw = r).then(r => r.json()); info.version = raw.headers.get('Version'), info.code = raw.status
-    if ('serviceWorker' in navigator)
+    if ('serviceWorker' in navigator) 
         navigator.serviceWorker.register(`/sw.js?v${localStorage.getItem('no-cache') == undefined ? info.version : ~~(Math.random() * 999999)}`)
+    
     if (localStorage.getItem('version') && localStorage.getItem('version') != info.version) w.location.reload()
     localStorage.setItem('version', info.version)
     if (raw.status.toString().startsWith('5')) session.ondown(info)

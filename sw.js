@@ -41,6 +41,13 @@ self.onfetch = async event => {
     }
 }
 
+self.onmessage = event => {
+    for (let key of Object.keys(event.data)) {
+        switch (key) {
+        }
+    }
+}
+
 self.onpush = async event => {
     const { title, body, url, icon } = JSON.parse(event.data.text())
     event.waitUntil(new Promise(resolve => setTimeout(() => {

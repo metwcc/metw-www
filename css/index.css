@@ -52,10 +52,17 @@ input:-webkit-autofill { border-color: var(--bd-2); -webkit-text-fill-color: var
 
 #compose-button { width: 4em; height: 4em; margin: 0 0 1em 1em; padding: 1em; bottom: 0; left: 0; position: absolute; border-radius: 50%; background: var(--bg-b-1); z-index: 40 }
 #compose { display: none; background: var(--bg-1a); z-index: 41; transform: scale(.8); place-items: center; opacity: 0; transition: .3s; outline: max(100vw, 100vh) solid var(--bg-1a) }
-#compose div { display: flex; width: min(85%, 600px); height: min(85%, 400px); padding: 1em; flex-direction: column; background: var(--bg-1); border-radius: .5em }
+#compose > div { display: flex; width: min(85%, 600px); height: min(85%, 400px); padding: 1em; flex-direction: column; background: var(--bg-1); border-radius: .5em }
 #compose  textarea { flex-grow: 1; resize: none; background-color: var(--bg-2); border-radius: .5em }
-#compose   button { margin: .5em 0 0 .5em; padding: .25em 1em; float: right }
-#compose   button.send { background-color: var(--bg-b-1) }
+#compose  .buttons { display: flex; justify-content: space-between }
+#compose   .upload { height: calc(100% - .5em); margin-top: .5em; padding: .25em 1em; background-color: var(--bg-b-1) }
+#compose   .upload svg { height: 100% }
+#compose   span button { margin: .5em 0 0 .5em; padding: .25em 1em }
+#compose   span button.send { background-color: var(--bg-b-1) }
+#compose .image { display: none; width: min-content; margin-top: .5em; position: relative }
+#compose .image img { height: 6em; border-radius: .5em }
+#compose .image button { width: 1.5em; height: 1.5em; padding: .25em; right: 0; position: absolute; border-radius: 100%; background-color: red; transform: translate(50%, -50%) }
+#compose .image  svg { width: 1em; height: 1em }
 
 /*  APP   */
 main { display: flex; flex-direction: column }
@@ -113,7 +120,6 @@ nav  .n-buttons  div:first-of-type a span:first-of-type { margin-left: .25em }
 ._p-c  .content::-webkit-scrollbar { width: .25em }
 ._p-c  .content::-webkit-scrollbar-thumb { background: var(--bg-1) }
 @media screen and (max-width: 600px) { ._p-c { padding: 2em 1em }._p-c li { padding: 1.5em 1.5em; width: calc(100% - 2em) } }
-
 ._p-c  .buttons { display: flex; align-items: center; justify-content: space-between }
 ._p-c  .buttons svg { stroke: inherit; height: 1em; width: 1em }
 ._p-c  .buttons span { height: 1.25em; opacity: .5; display: inline-flex; align-items: center; transition: .3s; stroke: var(--color); user-select: none }
@@ -126,6 +132,8 @@ nav  .n-buttons  div:first-of-type a span:first-of-type { margin-left: .25em }
 ._p-c  .buttons  .dots:hover { stroke: #00BA7C }
 ._p-c  .buttons  .reply:hover { stroke: var(--bg-b-1) }
 
+._posts .attachment { max-width: calc(100% - 1em); margin: .5em; border-radius: .5em }
+
 ._comments .a-c-r { display: grid; margin-top: 1em; grid-template: 1fr auto / auto 1fr }
 ._comments .a-c-r img { height: 3em; width: 3em; margin: .5em; border-radius: 50% }
 ._comments .a-c-r textarea { min-height: 100%; padding: .5em; background: inherit; border: .05em solid var(--bd-1); border-width: .05em 0; flex-basis: 100%; resize: none }
@@ -133,14 +141,13 @@ nav  .n-buttons  div:first-of-type a span:first-of-type { margin-left: .25em }
 ._comments .a-c-r button { padding-left: .5em }
 ._comments .a-c-r button:last-of-type { background: var(--bg-b-1) }
 ._comments .a-c-r svg { width: 1em; height: 1em; margin-left: .25em }
-
 ._comments { width: min(600px, 100%); margin: 0 auto }
 ._comments .top h2 { font-weight: normal; font-size: 1em; margin-top: 1em }
 ._comments > div { width: 100% }
 ._comments  .comment { display: flex; width: 100%; margin: 1em 0 0; padding: 1.5em 2.5em; border: .125px solid var(--bd-1); border-radius: 1em }
 ._comments  .comment  .content { max-height: 250px }
 ._comments  .comment  .buttons { justify-content: flex-end; gap: 2em }
-._comments  .add-reply { height: 0; margin: 0; padding-left: 2em; transition: .3s; overflow: hidden }
+._comments  .add-reply { min-width: 300px; height: 0; margin: 0; padding-left: 2em; transition: .3s; overflow: hidden }
 ._comments  .add-reply .buttons-2 { height: unset !important }
 ._comments  .replies { padding-left: 2em }
 ._comments  .replies .load-more { margin-top: 1em; min-width: 300px }

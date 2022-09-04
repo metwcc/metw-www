@@ -15,9 +15,9 @@
         @import "https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap";
         @import "/css/dark-theme.css";
         * { box-sizing: border-box; color: var(--color); font-family: "Source Code Pro", monospace; -webkit-tap-highlight-color: rgba(255, 255, 255, 0) !important; font-size: inherit }
+        body > * { grid-area: 1 / 1; width: 100vw; height: 100vh }
         html { font-size: 1rem }
         body { display: grid; margin: 0; place-items: center; overflow: hidden }
-        body > * { grid-area: 1 / 1; width: 100vw; height: 100vh }
         #initial-load { padding-top: 10vh; font-size: 1rem; transition: opacity linear .3s; background: var(--bg-g); z-index: 100 }
         #initial-load h1 { width: min-content; margin: auto; font-weight: normal; font-size: 2em }
         #initial-load div { width: min(16em, 75%); height: .2em; margin: .1em auto; background: var(--color); overflow: hidden; display: none }
@@ -69,7 +69,21 @@
     <div id="compose">
         <div class="bd-1">
             <textarea class="bd-1" oninput="acceptInput(event, /[\s\S]*/g, 1024)" placeholder="yazmaya başla..."></textarea>
-            <span><button class="send">gönder</button><button class="cancel">iptal</button></span>
+            <div class="buttons">
+                <button class="_inline-img upload">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                    </svg>
+                </button>
+                <span>
+                    <button class="cancel">iptal</button>
+                    <button class="send">gönder</button>
+                </span>
+            </div>
+            <div class="image">
+                <img src="" />
+                <button class="cancel-upload"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
         </div>
     </div>
     <button id="compose-button" class="@logged"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg></button>
