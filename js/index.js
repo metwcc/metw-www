@@ -228,7 +228,7 @@ session.etc = {
 var composeAttachment
 d.getElementById('compose-button').onclick = () => {
     var div = d.getElementById('compose'), textarea = div.querySelector('textarea')
-    textarea.value = '', composeAttachment = false
+    textarea.value = '', composeAttachment = undefined, d.querySelector('#compose .image').style.display = 'none'
     div.style.display = 'grid'
     setTimeout(() => { div.style = 'display: grid; transform: none; opacity: 1'; textarea.focus() }, 20)
     div.querySelector('button.cancel').onclick = () => { div.style = 'display: grid'; setTimeout(() => div.style = '', 320) }
