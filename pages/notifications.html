@@ -27,7 +27,6 @@
 
         p.loadMore.style.display = p._notifications.length % 10 != 0 || !p._notifications.length ? 'none' : ''
         p.loadMore.onclick = async () => {
-            console.log(p._notifications.at(-1).id)
             p._notifications = await load(async () => await session.get('notifications', p._notifications.at(-1).id))
             p._notifications.forEach(n => p.list.appendChild(p.notification(n)))
             p.loadMore.style.display = p._notifications.length % 10 != 0 || !p._notifications.length ? 'none' : ''

@@ -188,13 +188,13 @@ class Notification_ {
     }
     async format() {
         const detail = async (n, type) => this.details[n] = await this._session.get(type, this.details[n])
-        switch (this.type) {
-            case 1: await detail(0, 'user'); break
-            case 2: await detail(0, 'post'); detail(1, 'user'); break
-            case 3:
+        switch (this.type + 'a') {
+            case '1a': await detail(0, 'user'); break
+            case '2a': await detail(0, 'post'); await detail(1, 'user'); break
+            case '3a':
                 await detail(0, 'comment')
                 await detail(2, ['user', 'post', 'comment'][this.details[1]])
-                await detail(3, 'user')
+                await detail(3, 'user'); break
         }
     }
 }
