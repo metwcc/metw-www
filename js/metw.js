@@ -6,6 +6,7 @@ class Session {
         this.user = { id: 0 }
         this.notificationCount = 0
         this.indexed = { users: [], posts: [], comments: [], raw: [], notifications: [] }
+        setInterval(() => { try { this.ws.send('0') } catch { } }, 30000)
     }
     async event(name, ...args) {
         if (this['on' + name]) this['on' + name](...args)
