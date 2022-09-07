@@ -5,7 +5,7 @@ class Session {
         this.SID = SID
         this.user = { id: 0 }
         this.notificationCount = 0
-        this.indexed = { users: [], posts: [], comments: [], rawComments: [], notifications: [] }
+        this.indexed = { users: [], posts: [], comments: [], raw: [], notifications: [] }
     }
     async event(name, ...args) {
         if (this['on' + name]) this['on' + name](...args)
@@ -75,7 +75,7 @@ class Session {
         var [session, ok] = await this.request({ path: '/session', headers: { SID: this.SID } })
         if (ok) {
             this.user = new User(session, this)
-            this.indexed = { users: [this.user], posts: [], comments: [], rawComments: [], notifications: [] }
+            this.indexed = { users: [this.user], posts: [], comments: [], raw: [], notifications: [] }
             this.notificationCount = 0
             this.ws = new WebSocket(url.ws + `?${this.SID}`)
             this.ws.onmessage = message => this._onwsmessage(message)
@@ -85,7 +85,7 @@ class Session {
         return this.SID
     }
     async disconnect() {
-        this.indexed = { users: [], posts: [], comments: [], rawComments: [], notifications: [] }
+        this.indexed = { users: [], posts: [], comments: [], raw: [], notifications: [] }
         this.notificationCount = 0
         this.user = { id: 0 }
         this.logged = false, this.SID = undefined
@@ -116,9 +116,9 @@ class Session {
                 if (!['users', 'notifications'].includes(key)) var user = await this.get('user', d.user_id)
                 _data.push(eval(`new ${key.charAt(0).toUpperCase() + key.slice(1, -1)}${key == 'notifications' ? '_' : ''}({ ...d, user: ${key != 'users' ? 'user' : undefined} }, this)`))
             }
+            this.indexed.raw.push(..._data)
             if (key == 'comments') {
-                this.indexed.rawComments.push(..._data)
-                _data.forEach(comment => { if (comment.type == 2) this.indexed.rawComments.find(parent => parent.id == comment.parentId && parent.replies?.every(reply => reply.id != comment.id))?.replies.push(comment) })
+                _data.forEach(comment => { if (comment.type == 2) this.indexed.raw.find(parent => (Object.getPrototypeOf(parent).constructor == Comment) && (parent.id == comment.parentId) && (parent.replies.every(reply => reply.id != comment.id)))?.replies.push(comment) })
                 _data = _data.filter(comment => comment.type != 2)
             }
             if (key == 'notifications') {
@@ -142,7 +142,7 @@ class Session {
             var data = await this.bulkGet('notifications', (await this.request({ path: `/notifications?id=${this.user.id}&before=${selector || 0}` }))[0])
             if (this.notificationCount != 0) this.request({ path: '/notifications/read' }); return data
         }
-        var user = this.indexed[param == 'comment' ? 'rawComments' : param + 's'].find(typeof selector == 'number' || param != 'user' ? data => data.id == selector : user => user.name == selector)
+        var user = this.indexed[param == 'comment' ? 'raw' : param + 's'].find(typeof selector == 'number' || param != 'user' ? data => data.id == selector : user => user.name == selector)
         return user ||
             await (async () => {
                 var [data, ok] = await this.request({ path: `/${param}s/${typeof selector == 'number' && param == 'user' ? ':' : ''}${selector}?id=${this.user.id}` })
@@ -270,7 +270,7 @@ class Post {
         if (Array.isArray(id)) return id
         var comment = new Comment({ id: id, user_id: this._session.user.id, user: this._session.user, parent_id: this.id, type: 1, content: content }, this._session)
         this.commentCount++
-        this._session.indexed.rawComments.push(comment); this._session.indexed.comments.push(comment); this.comments.unshift(comment)
+        this._session.indexed.raw.push(comment); this._session.indexed.comments.push(comment); this.comments.unshift(comment)
         return comment
     }
 }
@@ -289,8 +289,10 @@ class Comment {
     async get(param, before) {
         if (param == 'replies') {
             var ids = (await this._session.request({ path: `/comments?type=2&parent_id=${this.id}&before=${before ? before : 0}` }))[0]
-            this.replies.push(...(await this._session.bulkGet('comments', ids)))
-            return this.replies.filter(reply => ids.includes(reply.id))
+            await this._session.bulkGet('comments', ids)
+            var newReplies = ids.map(c => this._session.indexed.raw.concat(this._session.indexed.comments).find(r => (Object.getPrototypeOf(r).constructor == Comment) && (r.id == c) && (r.parentId == this.id))).filter(i => !!i)
+            this.replies.push(...newReplies.filter(r => this.replies.every(s => s.id != r.id)))
+            return newReplies
         }
     }
     async reply(content) {
