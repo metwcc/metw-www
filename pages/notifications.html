@@ -1,12 +1,15 @@
 ﻿<script init>
     if (!session.logged) app.template.render('404')
-    p._notifications = await session.get('notifications')
-    document.title = 'Bildiirmler | metw'
+    else {
+        p._notifications = await session.get('notifications')
+        document.title = 'Bildiirmler | metw'
+    }
 </script>
 
 <template>
     <h2>Bildirimler</h2>
     <ul class="notifications"></ul>
+    <button class="_load-more load-more">devamını yükle</button>
 </template>
 
 <style>
@@ -18,20 +21,32 @@
 </style>
 
 <script>
-    p.list = p.querySelector('ul')
+    if (session.logged) {
+        p.list = p.querySelector('ul')
+        p.loadMore = p.querySelector('.load-more')
 
-    p.notification = n => {
-        let li = d.createElement('li'), user = n.details.at(-1); li.className = 'notification'
-        li.innerHTML = `<a class="href" href="javascript:app.redirect('@${user.name}')">${user.displayName}</a> ${['seni takip ediyor', 'gönderini beğendi', ['profiline yorum yazdı', 'gönderine yorum yazdı', 'yorumuna yanıt yazdı'][n.details[1]]][n.type - 1]}`
-        if ([2, 3].includes(n.type) && (n.type != 3 || n.details[1] == 1)) { let post = metw.gui.posts([n.details.at(-2)]); post.className += ' p-c post';  li.appendChild(post) }
-        if (n.type == 3) {
-            let comments = d.createElement('div'); comments.className = '_p-c _comments p-c'
-            if (n.details[1] == 1) comments.style = 'max-width: calc(100% - 2em); margin-left: 2em !important'
-            comments.appendChild(metw.gui.comment(n.details[n.details[1] == 2 ? 2 : 0]))
-            li.appendChild(comments)
+        p.loadMore.style.display = p._notifications.length % 10 != 0 || !p._notifications.length ? 'none' : ''
+        p.loadMore.onclick = async () => {
+            console.log(p._notifications.at(-1).id)
+            p._notifications = await load(async () => await session.get('notifications', p._notifications.at(-1).id))
+            p._notifications.forEach(n => p.list.appendChild(p.notification(n)))
+            p.loadMore.style.display = p._notifications.length % 10 != 0 || !p._notifications.length ? 'none' : ''
         }
-        return li
-    }
 
-    p._notifications.forEach(n => p.list.appendChild(p.notification(n)))
+        p.notification = n => {
+            let li = d.createElement('li'), user = n.details.at(-1); li.className = 'notification'
+            li.innerHTML = `<a class="href" href="javascript:app.redirect('@${user.name}')">${user.displayName}</a> ${['seni takip ediyor', 'gönderini beğendi', ['profiline yorum yazdı', 'gönderine yorum yazdı', 'yorumuna yanıt yazdı'][n.details[1]]][n.type - 1]}`
+            if ([2, 3].includes(n.type) && (n.type != 3 || n.details[1] == 1)) { let post = metw.gui.posts([n.details.at(-2)]); post.className += ' p-c post'; li.appendChild(post) }
+            if (n.type == 3) {
+                let comments = d.createElement('div'); comments.className = '_p-c _comments p-c'
+                if (n.details[1] == 1) comments.style = 'max-width: calc(100% - 2em); margin-left: 2em !important'
+                comments.appendChild(metw.gui.comment(n.details[n.details[1] == 2 ? 2 : 0]))
+                li.appendChild(comments)
+            }
+            if (!n.readen) li.style = 'background: var(--bg-1)', n.readen = true
+            return li
+        }
+
+        p._notifications.forEach(n => p.list.appendChild(p.notification(n)))
+    }
 </script>

@@ -139,8 +139,8 @@ class Session {
     }
     async get(param, selector) {
         if (param == 'notifications') {
-            if (this.notificationCount != 0) this.request({ path: '/notifications/read' })
-            return await this.bulkGet('notifications', (await this.request({ path: `/notifications?id=${this.user.id}&before=${this.selector || 0}` }))[0])
+            var data = await this.bulkGet('notifications', (await this.request({ path: `/notifications?id=${this.user.id}&before=${selector || 0}` }))[0])
+            if (this.notificationCount != 0) this.request({ path: '/notifications/read' }); return data
         }
         var user = this.indexed[param == 'comment' ? 'rawComments' : param + 's'].find(typeof selector == 'number' || param != 'user' ? data => data.id == selector : user => user.name == selector)
         return user ||

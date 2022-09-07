@@ -129,7 +129,7 @@ const app = {
                     for (let script of scripts[0]) await new Promise(resolve => eval(`(async resolve => { ${script}; resolve() })`)(resolve))
                     setTimeout(() => d.getElementById('loading-bar').style.height = '0', 2)
                     for (let script of scripts[1]) { var e = d.createElement('script'); e.innerHTML = script; page.appendChild(e) }
-                    oldPage.parentNode.replaceChild(page, oldPage)
+                    oldPage.parentNode.replaceChild(page, oldPage); d.querySelector('.page-outer').scroll(0, 0)
                 } else { this.data[name] = await fetch.stream(`/pages/${name}.html`, progress).then(r => r.text()); await this.render(name) }
             })
         }
