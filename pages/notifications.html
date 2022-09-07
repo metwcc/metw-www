@@ -1,0 +1,37 @@
+﻿<script init>
+    if (!session.logged) app.template.render('404')
+    p._notifications = await session.get('notifications')
+    document.title = 'Bildiirmler | metw'
+</script>
+
+<template>
+    <h2>Bildirimler</h2>
+    <ul class="notifications"></ul>
+</template>
+
+<style>
+    .p h2 { margin: 0; font-weight: normal; font-size: 1.5em; text-align: center }
+    .p .notifications { padding: 0 }
+    .p  .notification { padding: 1em; margin: .3em; list-style-type: none; border-radius: 1em; border: 0.05em solid var(--bd-1) }
+    .p .notifications .p-c { padding: 0 !important; margin: 0 !important; align-items: start !important }
+    .p .notifications .post { margin-top: 1em !important }
+</style>
+
+<script>
+    p.list = p.querySelector('ul')
+
+    p.notification = n => {
+        let li = d.createElement('li'), user = n.details.at(-1); li.className = 'notification'
+        li.innerHTML = `<a class="href" href="javascript:app.redirect('@${user.name}')">${user.displayName}</a> ${['seni takip ediyor', 'gönderini beğendi', ['profiline yorum yazdı', 'gönderine yorum yazdı', 'yorumuna yanıt yazdı'][n.details[1]]][n.type - 1]}`
+        if ([2, 3].includes(n.type) && (n.type != 3 || n.details[1] == 1)) { let post = metw.gui.posts([n.details.at(-2)]); post.className += ' p-c post';  li.appendChild(post) }
+        if (n.type == 3) {
+            let comments = d.createElement('div'); comments.className = '_p-c _comments p-c'
+            if (n.details[1] == 1) comments.style = 'max-width: calc(100% - 2em); margin-left: 2em !important'
+            comments.appendChild(metw.gui.comment(n.details[n.details[1] == 2 ? 2 : 0]))
+            li.appendChild(comments)
+        }
+        return li
+    }
+
+    p._notifications.forEach(n => p.list.appendChild(p.notification(n)))
+</script>

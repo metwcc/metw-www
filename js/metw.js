@@ -1,11 +1,11 @@
-﻿const url = { backend: 'https://api.metw.cc/v1', cdn: 'https://s3.amazonaws.com/cdn.metw.cc', ws: 'wss://api.metw.cc/v1/ws' }
-var info
+﻿var info
 
 class Session {
     constructor(SID) {
         this.SID = SID
         this.user = { id: 0 }
-        this.indexed = { users: [], posts: [], comments: [], rawComments: [] }
+        this.notificationCount = 0
+        this.indexed = { users: [], posts: [], comments: [], rawComments: [], notifications: [] }
     }
     async event(name, ...args) {
         if (this['on' + name]) this['on' + name](...args)
@@ -75,16 +75,21 @@ class Session {
         var [session, ok] = await this.request({ path: '/session', headers: { SID: this.SID } })
         if (ok) {
             this.user = new User(session, this)
-            this.indexed = { users: [this.user], posts: [], comments: [], rawComments: [] }
+            this.indexed = { users: [this.user], posts: [], comments: [], rawComments: [], notifications: [] }
+            this.notificationCount = 0
+            this.ws = new WebSocket(url.ws + `?${this.SID}`)
+            this.ws.onmessage = message => this._onwsmessage(message)
         }
         this.logged = ok
         this.event(ok ? 'login' : 'loginfailed')
         return this.SID
     }
     async disconnect() {
-        this.indexed = { users: [], posts: [], comments: [], rawComments: [] }
+        this.indexed = { users: [], posts: [], comments: [], rawComments: [], notifications: [] }
+        this.notificationCount = 0
         this.user = { id: 0 }
         this.logged = false, this.SID = undefined
+        this.ws.close()
         this.event('logout')
     }
     async post(content, attachment) {
@@ -105,24 +110,40 @@ class Session {
 
     async index(data) {
         for (let key of Object.keys(data)) {
-            if (key != 'users') await this.bulkGet('users', data[key].map(d => d.user_id))
+            if (!['users', 'notifications'].includes(key)) await this.bulkGet('users', data[key].map(d => d.user_id))
             var _data = []
             for (let d of data[key]) {
-                if (key != 'users') var user = await this.get('user', d.user_id)
-                _data.push(eval(`new ${key.charAt(0).toUpperCase() + key.slice(1, -1)}({ ...d, user: ${key != 'users' ? 'user' : undefined} }, this)`))
+                if (!['users', 'notifications'].includes(key)) var user = await this.get('user', d.user_id)
+                _data.push(eval(`new ${key.charAt(0).toUpperCase() + key.slice(1, -1)}${key == 'notifications' ? '_' : ''}({ ...d, user: ${key != 'users' ? 'user' : undefined} }, this)`))
             }
-            this.indexed.rawComments.push(..._data)
             if (key == 'comments') {
+                this.indexed.rawComments.push(..._data)
                 _data.forEach(comment => { if (comment.type == 2) this.indexed.rawComments.find(parent => parent.id == comment.parentId && parent.replies?.every(reply => reply.id != comment.id))?.replies.push(comment) })
                 _data = _data.filter(comment => comment.type != 2)
+            }
+            if (key == 'notifications') {
+                let dataToGet = { users: [], posts: [], comments: [] }
+                dataToGet.users.push(..._data.filter(n => [1, 2].includes(n.type)).map(n => n.details[+(n.type == 2)]))
+                dataToGet.users.push(..._data.filter(n => n.type == 3 && n.details[1] == 0).map(n => n.details[2]))
+                dataToGet.users.push(..._data.filter(n => n.type == 3).map(n => n.details[3]))
+                dataToGet.posts.push(..._data.filter(n => n.type == 2).map(n => n.details[0]))
+                dataToGet.posts.push(..._data.filter(n => n.type == 3 && n.details[1] == 1).map(n => n.details[2]))
+                dataToGet.comments = _data.filter(n => n.type == 3).map(n => n.details[0])
+                for (let k of Object.keys(dataToGet)) { dataToGet[k] = Array.from(new Set(dataToGet[k])); if (!dataToGet[k].length) dataToGet[k] = [0]}
+                await this.bulkGet(dataToGet)
+                for (let n of _data) await n.format()
             }
             this.indexed[key].push(..._data)
         }
 
     }
     async get(param, selector) {
-        var user = this.indexed[param + 's'].find(typeof selector == 'number' || param != 'user' ? data => data.id == selector : user => user.name == selector)
-        return user ? user :
+        if (param == 'notifications') {
+            if (this.notificationCount != 0) this.request({ path: '/notifications/read' })
+            return await this.bulkGet('notifications', (await this.request({ path: `/notifications?id=${this.user.id}&before=${this.selector || 0}` }))[0])
+        }
+        var user = this.indexed[param == 'comment' ? 'rawComments' : param + 's'].find(typeof selector == 'number' || param != 'user' ? data => data.id == selector : user => user.name == selector)
+        return user ||
             await (async () => {
                 var [data, ok] = await this.request({ path: `/${param}s/${typeof selector == 'number' && param == 'user' ? ':' : ''}${selector}?id=${this.user.id}` })
                 if (!ok) return false
@@ -146,6 +167,34 @@ class Session {
         if (_ids.length) var [data, ok] = await this.request({ path: `/${param}/bulk?id=${this.user.id}`, json: _ids })
         if (ok) await this.index({ [param]: data })
         return ids.map(id => this.indexed[param].find(i => i.id == id)).filter(i => !!i)
+    }
+
+    async _onwsmessage(message) {
+        var type = message.data[0], data = message.data.substring(1)
+        switch (type) {
+            case '1': this.notificationCount += 1; this.event('updatenotificationcount', this.notificationCount); break
+            case '2': this.notificationCount = parseInt(data); this.event('updatenotificationcount', parseInt(data)); break
+        }
+    }
+}
+
+class Notification_ {
+    constructor(data, session) {
+        this.id = data.id, this.type = data.type
+        this.details = data.details, this.text = data.text
+        this.readen = data.readen, this.timestamp = new Date(this.timestamp)
+        this._session = session
+    }
+    async format() {
+        const detail = async (n, type) => this.details[n] = await this._session.get(type, this.details[n])
+        switch (this.type) {
+            case 1: await detail(0, 'user'); break
+            case 2: await detail(0, 'post'); detail(1, 'user'); break
+            case 3:
+                await detail(0, 'comment')
+                await detail(2, ['user', 'post', 'comment'][this.details[1]])
+                await detail(3, 'user')
+        }
     }
 }
 

@@ -2,6 +2,7 @@
 var assets = ['/offline.html', '/favicon.ico', '/index.html', '/pages/admin.html',
     ...['index', 'dark-theme'].map(name => `/css/${name}.css`),
     ...['index', 'metw', 'metw-gui'].map(name => `/js/${name}.js`)]
+var cachesEnabled = true
 
 self.oninstall = async event => {
     if (event) self.skipWaiting()
@@ -19,13 +20,18 @@ self.onactivate = event => {
 const fixStatic = async () => {
     static = (await caches.keys()).find(i => i.startsWith(defaultStatic))
     if (!static) return await self.oninstall()
-    id = static.replace(defaultStatic, '') 
+    id = static.replace(defaultStatic, '')
 }
 
 self.onfetch = async event => {
     const request = event.request, url = new URL(request.url)
     if (url.origin == self.origin) {
         event.respondWith((async () => {
+            if (!cachesEnabled) {
+                const preloadResponse = await event.preloadResponse;
+                if (preloadResponse) return preloadResponse;
+                return await fetch(event.request)
+            }
             await fixStatic()
             const cache = await caches.open(static)
             if (request.mode === 'navigate') {
@@ -42,6 +48,7 @@ self.onfetch = async event => {
 }
 
 self.onmessage = event => {
+    if (event.data == 'no-cache') { cachesEnabled = false; return caches.delete(static) }
     for (let key of Object.keys(event.data)) {
         switch (key) {
         }

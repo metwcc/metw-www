@@ -10,7 +10,7 @@
 .bd-2 { border: .125em solid var(--bd-2) }
 
 a { cursor: pointer }
-body { background: var(--bg-g) }
+body { background: var(--bg-g); position: relative }
 
 button, input, textarea { padding: .25em; outline: none; background: var(--bg-1); border-radius: .25em; transition: .3s; border: none; outline: none }
 button { user-select: none }
@@ -20,7 +20,7 @@ input:-webkit-autofill { border-color: var(--bd-2); -webkit-text-fill-color: var
 
 /*  MISC   */
 #down { display: none; background: var(--bg-g); flex-direction: column; z-index: 101; justify-content: center; align-items: center }
-#down span { margin-bottom: 1em; font-size: 1.5em }
+#down span { margin-bottom: 1em; font-size: 1.5em; text-align: center }
 #down svg { width: min(80%, 20em); opacity: .05 }
 
 @keyframes loading-bar { 0% { margin-left: -4em } 100% { margin-left: 100% } }
@@ -71,13 +71,14 @@ nav { background: var(--bg-n); user-select: none; box-shadow: var(--shadow-1); z
 nav > div { display: flex; padding: .3125em; margin: 0 auto; max-width: 1200px; justify-content: space-between; align-items: center }
 nav  .n-name { font-size: 2em; margin-left: .3125em }
 nav  .n-buttons { display: flex; align-items: center; gap: .5em }
-nav  .n-buttons a { display: inline-flex; padding: .6em; align-items: center; align-content: center; font-size: 1.25em; background: var(--bg-n); transition: .3s; border-radius: .25em }
+nav  .n-buttons a { display: inline-flex; padding: .6em; position: relative; align-items: center; align-content: center; font-size: 1.25em; background: var(--bg-n); transition: .3s; border-radius: .25em }
 nav  .n-buttons  a:hover { filter: brightness(110%) } nav  .n-buttons  a:active { filter: brightness(120%) }
 nav  .n-buttons a svg, nav .n-buttons a img { width: 1em; height: 1em; margin-top: .125em }
 nav  .n-buttons > a span { display: none }
 nav  .n-buttons div { display: flex; gap: .5em }
 nav  .n-buttons div a img { border-radius: 50% }
 nav  .n-buttons  div:first-of-type a span:first-of-type { margin-left: .25em }
+nav  .n-buttons .notification-count { display: none; margin: 0 !important; padding: .1em .3em; top: 0; right: 0; transform: translate(-.3em, .5em); position: absolute; font-size: .5em; border-radius: 1em; background-color: var(--bg-b-1) }
 
 .page-outer { height: 100%; overflow: hidden auto }
 .page-outer::-webkit-scrollbar-thumb { background-color: var(--bg-1) }
@@ -91,7 +92,7 @@ nav  .n-buttons  div:first-of-type a span:first-of-type { margin-left: .25em }
     nav  .n-buttons { width: 100%; justify-content: space-around }
 }
 @media screen and (max-width: 480px) {
-    nav  .n-buttons div span { display: none }
+    nav  .n-buttons .username { display: none }
 }
 @media screen and (min-width: 600px) {
     nav  .n-buttons > a span { display: block }
@@ -108,7 +109,7 @@ nav  .n-buttons  div:first-of-type a span:first-of-type { margin-left: .25em }
 ._load-more { width: 100%; background: var(--bg-b-1); font-size: 1.25em }
 
 ._p-c { display: flex; width: 100%; min-width: 0; padding: 2em; flex-direction: column; align-items: center; justify-content: center }
-._p-c li { display: flex; width: min(600px, calc(100% - 4em)); margin-top: 1em; padding: 1.5em 2.5em; border: .05em solid var(--bd-1); border-radius: 1em }
+._p-c li { display: flex; width: min(600px, 100%); margin-top: 1em; padding: 1.5em 2.5em; border: .05em solid var(--bd-1); border-radius: 1em }
 ._p-c  li:first-of-type { margin: 0 }
 ._p-c > * > div { flex-grow: 1; overflow: hidden }
 ._p-c  div { flex-basis: 100% }
@@ -119,7 +120,7 @@ nav  .n-buttons  div:first-of-type a span:first-of-type { margin-left: .25em }
 ._p-c  .content {  max-height: 500px; overflow: hidden auto; margin: 0 0 .25em }
 ._p-c  .content::-webkit-scrollbar { width: .25em }
 ._p-c  .content::-webkit-scrollbar-thumb { background: var(--bg-1) }
-@media screen and (max-width: 600px) { ._p-c { padding: 2em 1em }._p-c li { padding: 1.5em 1.5em; width: calc(100% - 2em) } }
+@media screen and (max-width: 600px) { ._p-c { padding: 2em 1em }._p-c li { padding: 1.5em 1.5em } }
 ._p-c  .buttons { display: flex; align-items: center; justify-content: space-between }
 ._p-c  .buttons svg { stroke: inherit; height: 1em; width: 1em }
 ._p-c  .buttons span { height: 1.25em; opacity: .5; display: inline-flex; align-items: center; transition: .3s; stroke: var(--color); user-select: none }
@@ -156,3 +157,7 @@ nav  .n-buttons  div:first-of-type a span:first-of-type { margin-left: .25em }
 ._comments > div > .replies::-webkit-scrollbar { height: 0 }
 ._comments > button { margin-top: 1em }
 @media screen and (max-width: 600px) { ._comments  .comment { padding: 1.5em 1.5em } }
+
+._popup-menu { width: 0; height: 0; padding: .75em 0; position: absolute; background-color: var(--bg-1); transition: width .3s; overflow: hidden; border-radius: .5em; transform: translateX(-100%) }
+._popup-menu button { display: flex; width: 100%; padding: .5em 1.5em; justify-content: flex-start; white-space: nowrap }
+._popup-menu button svg { min-height: 1em; padding-right: .5em }

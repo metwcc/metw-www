@@ -2,7 +2,7 @@
 const session = new metw.Session()
 const defaultAlert = alert
 var page = p = {}, info = {}
-
+var serviceWorker
 
 //#region FUNCTIONS
 const progress = (v) => {
@@ -11,7 +11,6 @@ const progress = (v) => {
     else if (v === 0) bar.style = 'width: 0; height: 2px', mouse.disable()
     else bar.style = `width: ${v}%; height: 2px`, mouse.disable()
 }
-const acceptInput = ({ target }, pattern, length) => target.value = target.value.match(pattern).join('').substring(0, length)
 const load = async (f) => {
     var bar = d.getElementById('loading-bar')
     bar.style = 'display: block; transition: 0; animation: none'; mouse.disable()
@@ -44,7 +43,10 @@ const toBase64 = (file) => {
         reader.onload = () => resolve(reader.result)
     })
 }
-
+const urlBase64ToUint8Array = base64String => {
+    var rawData = window.atob((base64String + '='.repeat((4 - base64String.length % 4) % 4)).replace(/\-/g, '+').replace(/_/g, '/')), outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i); return outputArray;
+}
 alert = (message, type) => {
     var list = d.querySelector('#alerts ul'), element = list.querySelector('li:first-of-type').cloneNode(true), delay = message.length * 100 + 500,
         span = d.createElement('span'), bg = `var(--bg-a-${['d', 's', 'e'][[undefined, 'success', 'error'].indexOf(type)]})`
@@ -78,6 +80,28 @@ fetch.stream = async (url, progress, fetchInit) => {
             }
         })
     }).then(stream => { setTimeout(() => progress(100), 40); return new Response(stream) })
+}
+
+const acceptInput = ({ target }, pattern, length) => target.value = target.value.match(pattern).join('').substring(0, length)
+const popupMenu = ({ target }, buttons) => {
+    var popup = d.createElement('div'), rect, offsetWidth
+    popup.className = '_popup-menu', popup.style = 'width: unset; height: unset; transition: 0'
+    setTimeout(() => { offsetWidth = popup.offsetWidth, popup.style.width = '0' }, 20)
+    setTimeout(() => { popup.style.width = `${offsetWidth}px`; place() }, 40)
+    var place = () => { rect = target.closest('._popup-menu-button').getBoundingClientRect(), popup.style.left = `${rect.x}px`, popup.style.top = `${rect.y}px` }
+    var close = ({ target: targetClick }) => {
+        if (targetClick != popup) {
+            popup.style.width = '0'; setTimeout(() => popup.remove(), 300)
+            d.removeEventListener('click', close, true); d.removeEventListener('touch', close, true)
+            w.removeEventListener('resize', place, true); d.removeEventListener('scroll', place, true)
+        }
+    }
+    
+    d.addEventListener('click', close, true); d.addEventListener('touch', close, true)
+    w.addEventListener('resize', place, true); d.addEventListener('scroll', place, true)
+    popup.innerHTML = buttons.map(v => `<button class="_inline-img">${icons[v[0]]}${v[1]}</button>`).join('')
+    Array.from(popup.children).forEach((button, index) => button.onclick = buttons[index][2])
+    d.documentElement.appendChild(popup)
 }
 //#endregion
 
@@ -124,6 +148,7 @@ const app = {
             case 'giriş': composeEnabled(false); return await this.template.render('gateway')
             case 'ayarlar': composeEnabled(false); return await this.template.render('settings')
             case 'gönderi': composeEnabled(true); return await this.template.render('post')
+            case 'bildirimler': composeEnabled(false); return await this.template.render('notifications')
             case undefined: composeEnabled(true); return await this.template.render('homepage')
             default: composeEnabled(false); return await this.template.render('404')
         }
@@ -203,7 +228,7 @@ session.onlogin = () => {
     localStorage.setItem('SID', session.SID)
     for (e of d.getElementsByClassName('@logged')) e.style.display = ''
     for (e of d.getElementsByClassName('@non-logged')) e.style.display = 'none'
-    for (e of d.getElementsByClassName('@username')) e.innerText = session.user.name
+    for (e of d.getElementsByClassName('@username')) e.innerText = session.user.displayName
     for (e of d.getElementsByClassName('@avatar')) e.src = session.user.avatarURL
 }
 session.onloginfailed = () => {
@@ -212,9 +237,15 @@ session.onloginfailed = () => {
     localStorage.removeItem('SID')
 }
 session.onlogout = () => { session.onloginfailed(); app.redirect('') }
+
 session.onchangeavatar = () => { for (e of d.getElementsByClassName('@avatar')) e.src = session.user.avatarURL }
 session.onchangebanner = () => { for (e of d.getElementsByClassName('@banner')) e.src = session.user.bannerURL }
+
 session.onupgradefound = () => w.location.reload()
+session.onupdatenotificationcount = (count) => {
+    for (e of d.getElementsByClassName('@notification-count')) e.style.display = count ? 'block' : 'none', e.innerHTML = count
+}
+
 session.ondown = (data) => {
     d.getElementById('down').style.display = 'flex'
     d.querySelector('#down span').innerHTML = data.message
@@ -263,10 +294,15 @@ d.querySelector('#compose .cancel-upload').onclick = async () => { composeAttach
 
 w.onload = async () => {
     var raw; info = await fetch(url.backend + '/').then(r => raw = r).then(r => r.json()); info.version = raw.headers.get('Version'), info.code = raw.status
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register(`/sw.js?v${localStorage.getItem('no-cache') == undefined ? info.version : ~~(Math.random() * 999999)}`)
-    if (localStorage.getItem('version') && localStorage.getItem('version') != info.version) { localStorage.setItem('update-refresh', '1'); w.location.reload() }
-    if (localStorage.getItem('update-refresh')) { localStorage.removeItem('update-refresh'); w.location.reload() }
-    if (raw.status.toString().startsWith('5')) session.ondown(info)
+    !localStorage.getItem('update-refresh') && localStorage.setItem('update-refresh', '0')
+    if ('serviceWorker' in navigator) {
+        serviceWorker = await navigator.serviceWorker.register(`/sw.js?v${info.version}`)
+        if ((localStorage.getItem('version') && localStorage.getItem('version') != info.version)) { localStorage.setItem('update-refresh', '1'); w.location.reload() }
+        else if (localStorage.getItem('update-refresh') == '1') { localStorage.setItem('update-refresh', '2'); w.location.reload() }
+        else localStorage.setItem('update-refresh', '0')
+        raw.status.toString().startsWith('5') && session.ondown(info)
+        localStorage.getItem('no-cache') && navigator.serviceWorker.controller.postMessage('no-cache')
+    }
     localStorage.setItem('version', info.version)
 
     SID = localStorage.getItem('SID')
