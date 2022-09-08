@@ -316,7 +316,7 @@ w.onload = async () => {
     setTimeout(() => d.getElementById('initial-load').remove(), 300)
 }
 w.onpopstate = () => { if (!mouse.state) return w.history.pushState(null, null); app.load() }
-w.addEventListener('resize', () => d.querySelector('body').style.height = window.innerHeight + 'px')
+w.onresize = () => d.querySelector('body').style.height = window.innerHeight + 'px'
 
 const ontitlechange = new MutationObserver(([{ target }]) => gtag('config', gaId, { page_title: target.text, page_path: w.location.pathname }) )
 ontitlechange.observe(document.querySelector('title'), { childList: true })
