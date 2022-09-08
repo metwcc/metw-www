@@ -133,7 +133,7 @@
         var textarea = p.profile.bio.querySelector('textarea'), style = d.createElement('style')
         p.profile.avatar.classList.add('@avatar')
         p.profile.avatar.parentElement.onclick = () => session.etc.changeAvatar()
-        textarea.innerText = p.user.bio; textarea.addEventListener('focusout', () => load(async () => await session.settings([{ name: 'update_bio', content: textarea.value }])))
+        textarea.value = p.user.bio; textarea.addEventListener('focusout', () => load(async () => await session.settings([{ name: 'update_bio', content: textarea.value }])))
         p.profile.follow.style.display = 'none'
         style.innerHTML = '.p .profile  .user  .avatar:after { content: "değiştir" }'; p.appendChild(style)
     }
