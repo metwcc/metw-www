@@ -7,9 +7,9 @@ var serviceWorker
 //#region FUNCTIONS
 const progress = (v) => {
     var bar = d.getElementById('progress-bar')
-    if (v === 100) bar.style = 'width: 100%; transition: .3s', mouse.enable()
-    else if (v === 0) bar.style = 'width: 0; height: 2px', mouse.disable()
-    else bar.style = `width: ${v}%; height: 2px`, mouse.disable()
+    if (v === 100) bar.style = 'width: 100%; transition: .3s'
+    else if (v === 0) bar.style = 'width: 0; height: 2px'
+    else bar.style = `width: ${v}%; height: 2px`
 }
 const load = async (f) => {
     var bar = d.getElementById('loading-bar')
@@ -313,7 +313,7 @@ w.onload = async () => {
     d.getElementById('initial-load').style = 'opacity: 0'
     setTimeout(() => d.getElementById('initial-load').remove(), 300)
 }
-w.onpopstate = () => app.load()
+w.onpopstate = () => { if (!mouse.state) return w.history.pushState(null, null); app.load() }
 
 const ontitlechange = new MutationObserver(([{ target }]) => gtag('config', gaId, { page_title: target.text, page_path: w.location.pathname }) )
 ontitlechange.observe(document.querySelector('title'), { childList: true })

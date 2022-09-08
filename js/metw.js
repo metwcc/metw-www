@@ -80,6 +80,7 @@ class Session {
             this.notificationCount = 0
             this.ws = new WebSocket(url.ws + `?${this.SID}`)
             this.ws.onmessage = message => this._onwsmessage(message)
+            this.ws.onclose = () => this._onwsclose()
         }
         this.logged = ok
         this.event(ok ? 'login' : 'loginfailed')
@@ -176,6 +177,12 @@ class Session {
             case '1': this.notificationCount += 1; this.event('updatenotificationcount', this.notificationCount); break
             case '2': this.notificationCount = parseInt(data); this.event('updatenotificationcount', parseInt(data)); break
         }
+    }
+    async _onwsclose() {
+        if (!this.logged) return
+        this.ws = new WebSocket(this.ws.url)
+        this.ws.onmessage = this._onwsmessage.bind(this)
+        this.ws.onclose = this._onwsclose.bind(this)
     }
 }
 
