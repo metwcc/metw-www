@@ -293,6 +293,8 @@ d.querySelector('#compose .cancel-upload').onclick = async () => { composeAttach
 
 
 w.onload = async () => {
+    d.querySelector('body').style.height = window.innerHeight + 'px'
+    
     var raw; info = await fetch(url.backend + '/').then(r => raw = r).then(r => r.json()); info.version = raw.headers.get('Version'), info.code = raw.status
     !localStorage.getItem('update-refresh') && localStorage.setItem('update-refresh', '0')
     if ('serviceWorker' in navigator) {
@@ -314,6 +316,7 @@ w.onload = async () => {
     setTimeout(() => d.getElementById('initial-load').remove(), 300)
 }
 w.onpopstate = () => { if (!mouse.state) return w.history.pushState(null, null); app.load() }
+w.addEventListener('resize', () => d.querySelector('body').style.height = window.innerHeight + 'px')
 
 const ontitlechange = new MutationObserver(([{ target }]) => gtag('config', gaId, { page_title: target.text, page_path: w.location.pathname }) )
 ontitlechange.observe(document.querySelector('title'), { childList: true })
