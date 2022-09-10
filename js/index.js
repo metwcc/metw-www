@@ -275,8 +275,8 @@ d.querySelector('#compose .upload').onclick = async () => {
     var _image = await toBase64((await filedialog('image/*')).files[0]), image = new Image()
     image.onload = () => {
         var canvas = d.createElement('canvas'), s = { w: image.width, h: image.height }, m
-        if (image.width > 400) m = 400 / image.width, image.width *= m, image.height *= m
-        if (image.height > 800) m = 800 / image.height, image.width *= m, image.height *= m
+        if (image.width > 1800) m = 1800 / image.width, image.width *= m, image.height *= m
+        if (image.height > 2700) m = 2700 / image.height, image.width *= m, image.height *= m
         canvas.width = image.width, canvas.height = image.height
         var ctx = canvas.getContext('2d')
         ctx.drawImage(image, 0, 0, s.w, s.h, 0, 0, canvas.width, canvas.height)
