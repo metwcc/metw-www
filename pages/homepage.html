@@ -36,10 +36,9 @@
             loadMore.innerHTML = 'devamını yükle', loadMore.className = '_load-more'
             if (!(p.posts.data.length % 30)) p.appendChild(loadMore)
             loadMore.onclick = async () => {
-                var data = await load(async () => await session.homepage(p.posts.cursor))
-                p.posts.cursor = data[30]?.id
+                p.posts.data = await load(async () => await session.homepage(p.posts.data.at(-1)?.id))
                 if (!p.posts.cursor) loadMore.remove()
-                p.posts.append(data)
+                p.posts.append(p.posts.data)
             }
         } else {
             p.innerHTML += `

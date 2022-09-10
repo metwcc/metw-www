@@ -45,7 +45,9 @@ class Session {
                 case 'remove_banner': this.user.banner = 0; this.event('changebanner'); break
                 case 'update_bio': this.user.bio = actions.find(action => action.name == 'update_bio').content; break
                 case 'change_password':
-                    if (responses['change_password'][1]) this.SID = responses['change_password'][0]
+                    if (responses['change_password'][1]) {
+                        this.SID = responses['change_password'][0]
+                    }
                     resp['change_password'] = responses['change_password'][1]
                     break
             }
@@ -119,10 +121,8 @@ class Session {
                 _data.push(eval(`new ${key.charAt(0).toUpperCase() + key.slice(1, -1)}${key == 'notifications' ? '_' : ''}({ ...d, user: ${key != 'users' ? 'user' : undefined} }, this)`))
             }
             this.indexed.raw.push(..._data)
-            if (key == 'comments') {
+            if (key == 'comments') 
                 _data.forEach(comment => { if (comment.type == 2) this.indexed.raw.find(parent => (Object.getPrototypeOf(parent).constructor == Comment) && (parent.id == comment.parentId) && (parent.replies.every(reply => reply.id != comment.id)))?.replies.push(comment) })
-                _data = _data.filter(comment => comment.type != 2)
-            }
             if (key == 'notifications') {
                 let dataToGet = { users: [], posts: [], comments: [] }
                 dataToGet.users.push(..._data.filter(n => [1, 2].includes(n.type)).map(n => n.details[+(n.type == 2)]))
@@ -133,7 +133,7 @@ class Session {
                 dataToGet.comments = _data.filter(n => n.type == 3).map(n => n.details[0])
                 for (let k of Object.keys(dataToGet)) { dataToGet[k] = Array.from(new Set(dataToGet[k])); if (!dataToGet[k].length) dataToGet[k] = [0]}
                 await this.bulkGet(dataToGet)
-                for (let n of _data) await n.format()
+                await Promise.all(_data.map(n => n.format()))
             }
             this.indexed[key].push(..._data)
         }
@@ -144,7 +144,7 @@ class Session {
             var data = await this.bulkGet('notifications', (await this.request({ path: `/notifications?id=${this.user.id}&before=${selector || 0}` }))[0])
             if (this.notificationCount != 0) this.request({ path: '/notifications/read' }); return data
         }
-        var user = this.indexed[param == 'comment' ? 'raw' : param + 's'].find(typeof selector == 'number' || param != 'user' ? data => data.id == selector : user => user.name == selector)
+        var user = this.indexed[param + 's'].find(typeof selector == 'number' ? data => data.id == selector : user => user.name == selector)
         return user ||
             await (async () => {
                 var [data, ok] = await this.request({ path: `/${param}s/${typeof selector == 'number' && param == 'user' ? ':' : ''}${selector}?id=${this.user.id}` })
@@ -178,8 +178,8 @@ class Session {
             case '2': this.notificationCount = parseInt(data); this.event('updatenotificationcount', parseInt(data)); break
         }
     }
-    async _onwsclose() {
-        if (!this.logged) return
+    async _onwsclose() { if (!this.logged) return; this._wsconnect() }
+    _wsconnect() {
         this.ws = new WebSocket(this.ws.url)
         this.ws.onmessage = this._onwsmessage.bind(this)
         this.ws.onclose = this._onwsclose.bind(this)

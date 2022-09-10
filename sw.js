@@ -49,6 +49,7 @@ self.onfetch = async event => {
 
 self.onmessage = event => {
     if (event.data == 'no-cache') { cachesEnabled = false; return caches.delete(static) }
+    if (event.data == 'clear-cache') return caches.delete(static)
     for (let key of Object.keys(event.data)) {
         switch (key) {
         }
