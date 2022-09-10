@@ -31,7 +31,7 @@ input:-webkit-autofill { border-color: var(--bd-2); -webkit-text-fill-color: var
 #disable-mouse { display: none; z-index: 99; cursor: wait }
 
 #alerts { display: block; z-index: 99; width: fit-content; height: fit-content; place-self: end }
-#alerts ul { max-width: calc(100vw - 4em); max-height: 50vh; padding: 0; overflow: hidden auto }
+#alerts ul { max-width: calc(100vw - 4em); max-height: 50vh; padding: 0; overflow: hidden auto; word-break: break-all }
 #alerts  ul::-webkit-scrollbar { width: 0 }
 #alerts  li { display: flex; width: fit-content; padding: .5em .5em .75em; margin: .5em 2em 0 auto; background: var(--bg-a-d); position: relative; flex-direction: row-reverse; list-style: none; border-radius: .25em; font-size: 1em; max-width: 75vw; overflow: hidden; transform: translateX(3em); opacity: 0; transition: transform .3s, opacity .3s }
 #alerts  li:first-of-type { display: none }
@@ -117,7 +117,7 @@ nav  .n-buttons .notification-count { display: none; margin: 0 !important; paddi
 ._p-c   .avatar:hover,
 ._p-c   .username:hover { cursor: pointer }
 ._p-c  .date { opacity: .5; font-size: .8em }
-._p-c  .content {  max-height: 500px; overflow: hidden auto; margin: 0 0 .25em; word-break: break-all }
+._p-c  .content {  max-height: 500px; overflow: hidden auto; margin: 0 0 .25em; word-break: break-word }
 ._p-c  .content::-webkit-scrollbar { width: .25em }
 ._p-c  .content::-webkit-scrollbar-thumb { background: var(--bg-1) }
 @media screen and (max-width: 600px) { ._p-c { padding: 2em 1em }._p-c li { padding: 1.5em 1.5em } }
