@@ -229,7 +229,7 @@ class User {
 
     async get(param, before) {
         if (param == 'comments') {
-            var comments = await this._session.bulkGet('comments', (await this._session.request({ path: `/comments?type=0&parent_id=${this.id}&before=${before ? before : 0}` }))[0])
+            var comments = (await this._session.bulkGet('comments', (await this._session.request({ path: `/comments?type=0&parent_id=${this.id}&before=${before ? before : 0}` }))[0])).filter(c => c.type == 0)
             this.comments.push(...comments)
             return comments
         }
@@ -264,7 +264,7 @@ class Post {
     }
     async get(param, before) {
         if (param == 'comments') {
-            var comments = await this._session.bulkGet('comments', (await this._session.request({ path: `/comments?type=1&parent_id=${this.id}&before=${before ? before : 0}` }))[0])
+            var comments = (await this._session.bulkGet('comments', (await this._session.request({ path: `/comments?type=1&parent_id=${this.id}&before=${before ? before : 0}` }))[0])).filter(c => c.type == 1)
             this.comments.push(...comments)
             return comments
         }
