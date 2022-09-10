@@ -293,7 +293,7 @@ d.querySelector('#compose .cancel-upload').onclick = async () => { composeAttach
 
 
 w.onload = async () => {
-    d.querySelector('body').style.height = window.innerHeight + 'px'
+    w.onresize()
     
     var raw; info = await fetch(url.backend + '/').then(r => raw = r).then(r => r.json()); info.version = raw.headers.get('Version'), info.code = raw.status
     !localStorage.getItem('update-refresh') && localStorage.setItem('update-refresh', '0')
@@ -316,7 +316,12 @@ w.onload = async () => {
     setTimeout(() => d.getElementById('initial-load').remove(), 300)
 }
 w.onpopstate = () => { if (!mouse.state) return w.history.pushState(null, null); app.load() }
-w.onresize = () => d.querySelector('body').style.height = window.innerHeight + 'px'
+w.onresize = () => {
+    var style = d.getElementsByClassName('@resize')[0], isNew = !style
+    if (isNew) style = d.createElement('style'), style.className = '@resize'
+    style.innerHTML = `body, body > * { height: ${window.innerHeight + 'px'} }`
+    if (isNew) d.querySelector('body').appendChild(style)
+}
 
 const ontitlechange = new MutationObserver(([{ target }]) => gtag('config', gaId, { page_title: target.text, page_path: w.location.pathname }) )
 ontitlechange.observe(document.querySelector('title'), { childList: true })
