@@ -10,5 +10,5 @@
     x: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>',
     accept: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>'
 }
-const url = { backend: 'http://api.metw/utb', cdn: 'https://s3.amazonaws.com/cdn.metw.cc/utb', ws: 'ws://api.metw/utb/ws' }
+const url = { backend: 'https://api.metw.cc/v1', cdn: 'https://dpupind62kwme.cloudfront.net', ws: 'wss://api.metw.cc/v1/ws' }
 const publicVapidKey = 'BKN8z1ZV6W03lysfQx6Dm5MQounUoaad_f-VG2phhxdxZfOF-PX24Jz-S-MufPSIXd183Bz14__F0krdsqxvT2c'
