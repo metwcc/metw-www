@@ -250,6 +250,9 @@ session.ondown = (data) => {
     d.getElementById('down').style.display = 'flex'
     d.querySelector('#down span').innerHTML = data.message
 }
+session.onunexpectederror = () => window.location.replace('/offline.html')
+session.onconnectionerror = () => window.location.replace('/offline.html')
+
 session.etc = {
     async upload(t, d) { return await load(async () => await session.upload(t, d)) },
     async changeAvatar() { return this.upload('avatar', await crop.start('1:1', '128x128')) },
@@ -294,8 +297,11 @@ d.querySelector('#compose .cancel-upload').onclick = async () => { composeAttach
 
 w.onload = async () => {
     w.onresize()
-    
-    var raw; info = await fetch(url.backend + '/').then(r => raw = r).then(r => r.json()); info.version = raw.headers.get('Version'), info.code = raw.status
+
+    try { info = await fetch(url.backend + '/').then(r => raw = r).then(r => r.json()) }
+    catch { w.location.replace('/offline.html') }
+
+    var raw; info.version = raw.headers.get('Version'), info.code = raw.status
     !localStorage.getItem('update-refresh') && localStorage.setItem('update-refresh', '0')
     if ('serviceWorker' in navigator) {
         serviceWorker = await navigator.serviceWorker.register(`/sw.js?v${info.version}`)

@@ -19,13 +19,15 @@ class Session {
             if (options.json) body = JSON.stringify(options.json), headers['content-type'] = 'application/json', options.method = 'post'
             if (options.form) body = options.form, options.method = 'post'
             if (this.SID) headers.SID = this.SID
-            var raw, ok, res = await fetch(url.backend + options.path, { method: options.method || 'get', headers: headers, body: body })
-                .then(res => { ok = res.ok, raw = res; return res.json() }).then(json => [json, ok, raw])
-            if (info && raw.headers.get('Version') != info.version) this.event('upgradefound')
-            if (res[2].status.toString().startsWith('5')) resolve(this.event('down', res[0]))
-            if (res[2].status == 401 && res[0][1] == 205) this.event('loginfailed')
-            if (res[2].status == 429 && options.retry !== false) setTimeout(async () => resolve(await this.request(options)), (parseInt(res[2].headers.get('RateLimit-Reset'))) * 1000)
-            else resolve(res)
+            try {
+                var raw, ok, res = await fetch(url.backend + options.path, { method: options.method || 'get', headers: headers, body: body })
+                    .then(res => { ok = res.ok, raw = res; return res.json() }).catch(err => this.event('unexpectederror')).then(json => [json, ok, raw])
+                if (info && raw.headers.get('Version') != info.version) this.event('upgradefound')
+                if (res[2].status.toString().startsWith('5')) resolve(this.event('down', res[0]))
+                if (res[2].status == 401 && res[0][1] == 205) this.event('loginfailed')
+                if (res[2].status == 429 && options.retry !== false) setTimeout(async () => resolve(await this.request(options)), (parseInt(res[2].headers.get('RateLimit-Reset'))) * 1000)
+                else resolve(res)
+            } catch { this.event('connectionerror') }
         })
     }
 

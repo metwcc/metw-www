@@ -1,8 +1,10 @@
 ﻿<script init>
     p.post = await session.get('post', app.location.pathname[1])
-    if (!p.post) resolve(app.template.render('404'))
-    document.title = p.post.content.substring(0, 10) + ' | metw'
-    p._comments = await metw.gui.comments(p.post) 
+    if (!p.post) app.template.render('404')
+    else {
+        document.title = p.post.content.substring(0, 10) + ' | metw'
+        p._comments = await metw.gui.comments(p.post)
+    }
 </script>
 
 <template>

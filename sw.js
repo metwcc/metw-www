@@ -1,7 +1,7 @@
 ﻿var static, defaultStatic = 'metw', id = 0
 var assets = ['/offline.html', '/favicon.ico', '/index.html', '/pages/admin.html',
     ...['index', 'dark-theme'].map(name => `/css/${name}.css`),
-    ...['index', 'metw', 'metw-gui'].map(name => `/js/${name}.js`)]
+    ...['index', 'metw', 'metw-gui', 'etc'].map(name => `/js/${name}.js`)]
 var cachesEnabled = true
 
 self.oninstall = async event => {
@@ -42,7 +42,12 @@ self.onfetch = async event => {
                 const cachedPage = await cache.match(`${url.pathname}?${id}`)
                 if (cachedPage) return cachedPage
             }
-            await cache.add(`${url.pathname}?${id}`); return await cache.match(`${url.pathname}?${id}`)
+            try {
+                var cachedPage = await cache.match(`${url.pathname}?${id}`)
+                if (cachedPage) return cachedPage
+                else { await cache.add(`${url.pathname}?${id}`); return await cache.match(`${url.pathname}?${id}`) }
+            }
+            catch { try { return await cache.match(`offline.html?${id}`) } catch { } }
         })())
     }
 }
