@@ -187,7 +187,7 @@ crop.start = async (ratio, resolution) => {
             ctx.drawImage(crop.img, (crop.img.meta.sx < 0 ? 0 : crop.img.meta.sx + crop.frame.offsetWidth > crop.img.offsetWidth ? crop.img.offsetWidth - crop.frame.offsetWidth : crop.img.meta.sx) * scales[0],
                 (crop.img.meta.sy < 0 ? 0 : crop.img.meta.sy + crop.frame.offsetHeight > crop.img.offsetHeight ? crop.img.offsetHeight - crop.frame.offsetHeight : crop.img.meta.sy) * scales[1],
                 crop.frame.offsetWidth * scales[0], crop.frame.offsetHeight * scales[1], 0, 0, ...crop.resolution)
-            resolve(canvas.toDataURL('image/png'))
+            resolve(canvas.toDataURL('image/webp'))
             crop.cancel.click()
         }
     })
@@ -250,13 +250,13 @@ session.ondown = (data) => {
     d.getElementById('down').style.display = 'flex'
     d.querySelector('#down span').innerHTML = data.message
 }
-session.onunexpectederror = () => window.location.replace('/offline.html')
+session.onunexpectederror = () => session.ondown({ message: 'Beklenmedik bir hata meydana geldi...' })
 session.onconnectionerror = () => window.location.replace('/offline.html')
 
 session.etc = {
     async upload(t, d) { return await load(async () => await session.upload(t, d)) },
     async changeAvatar() { return this.upload('avatar', await crop.start('1:1', '128x128')) },
-    async changeBanner() { return this.upload('banner', await crop.start('16:9', '640x360'))  }
+    async changeBanner() { return this.upload('banner', await crop.start('16:9', '800x450'))  }
 }
 
 var composeAttachment
@@ -309,7 +309,7 @@ w.onload = async () => {
         else if (localStorage.getItem('update-refresh') == '1') { localStorage.setItem('update-refresh', '2'); w.location.reload() }
         else localStorage.setItem('update-refresh', '0')
         raw.status.toString().startsWith('5') && session.ondown(info)
-        localStorage.getItem('no-cache') && navigator.serviceWorker.controller.postMessage('no-cache')
+        localStorage.getItem('no-cache') && navigator.serviceWorker?.controller?.postMessage('no-cache')
     }
     localStorage.setItem('version', info.version)
 

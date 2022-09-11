@@ -14,7 +14,7 @@
                     <span class="dots _popup-menu-button">${icons.dots}</span>
                 </div>
             </div>`
-        if ((post.flags | 1) != post.flags) _post.querySelector('.attachment').remove()
+        if (!(post.flags & 1)) _post.querySelector('.attachment').remove()
         _post.querySelector('p').innerText = post.content
         _post.querySelector('.share').onclick = () => navigator.share({ title: 'metw', url: `/gönderi/${post.id}`, text: post.content })
         _post.querySelector('.dots').onclick = event => popupMenu(event, [['report', 'bildir', console.log], ['delete', 'sil', console.log], ['edit', 'düzenle', console.log]])

@@ -20,8 +20,9 @@ class Session {
             if (options.form) body = options.form, options.method = 'post'
             if (this.SID) headers.SID = this.SID
             try {
-                var raw, ok, res = await fetch(url.backend + options.path, { method: options.method || 'get', headers: headers, body: body })
-                    .then(res => { ok = res.ok, raw = res; return res.json() }).catch(err => this.event('unexpectederror')).then(json => [json, ok, raw])
+                var raw, ok, isErr, res = await fetch(url.backend + options.path, { method: options.method || 'get', headers: headers, body: body })
+                    .then(res => { ok = res.ok, raw = res; return res.json() }).catch(err => isErr = true).then(json => [json, ok, raw])
+                if (isErr) return this.event('unexpectederror')
                 if (info && raw.headers.get('Version') != info.version) this.event('upgradefound')
                 if (res[2].status.toString().startsWith('5')) resolve(this.event('down', res[0]))
                 if (res[2].status == 401 && res[0][1] == 205) this.event('loginfailed')
@@ -209,6 +210,37 @@ class Notification_ {
 }
 
 class User {
+    static test = {
+        permissions: {
+            'admin': 0,
+            'users': {
+                'ban': 1,
+                'ip_ban': 2,
+                'change_usernames': 3,
+                'edit_profiles': 4,
+                'wipe_user_data': 5,
+                'manage_flags': 6
+            },
+            'posts': {
+                'delete': 7,
+                'edit': 8,
+                'downvote': 9,
+                'remove_attachments': 10,
+                'manage_flags': 11
+            },
+            'attachments': {
+                'level_2': 12,
+                'level_3': 13
+            }
+        },
+        flags: {
+            'staff': 0,
+            'admin': 1,
+            'premium': 2,
+            'bug_hunter': 3
+        }
+    }
+
     constructor(data, session) {
         this.id = data.id, this.name = data.name
         this.avatar = data.avatar, this.banner = data.banner
@@ -250,7 +282,7 @@ class User {
         return comment
     }
 
-    testPermission(permissions) { return (permissions | this.permissions) == this.permissions }
+    hasPermission(permissions) { return permissions & this.permissions > 0 }
 }
 
 class Post {
