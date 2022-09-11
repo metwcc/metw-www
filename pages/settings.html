@@ -86,7 +86,7 @@
             window.history.pushState(null, null, null)
         }
 
-        if (!session.user.testPermission(1)) p.querySelector('.admin').remove()
+        if (!session.user.hasPermissions('$ & "admin"')) p.querySelector('.admin').remove()
         else {
             var e = {
                 message: p.querySelector('.admin .message'),

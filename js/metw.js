@@ -1,6 +1,33 @@
-﻿var info
+﻿var info, metw = {}
 
-class Session {
+metw.util = {
+    objectDeepKeys: (obj) => {
+        var keys = []
+        for (let key in obj) { keys.push(key); if (typeof obj[key] == 'object') keys.push(...metw.util.objectDeepKeys(obj[key]).map(subkey => `${key}.${subkey}`)) }
+        return keys
+    },
+    BitwiseTester: class {
+        constructor(data) {
+            this.data = {}
+            for (let key of metw.util.objectDeepKeys(data)) eval(`if(!isNaN(data.${key})) this.data['${key}'] = 2 ** data.${key}`)
+        }
+        basicEval(condition) {
+            return +condition.split('|').map(c => {
+                let nums = c.split('&').map(v => parseInt(v))
+                if (nums.length == 1) return nums[0]
+                let target = Array.from(new Set(nums.slice(1))).reduce((t, n) => t += n)
+                return ((nums[0] & target) === target) && !!target
+            }).some(v => v == true)
+        }
+        eval(num, condition) {
+            var _condition = condition.replace(/(?:\'([^\']*)\'|\"([^\"]*)\")/g, (input, s1, s2) => this.data[s1] || this.data[s2]).replace(/\$/g, num).replace(/\s/g, '')
+            let re = /\(([^\(\)]*)\)/g, _eval = () => { _condition = _condition.replace(re, (input, data) => this.basicEval(data)); if (_condition.match(re)) _eval() }; _eval()
+            return !!this.basicEval(_condition)
+        }
+    }
+}
+
+metw.Session = class Session {
     constructor(SID) {
         this.SID = SID
         this.user = { id: 0 }
@@ -9,7 +36,7 @@ class Session {
         setInterval(() => { if (this.ws.readyState == 1) this.ws.send('0') }, 30000)
     }
     async event(name, ...args) {
-        if (this['on' + name]) this['on' + name](...args)
+        if (typeof this['on' + name] == 'function') this['on' + name](...args)
     }
 
     async request(options) {
@@ -80,7 +107,7 @@ class Session {
         if (SID) this.SID = SID
         var [session, ok] = await this.request({ path: '/session', headers: { SID: this.SID } })
         if (ok) {
-            this.user = new User(session, this)
+            this.user = new metw.User(session, this)
             this.indexed = { users: [this.user], posts: [], comments: [], raw: [], notifications: [] }
             this.notificationCount = 0
             this.ws = new WebSocket(url.ws + `?${this.SID}`)
@@ -105,7 +132,7 @@ class Session {
         if (attachment) {
             await this.upload('image', attachment, id.upload_key)
         }
-        var post = new Post({ id: id.id, user_id: this.user.id, user: this.user, content, flags: (attachment ? 1 : 0) }, session)
+        var post = new metw.Post({ id: id.id, user_id: this.user.id, user: this.user, content, flags: (attachment ? 1 : 0) }, session)
         this.indexed.posts.push(post)
         this.event('post', post)
         return post
@@ -121,7 +148,7 @@ class Session {
             var _data = []
             for (let d of data[key]) {
                 if (!['users', 'notifications'].includes(key)) var user = await this.get('user', d.user_id)
-                _data.push(eval(`new ${key.charAt(0).toUpperCase() + key.slice(1, -1)}${key == 'notifications' ? '_' : ''}({ ...d, user: ${key != 'users' ? 'user' : undefined} }, this)`))
+                _data.push(eval(`new metw.${key.charAt(0).toUpperCase() + key.slice(1, -1)}({ ...d, user: ${key != 'users' ? 'user' : undefined} }, this)`))
             }
             this.indexed.raw.push(..._data)
             if (key == 'comments') 
@@ -153,7 +180,7 @@ class Session {
                 var [data, ok] = await this.request({ path: `/${param}s/${typeof selector == 'number' && param == 'user' ? ':' : ''}${selector}?id=${this.user.id}` })
                 if (!ok) return false
                 if (param != 'user') var user = await this.get('user', data.user_id)
-                data = eval(`new ${param.charAt(0).toUpperCase() + param.substring(1)}({ ...data, user: ${param != 'user' ? 'user' : undefined} }, this)`)
+                data = eval(`new metw.${param.charAt(0).toUpperCase() + param.substring(1)}({ ...data, user: ${param != 'user' ? 'user' : undefined} }, this)`)
                 this.indexed[param + 's'].push(data)
                 return data
             })()
@@ -189,7 +216,7 @@ class Session {
     }
 }
 
-class Notification_ {
+metw.Notification = class Notification_ {
     constructor(data, session) {
         this.id = data.id, this.type = data.type
         this.details = data.details, this.text = data.text
@@ -209,37 +236,26 @@ class Notification_ {
     }
 }
 
-class User {
-    static test = {
-        permissions: {
-            'admin': 0,
-            'users': {
-                'ban': 1,
-                'ip_ban': 2,
-                'change_usernames': 3,
-                'edit_profiles': 4,
-                'wipe_user_data': 5,
-                'manage_flags': 6
-            },
-            'posts': {
-                'delete': 7,
-                'edit': 8,
-                'downvote': 9,
-                'remove_attachments': 10,
-                'manage_flags': 11
-            },
-            'attachments': {
-                'level_2': 12,
-                'level_3': 13
-            }
+metw.User = class User {
+    static permissionTester = new metw.util.BitwiseTester({
+        'admin': 0,
+        'users': {
+            'ban': 1,
+            'change_usernames': 2,
+            'edit_profiles': 3,
+            'wipe_user_data': 4,
+            'manage_flags': 5,
+            'manage_permissions': 6
         },
-        flags: {
-            'staff': 0,
-            'admin': 1,
-            'premium': 2,
-            'bug_hunter': 3
-        }
-    }
+        'posts': {
+            'delete': 7,
+            'edit': 8,
+            'downvote': 9,
+            'remove_attachments': 10,
+            'manage_flags': 11
+        },
+        'attachments': { 'level_2': 12, 'level_3': 13 }
+    })
 
     constructor(data, session) {
         this.id = data.id, this.name = data.name
@@ -272,7 +288,7 @@ class User {
         return ok ? (!cursor ? data : { data: data, cursor: cursor }) : []
     }
     async comment(content) {
-        var comment = new Comment(
+        var comment = new metw.Comment(
             {
                 id: (await this._session.request({ path: `/comments?type=0&parent_id=${this.id}`, json: { content: content } }))[0],
                 user_id: this._session.user.id, user: this._session.user, parent_id: this.id, type: 1, content: content
@@ -282,10 +298,10 @@ class User {
         return comment
     }
 
-    hasPermission(permissions) { return permissions & this.permissions > 0 }
+    hasPermissions(permissions) { return metw.User.permissionTester.eval(this.permissions, permissions) }
 }
 
-class Post {
+metw.Post = class Post {
     constructor(data, session) {
         this.id = data.id, this.userId = data.user_id, this.user = data.user
         this.likeCount = parseInt(data.like_count) || 0, this.liked = data.liked || false
@@ -310,14 +326,14 @@ class Post {
     async comment(content) {
         var id = (await this._session.request({ path: `/comments?type=1&parent_id=${this.id}`, json: { content: content }, retry: false }))[0]
         if (Array.isArray(id)) return id
-        var comment = new Comment({ id: id, user_id: this._session.user.id, user: this._session.user, parent_id: this.id, type: 1, content: content }, this._session)
+        var comment = new metw.Comment({ id: id, user_id: this._session.user.id, user: this._session.user, parent_id: this.id, type: 1, content: content }, this._session)
         this.commentCount++
         this._session.indexed.raw.push(comment); this._session.indexed.comments.push(comment); this.comments.unshift(comment)
         return comment
     }
 }
 
-class Comment {
+metw.Comment = class Comment {
     constructor(data, session) {
         this.id = data.id, this.userId = data.user_id, this.user = data.user
         this.type = data.type; this.parentId = data.parent_id; this.topParentId = data.top_parent_id || 0
@@ -340,7 +356,7 @@ class Comment {
     async reply(content) {
         var id = (await this._session.request({ path: `/comments?type=2&parent_id=${this.id}&top_parent_id=${this.type != 2 ? this.parentId : (this.topParentId ? this.topParentId : 0)}`, json: { content: content }, retry: false }))[0]
         if (Array.isArray(id)) return id
-        var reply = new Comment(
+        var reply = new metw.Comment(
             {
                 id: id,
                 user_id: this._session.user.id, user: this._session.user, parent_id: this.id, top_parent_id: this.top_parent_id, type: 2, reply_count: 0,
@@ -351,4 +367,3 @@ class Comment {
         return reply
     }
 }
-metw = { Session: Session, User: User, Post: Post }

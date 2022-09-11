@@ -20,8 +20,8 @@ input:-webkit-autofill { border-color: var(--bd-2); -webkit-text-fill-color: var
 
 /*  MISC   */
 #down { display: none; background: var(--bg-g); flex-direction: column; z-index: 101; justify-content: center; align-items: center }
-#down span { margin-bottom: 1em; font-size: 1.5em; text-align: center }
-#down svg { width: min(80%, 20em); opacity: .05 }
+#down span { width: 75%; margin-bottom: 1em; font-size: 1.5em; text-align: center }
+#down svg { width: min(70%, 20em); opacity: .05 }
 
 @keyframes loading-bar { 0% { margin-left: -4em } 100% { margin-left: 100% } }
 #progress-bar, #loading-bar { opacity: .5; background: var(--color); position: absolute; top: 0; left: 0; z-index: 99; transition: height .3s }
