@@ -194,7 +194,7 @@
             refresh()
             var data = await load(async () => await p.user.get('posts', p.posts.pageNo * 30))
             p.posts.list.clear(); p.posts.list.append(data)
-            p.posts.appendChild(metw.gui.posts())
+            p.posts.list.append(metw.gui.posts())
         }
         for (let i = 0; i < p.posts.pageCount + 2; i++) {
             let li = d.createElement('li')
