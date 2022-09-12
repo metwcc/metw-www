@@ -15,10 +15,12 @@
 <style>
     .p h2 { margin: 0; font-weight: normal; font-size: 1.5em; text-align: center }
     .p .notifications { padding: 0 }
-    .p  .notification { margin-top: 1em; padding: 1em; list-style-type: none; border-radius: 1em; border: 0.05em solid var(--bd-1) }
-    .p  .notification .date { opacity: .5; font-size: .8em }
-    .p .notifications .p-c { padding: 0 !important; margin: 0 !important; align-items: start !important }
-    .p .notifications .post { margin-top: 1em !important }
+    .p  .notification { display: flex; width: min(100%, 700px); margin: 1em auto 0; padding: 1em; flex-direction: column; list-style-type: none; border-radius: 1em; border: 0.05em solid var(--bd-1); align-items: center }
+    .p  .notification > .title { width: min(100%, 600px) }
+    .p  .notification > .title .date { opacity: .5; font-size: .8em }
+    .p .notifications .p-c { margin: 0; padding: 0 !important; align-items: start !important }
+    .p .notifications .post { display: flex; margin-top: 1em !important; align-content: center; flex-wrap: wrap }
+    .p > .load-more { display: block; width: min(calc(100% - 50px), 650px); margin: auto }
 </style>
 
 <script>
@@ -35,11 +37,11 @@
 
         p.notification = n => {
             let li = d.createElement('li'), user = n.details.at(-1); li.className = 'notification'
-            li.innerHTML = `<a class="href" href="javascript:app.redirect('@${user.name}')">${user.displayName}</a> ${['seni takip ediyor', 'gönderini beğendi', ['profiline yorum yazdı', 'gönderine yorum yazdı', 'yorumuna yanıt yazdı'][n.details[1]]][n.type - 1]}<span class="date">&nbsp;·&nbsp;${timeSince(n.timestamp)}</span>`
+            li.innerHTML = `<div class="title"><a class="href" href="javascript:app.redirect('@${user.name}')">${user.displayName}</a> ${['seni takip ediyor', 'gönderini beğendi', ['profiline yorum yazdı', 'gönderine yorum yazdı', 'yorumuna yanıt yazdı'][n.details[1]]][n.type - 1]}<span class="date">&nbsp;·&nbsp;${timeSince(n.timestamp)}</span></div>`
             if ([2, 3].includes(n.type) && (n.type != 3 || n.details[1] == 1)) { let post = metw.gui.posts([n.details.at(-2)]); post.className += ' p-c post'; li.appendChild(post) }
             if (n.type == 3) {
                 let comments = d.createElement('div'); comments.className = '_p-c _comments p-c'
-                if (n.details[1] == 1) comments.style = 'max-width: calc(100% - 2em); margin-left: 2em !important'
+                if (n.details[1] == 1) comments.style = 'padding-left: 2em !important'
                 comments.appendChild(metw.gui.comment(n.details[n.details[1] == 2 ? 2 : 0], (n.details[1] == 2 ? n.details[0] : undefined)))
                 li.appendChild(comments)
             }
