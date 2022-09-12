@@ -93,7 +93,7 @@
 
         _loadMore.onclick = async () => {
             var replies = await load(async () => await comment.get('replies', Math.min(...comment.replies.map(reply => reply.id))))
-            for (let reply of replies) if (reply != highlightedComment?.id) _replies.insertBefore(this.comment(reply), _loadMore)
+            for (let reply of replies) if (reply.id != highlightedComment?.id) _replies.insertBefore(this.comment(reply), _loadMore)
             if (comment.replies.length >= comment.replyCount) _loadMore.remove()
         }
 
