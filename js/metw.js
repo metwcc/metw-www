@@ -216,11 +216,11 @@ metw.Session = class Session {
     }
 }
 
-metw.Notification = class Notification_ {
+metw.Notification = class Notification {
     constructor(data, session) {
         this.id = data.id, this.type = data.type
         this.details = data.details, this.text = data.text
-        this.readen = data.readen, this.timestamp = new Date(this.timestamp)
+        this.readen = data.readen, this.timestamp = new Date(data.timestamp)
         this._session = session
     }
     async format() {
