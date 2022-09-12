@@ -5,7 +5,7 @@
         _post.innerHTML = `
             <img class="avatar" onclick="if (app.location.pathname[0] != '@${post.user.name}' || app.location.pathname.lenght > 1) app.redirect('/@${post.user.name}')" src="${post.user.avatarURL}" />
             <div>
-                <span class="username" onclick="if (app.location.pathname[0] != '@${post.user.name}' || app.location.pathname.lenght > 1) app.redirect('/@${post.user.name}')">${post.user.displayName}</span><span class="date">&nbsp;·&nbsp;${timeSince(post.sentOn)}</span>
+                <span class="username" onclick="if (app.location.pathname[0] != '@${post.user.name}' || app.location.pathname.lenght > 1) app.redirect('/@${post.user.name}')">${post.user.displayName}</span><span class="date">&nbsp;·&nbsp;${timeSince(post.sentOn)} ${post.hasFlag('$ & "edited"') ? '(düzenlendi)' : ''}</span>
                 <p class="content"></p>
                 <div class="edit">
                     <textarea></textarea>
@@ -32,20 +32,21 @@
                     textarea = edit.querySelector('textarea')
                 if (edit.style.height) return
                 textarea.value = post.content
+                textarea.oninput = () => { textarea.style.height = `calc(${textarea.scrollHeight}px + .05em)`, textarea.value = textarea.value.substring(0, 1024) }; textarea.oninput()
                 contentHeight = content.offsetHeight; content.style.height = contentHeight + 'px'
                 edit.style.height = 'unset'; targetHeight = edit.offsetHeight; edit.style.height = '0'
                 setTimeout(() => { edit.style = `transition: height .3s; height: ${targetHeight}px`, content.style.height = '0' }, 20)
                 setTimeout(() => edit.style.height = 'unset', 320)
                 edit.querySelector('.cancel').onclick = () => {
-                    edit.style.height = edit.offsetHeight + 'px', content.style.height = contentHeight + 'px'
+                    edit.style.height = edit.offsetHeight + 'px', content.style.height = textarea.scrollHeight + 'px'
                     setTimeout(() => edit.style.height = '0', 20); setTimeout(() => edit.style = '', 320)
                 }
                 edit.querySelector('.ok').onclick = async () => {
                     await load(async () => await post.edit(textarea.value))
                     content.innerText = textarea.value
+                    if (!post.hasFlag('$ & "edited"')) _post.querySelector('.date').innerHTML += ' (düzenlendi)'
                     edit.querySelector('.cancel').click()
                 }
-                textarea.oninput = ({ target }) => { target.style.height = textarea.scrollHeight + 'px', target.value = target.value.substring(0, 1024) }
             }] : false])
         
         _post.querySelector('.buttons .like').onclick = async () => { if (!session.logged) return; await load(async () => await post.like(!post.liked)); uls() }
@@ -145,7 +146,11 @@
         if (!session.logged) _addComment.remove()
         else {
             _addComment.textarea.oninput = ({ target }) => { target.style.height = target.scrollHeight + 'px', target.value = target.value.substring(0, 512) }
-            _addComment.textarea.addEventListener('focus', () => _addComment.buttons.style.height = '2em')
+            _addComment.textarea.addEventListener('focus', () => {
+                _addComment.buttons.style.height = 'unset'; var targetHeight = _addComment.buttons.offsetHeight
+                _addComment.buttons.style.height = '0'
+                setTimeout(() => { _addComment.buttons.style.height = targetHeight + 'px' }, 20)
+            })
             _addComment.textarea.addEventListener('focusout', () => { if (!_addComment.textarea.value.length) _addComment.buttons.style.height = '0' })
 
             _addComment.querySelector('.cancel').onclick = () => { _addComment.textarea.value = '', _addComment.buttons.style.height = '0' }

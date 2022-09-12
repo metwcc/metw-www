@@ -148,7 +148,9 @@ metw.Session = class Session {
             }
             this.indexed.raw.push(..._data)
             if (key == 'comments') 
-                _data.forEach(comment => { if (comment.type == 2) this.indexed.raw.find(parent => (Object.getPrototypeOf(parent).constructor == Comment) && (parent.id == comment.parentId) && (parent.replies.every(reply => reply.id != comment.id)))?.replies.push(comment) })
+                _data.forEach(comment => {
+                    if (comment.type == 2) this.indexed.raw.find(parent => (Object.getPrototypeOf(parent).constructor == metw.Comment) && (parent.id == comment.parentId) && (parent.replies.every(reply => reply.id != comment.id)))?.replies.push(comment)
+                })
             if (key == 'notifications') {
                 let dataToGet = { users: [], posts: [], comments: [] }
                 dataToGet.users.push(..._data.filter(n => [1, 2].includes(n.type)).map(n => n.details[+(n.type == 2)]))
