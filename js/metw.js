@@ -143,8 +143,8 @@ metw.Session = class Session {
             if (!['users', 'notifications'].includes(key)) await this.bulkGet('users', data[key].map(d => d.user_id))
             var _data = []
             for (let d of data[key]) {
-                if (!['users', 'notifications'].includes(key)) var user = await this.get('user', d.user_id)
-                _data.push(eval(`new metw.${key.charAt(0).toUpperCase() + key.slice(1, -1)}({ ...d, user: ${key != 'users' ? 'user' : undefined} }, this)`))
+                if (!['users', 'notifications'].includes(key) && d.user_id) var user = await this.get('user', d.user_id)
+                _data.push(eval(`new metw.${key.charAt(0).toUpperCase() + key.slice(1, -1)}({ ...d, user: ${user ? 'user' : undefined} }, this)`))
             }
             this.indexed.raw.push(..._data)
             if (key == 'comments') 
@@ -184,8 +184,10 @@ metw.Session = class Session {
     async bulkGet(param, ids) {
         if (!Array.isArray(ids)) {
             var _param = { ...param }, response = {}
-            for (let key of Object.keys(_param))
+            for (let key of Object.keys(_param)) {
                 _param[key] = _param[key].slice(0, 50).filter((id, index, array) => array.indexOf(id) == index && !this.indexed[key].some(data => data.id == id))
+                if (!_param[key].length) _param[key].push(0)
+            }
             if (Object.values(_param).some(v => v.length)) var [data, ok] = await this.request({ path: `/bulk?id=${this.user.id}`, json: _param })
             if (ok) await this.index(Array.isArray(data) ? { [Object.keys(_param)[0]]: data } : data)
             Object.keys(param).forEach(key => response[key] = param[key].map(id => this.indexed[key].find(i => i.id == id)).filter(i => !!i))
@@ -234,23 +236,23 @@ metw.Notification = class Notification {
 
 metw.User = class User {
     static permissionTester = new metw.util.BitwiseTester({
-        'admin': 0,
-        'users': {
-            'ban': 1,
-            'change_usernames': 2,
-            'edit_profiles': 3,
-            'wipe_user_data': 4,
-            'manage_flags': 5,
-            'manage_permissions': 6
+        admin: 0,
+        users: {
+            ban: 1,
+            change_usernames: 2,
+            edit_profiles: 3,
+            wipe_user_data: 4,
+            manage_flags: 5,
+            manage_permissions: 6
         },
-        'posts': {
-            'delete': 7,
-            'edit': 8,
-            'downvote': 9,
-            'remove_attachments': 10,
-            'manage_flags': 11
+        posts: {
+            delete: 7,
+            edit: 8,
+            downvote: 9,
+            remove_attachments: 10,
+            manage_flags: 11
         },
-        'attachments': { 'level_2': 12, 'level_3': 13 }
+        attachments: { level_2: 12, level_3: 13 }
     })
 
     constructor(data, session) {
@@ -298,6 +300,14 @@ metw.User = class User {
 }
 
 metw.Post = class Post {
+    static flagTester = new metw.util.BitwiseTester({
+        has_attachment: 0,
+        downvoted: 1,
+        edited: 2,
+        uneditable: 3,
+        deleted: 4
+    })
+    
     constructor(data, session) {
         this.id = data.id, this.userId = data.user_id, this.user = data.user
         this.likeCount = parseInt(data.like_count) || 0, this.liked = data.liked || false
@@ -327,6 +337,18 @@ metw.Post = class Post {
         this._session.indexed.raw.push(comment); this._session.indexed.comments.push(comment); this.comments.unshift(comment)
         return comment
     }
+    async delete() {
+        var response = (await this._session.request({ path: `/posts/${this.id}/delete` }))[0]
+        if (!response) return false
+        this.flags = this.flags | 16
+    }
+    async edit(content) {
+        var [id, ok] = await this._session.request({ path: `/posts/${this.id}/edit`, json: Object.assign({ content: content }) })
+        if (!ok) return id
+        this.content = content
+        return true
+    }
+    hasFlag(flags) { return metw.Post.flagTester.eval(this.flags, flags) }
 }
 
 metw.Comment = class Comment {

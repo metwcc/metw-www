@@ -18,6 +18,9 @@ button:hover { filter: brightness(110%); cursor: pointer }
 button:active { filter: brightness(120%) }
 input:-webkit-autofill { border-color: var(--bd-2); -webkit-text-fill-color: var(--color); box-shadow: 0 0 0 100vh inset var(--bg-2) }
 
+button.ok, button.cancel { padding: .25em 1em }
+button.ok { background-color: var(--bg-b-1) }
+
 /*  MISC   */
 #down { display: none; background: var(--bg-g); flex-direction: column; z-index: 101; justify-content: center; align-items: center }
 #down span { width: 75%; margin-bottom: 1em; font-size: 1.5em; text-align: center }
@@ -44,8 +47,6 @@ input:-webkit-autofill { border-color: var(--bd-2); -webkit-text-fill-color: var
 #image-crop .range{ width: min(60%, 20em); height: 1.25em; margin-bottom: 1.25em; padding: 0; z-index: 4; -webkit-appearance: none; border-radius: 1em; outline: .05em solid var(--bg-b-2); align-self: end }
 #image-crop  .range::-webkit-slider-thumb { width: 1.25em; height: 1.25em; margin: 0; -webkit-appearance: none; border-radius: 50%; background: var(--bg-b-2); cursor: pointer; outline: .75em solid var(--bg-b-2); outline-offset: -.5em }
 #image-crop .buttons { margin-top: 1.25em; z-index: 4; font-size: 1.25em; align-self: start }
-#image-crop .buttons > * { padding: .25em 1em }
-#image-crop .buttons .ok { background-color: var(--bg-b-1) }
 #image-crop .main { display: grid; width: 80%; height: 80%; position: relative; place-items: center; border-radius: 1em; user-select: none; overflow: hidden; outline: max(100vw, 100vh) solid var(--bg-1a) }
 #image-crop  .frame { border: .125em solid var(--bd-2); border-radius: .5em; outline: max(100vw, 100vh) solid var(--bg-1a); z-index: 3 }
 #image-crop  .img { position: absolute; transform: translate(-50%, -50%); border-radius: .5em }
@@ -117,9 +118,12 @@ nav  .n-buttons .notification-count { display: none; margin: 0 !important; paddi
 ._p-c   .avatar:hover,
 ._p-c   .username:hover { cursor: pointer }
 ._p-c  .date { opacity: .5; font-size: .8em }
-._p-c  .content {  max-height: 500px; overflow: hidden auto; margin: 0 0 .25em; word-break: break-word }
+._p-c  .content { max-height: 500px; overflow: hidden auto; margin: 0 0 .25em; word-break: break-word; transition: height .3s }
 ._p-c  .content::-webkit-scrollbar { width: .25em }
 ._p-c  .content::-webkit-scrollbar-thumb { background: var(--bg-1) }
+._p-c  .edit { width: 100%; height: 0; overflow: hidden }
+._p-c  .edit textarea { width: 100%; resize: none }
+._p-c   .edit-buttons { display: flex; justify-content: right; column-gap: .5em }
 @media screen and (max-width: 600px) { ._p-c { padding: 2em 1em }._p-c li { padding: 1.5em 1.5em } }
 ._p-c  .buttons { display: flex; align-items: center; justify-content: space-between }
 ._p-c  .buttons svg { stroke: inherit; height: 1em; width: 1em }
@@ -132,15 +136,14 @@ nav  .n-buttons .notification-count { display: none; margin: 0 !important; paddi
 ._p-c  .buttons  .share:hover { stroke: #75bbf5 }
 ._p-c  .buttons  .dots:hover { stroke: #00BA7C }
 ._p-c  .buttons  .reply:hover { stroke: var(--bg-b-1) }
+._p-c textarea { min-height: 4em; background: inherit; border: .05em solid var(--bd-1); border-width: .05em 0; resize: none }
 
 ._posts .attachment { max-width: calc(100% - 1em); margin: .5em; border-radius: .5em }
 
 ._comments .a-c-r { display: grid; margin-top: 1em; grid-template: 1fr auto / auto 1fr }
 ._comments .a-c-r img { height: 3em; width: 3em; margin: .5em; border-radius: 50% }
-._comments .a-c-r textarea { min-height: 100%; padding: .5em; background: inherit; border: .05em solid var(--bd-1); border-width: .05em 0; flex-basis: 100%; resize: none }
+._comments .a-c-r textarea { padding: .5em; flex-basis: 100% }
 ._comments .a-c-r .buttons-2 { margin-top: .25em; grid-column: 2 / auto; transition: .3s; height: 0; overflow: hidden }
-._comments .a-c-r button { padding-left: .5em }
-._comments .a-c-r button:last-of-type { background: var(--bg-b-1) }
 ._comments .a-c-r svg { width: 1em; height: 1em; margin-left: .25em }
 ._comments { width: min(600px, 100%); margin: 0 auto }
 ._comments .top h2 { font-weight: normal; font-size: 1em; margin-top: 1em }

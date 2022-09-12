@@ -1,12 +1,17 @@
 ﻿metw.gui = {
     post(post) {
         var _post = d.createElement('li')
+        if (post.hasFlag('$ & "deleted"')) { _post.innerHTML = `gönderi silinmiş...`;  return _post }
         _post.innerHTML = `
             <img class="avatar" onclick="if (app.location.pathname[0] != '@${post.user.name}' || app.location.pathname.lenght > 1) app.redirect('/@${post.user.name}')" src="${post.user.avatarURL}" />
             <div>
                 <span class="username" onclick="if (app.location.pathname[0] != '@${post.user.name}' || app.location.pathname.lenght > 1) app.redirect('/@${post.user.name}')">${post.user.displayName}</span><span class="date">&nbsp;·&nbsp;${timeSince(post.sentOn)}</span>
                 <p class="content"></p>
-                <img class="attachment" src="${(post.flags | 1) == post.flags ? (url.cdn + '/attachments/' + post.id) : ''}" />
+                <div class="edit">
+                    <textarea></textarea>
+                    <div class="edit-buttons"><button class="cancel">iptal</button><button class="ok">kaydet</button></div>
+                </div>
+                <img class="attachment" src="${post.hasFlag('$ & "has_attachment"') ? (url.cdn + '/attachments/' + post.id) : ''}" />
                 <div class="buttons">
                     <span class="_inline-img comment" onclick="app.redirect('/gönderi/${post.id}')" comment">${icons.comment}&nbsp;${post.commentCount}</span>
                     <span class="_inline-img like">${icons.like}&nbsp;<a class="count">${post.likeCount}</a></span>
@@ -16,9 +21,33 @@
             </div>`
         if (!(post.flags & 1)) _post.querySelector('.attachment').remove()
         _post.querySelector('p').innerText = post.content
-        _post.querySelector('.share').onclick = () => navigator.share({ title: 'metw', url: `/gönderi/${post.id}`, text: post.content })
-        _post.querySelector('.dots').onclick = event => popupMenu(event, [['report', 'bildir', console.log], ['delete', 'sil', console.log], ['edit', 'düzenle', console.log]])
+
         var uls = () => { _post.querySelector('.buttons .like').style = post.liked ? 'color: #F91880; stroke: #F91880' : ''; _post.querySelector('.buttons .like .count').innerText = post.likeCount }; uls()
+        _post.querySelector('.share').onclick = () => navigator.share({ title: 'metw', url: `/gönderi/${post.id}`, text: post.content })
+        _post.querySelector('.dots').onclick = event =>
+            popupMenu(event, [['report', 'bildir', console.log],
+            session.user.hasPermissions('$ & "admin" | $ & "posts.delete"') || post.user.id == session.user.id ? ['delete', 'sil', () => load(async () => { await post.delete(); _post.innerHTML = 'gönderi silindi' })] : false,
+            session.user.hasPermissions('$ & "admin" | $ & "posts.edit"') || post.user.id == session.user.id ? ['edit', 'düzenle', () => {
+                var edit = _post.querySelector('.edit'), content = _post.querySelector('.content'), targetHeight, contentHeight,
+                    textarea = edit.querySelector('textarea')
+                if (edit.style.height) return
+                textarea.value = post.content
+                contentHeight = content.offsetHeight; content.style.height = contentHeight + 'px'
+                edit.style.height = 'unset'; targetHeight = edit.offsetHeight; edit.style.height = '0'
+                setTimeout(() => { edit.style = `transition: height .3s; height: ${targetHeight}px`, content.style.height = '0' }, 20)
+                setTimeout(() => edit.style.height = 'unset', 320)
+                edit.querySelector('.cancel').onclick = () => {
+                    edit.style.height = edit.offsetHeight + 'px', content.style.height = contentHeight + 'px'
+                    setTimeout(() => edit.style.height = '0', 20); setTimeout(() => edit.style = '', 320)
+                }
+                edit.querySelector('.ok').onclick = async () => {
+                    await load(async () => await post.edit(textarea.value))
+                    content.innerText = textarea.value
+                    edit.querySelector('.cancel').click()
+                }
+                textarea.oninput = ({ target }) => { target.style.height = textarea.scrollHeight + 'px', target.value = target.value.substring(0, 1024) }
+            }] : false])
+        
         _post.querySelector('.buttons .like').onclick = async () => { if (!session.logged) return; await load(async () => await post.like(!post.liked)); uls() }
         return _post
     },
@@ -50,7 +79,7 @@
                 <textarea placeholder="yazmaya başla..."></textarea>
                 <div class="buttons-2">
                     <button class="_inline-img cancel">iptal${icons.x}</button>
-                    <button class="_inline-img send">gönder${icons.accept}</button>
+                    <button class="_inline-img ok send">gönder${icons.accept}</button>
                 </div>
             </div>
             <div class="replies"></div>`
@@ -106,7 +135,7 @@
                     <textarea placeholder="yorum ekle..."></textarea>
                     <div class="buttons-2">
                         <button class="_inline-img cancel">iptal${icons.x}</button>
-                        <button class="_inline-img send">gönder${icons.accept}</button>
+                        <button class="_inline-img ok send">gönder${icons.accept}</button>
                     </div>
                 </div>
             </div>`

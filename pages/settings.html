@@ -11,8 +11,8 @@
             <div>
                 <img class="@avatar" />
                 <span>
-                    <button class="change" onclick="session.etc.changeAvatar()">değiştir</button>
-                    <button onclick="load(async () => await session.settings([{name: 'remove_avatar'}]))">sil</button>
+                    <button class="ok" onclick="session.etc.changeAvatar()">değiştir</button>
+                    <button class="cancel" onclick="load(async () => await session.settings([{name: 'remove_avatar'}]))">sil</button>
                 </span>
             </div>
         </div>
@@ -21,8 +21,8 @@
             <div>
                 <img class="@banner" />
                 <span>
-                    <button class="change" onclick="session.etc.changeBanner()">değiştir</button>
-                    <button onclick="load(async () => await session.settings([{name: 'remove_banner'}]))">sil</button>
+                    <button class="ok" onclick="session.etc.changeBanner()">değiştir</button>
+                    <button class="cancel" onclick="load(async () => await session.settings([{name: 'remove_banner'}]))">sil</button>
                 </span>
             </div>
         </div>
@@ -33,7 +33,7 @@
             <input class="old-password" placeholder="eski şifre" type="password" />
             <input class="new-password" placeholder="yeni şifre" type="password" />
             <input class="confirm-new-password" placeholder="yeni şifreyi onayla" type="password" />
-            <button class="change">değiştir</button>
+            <button class="ok">değiştir</button>
         </div>
     </div>
     <div class="admin">
@@ -42,7 +42,7 @@
             <input class="message" placeholder="mesaj" />
             <input class="code" placeholder="kod" oninput="acceptInput(event, /[\d]*/g, 3)"/>
             <input class="version" placeholder="versiyon" />
-            <button class="change">gönder</button>
+            <button class="ok">gönder</button>
         </div>
     </div>
 </template>
@@ -62,7 +62,6 @@
     @media (max-width: 350px) { .p input { width: 100% } }
 
     .p input { display: block; border: .125em solid var(--bd-1); margin-bottom: .5em }
-    .p button.change { background-color: var(--bg-b-1) }
 </style>
 
 <script>

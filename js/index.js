@@ -96,10 +96,9 @@ const popupMenu = ({ target }, buttons) => {
             w.removeEventListener('resize', place, true); d.removeEventListener('scroll', place, true)
         }
     }
-    
     d.addEventListener('click', close, true); d.addEventListener('touch', close, true)
     w.addEventListener('resize', place, true); d.addEventListener('scroll', place, true)
-    popup.innerHTML = buttons.map(v => `<button class="_inline-img">${icons[v[0]]}${v[1]}</button>`).join('')
+    popup.innerHTML = buttons.filter(b => b).map(v => `<button class="_inline-img">${icons[v[0]]}${v[1]}</button>`).join('')
     Array.from(popup.children).forEach((button, index) => button.onclick = buttons[index][2])
     d.documentElement.appendChild(popup)
 }
