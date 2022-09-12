@@ -277,6 +277,10 @@ metw.User = class User {
         if (done) this.followed = follow, this.followerCount += 1 * (follow ? 1 : -1), this._session.user.followingCount += 1 * (follow ? 1 : -1); return done
     }
 
+    async isOnline() {
+        return (await this._session.request({ path: `/users/:${this.id}/online` }))[0]
+    }
+
     async get(param, before) {
         if (param == 'comments') {
             var comments = (await this._session.bulkGet('comments', (await this._session.request({ path: `/comments?type=0&parent_id=${this.id}&before=${before ? before : 0}` }))[0])).filter(c => c.type == 0)

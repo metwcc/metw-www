@@ -3,6 +3,7 @@
     if (!p.user) resolve(app.template.render('404'))
     document.title = p.user.displayName + ' | metw'
     p.user.logged = p.user.id == session.user.id;
+    p.user._online = await p.user.isOnline()
     p._posts = await p.user.get('posts')
 </script>
 
@@ -10,7 +11,7 @@
     <div class="bg-1 profile">
         <div>
             <div class="user">
-                <div class="avatar"><img /></div>
+                <div class="avatar"><img /><span class="online-badge"></span></div>
                 <div>
                     <h1 class="name">@name</h1>
                     <div class="bio">
@@ -60,10 +61,11 @@
     .p .posts, .p .follow-list { width: 100vw; height: 100%; max-width: 1200px; grid-area: 2 / 1 / 3 / 2 }
     
     .p .profile  .user { display: flex; width: 100%; overflow: hidden }
-    .p .profile  .user .avatar { display: grid; width: 5em; height: 5em; align-self: center; border-radius: 50%; overflow: hidden; place-items: center; flex-shrink: 0; user-select: none }
-    .p .profile  .user .avatar img { width: 100%; height: 100%; grid-area: 1 / 1 / 2 / 2 }
-    .p .profile  .user  .avatar:after { display: grid; width: 100%; height: 100%; background: var(--bg-1a); z-index: 2; place-content: center; grid-area: 1 / 1 / 2 / 2; opacity: 0; transition: .3s }
+    .p .profile  .user .avatar { display: grid; width: 5em; height: 5em; position: relative; align-self: center; place-items: center; flex-shrink: 0; user-select: none }
+    .p .profile  .user .avatar img { width: 100%; height: 100%; grid-area: 1 / 1 / 2 / 2; border-radius: 50% }
+    .p .profile  .user  .avatar:after { display: grid; width: 100%; height: 100%; background: var(--bg-1a); border-radius: 50%; z-index: 2; place-content: center; grid-area: 1 / 1 / 2 / 2; opacity: 0; transition: .3s }
     .p .profile  .user   .avatar:hover:after { cursor: pointer; opacity: 1 }
+    .p .profile  .user .avatar .online-badge { width: 1em; height: 1em; margin: .25em; position: absolute; bottom: 0; right: 0; border-radius: 50%; outline: .3em solid var(--bg-1); background: var(--bg-b-1); z-index: 3 }
     .p .profile  .user > div:last-of-type { display: flex; margin-left: 1em; flex-grow: 1; flex-direction: column }
     .p .profile  .user  .name { margin: 0; font-size: 2em; font-weight: normal }
     .p .profile  .user  .bio { margin: .25em }
@@ -114,7 +116,9 @@
     Object.assign(p.profile, {
         name: p.profile.querySelector('.name'), avatar: p.profile.querySelector('.avatar img'), bio: p.profile.querySelector('.bio'),
         followerCount: p.querySelector('.follower-count'), followingCount: p.querySelector('.following-count'),
-        follow: Object.assign(p.profile.querySelector('.follow button'), { followSpan: p.profile.querySelector('.follow-span'), unfollowSpan: p.profile.querySelector('.unfollow-span') })
+        follow: Object.assign(p.profile.querySelector('.follow button'), { followSpan: p.profile.querySelector('.follow-span'), unfollowSpan: p.profile.querySelector('.unfollow-span') }),
+        onlineBadge: p.profile.querySelector('.online-badge')
+
     })
     Object.assign(p.followList, {
         ul: p.followList.querySelector('ul'),
@@ -140,7 +144,7 @@
     else p.profile.bio.innerText = p.user.bio
     if (!session.logged) p.profile.follow.style.display = 'none'
     p.style.setProperty('--banner-url', `url("${p.user.bannerURL}")`)
-
+    p.profile.onlineBadge.style.display = ['none', 'block'][+p.user._online]
 
     // follow & list
     p.profile.follow.updateState = (n) => {
