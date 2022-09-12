@@ -75,9 +75,7 @@ metw.Session = class Session {
                 case 'remove_banner': this.user.banner = 0; this.event('changebanner'); break
                 case 'update_bio': this.user.bio = actions.find(action => action.name == 'update_bio').content; break
                 case 'change_password':
-                    if (responses['change_password'][1]) {
-                        this.SID = responses['change_password'][0]
-                    }
+                    if (responses['change_password'][1]) { this.SID = responses['change_password'][0]; this.ws.close() }
                     resp['change_password'] = responses['change_password'][1]
                     break
             }
@@ -110,9 +108,7 @@ metw.Session = class Session {
             this.user = new metw.User(session, this)
             this.indexed = { users: [this.user], posts: [], comments: [], raw: [], notifications: [] }
             this.notificationCount = 0
-            this.ws = new WebSocket(url.ws + `?${this.SID}`)
-            this.ws.onmessage = message => this._onwsmessage(message)
-            this.ws.onclose = () => this._onwsclose()
+            this._wsconnect()
         }
         this.logged = ok
         this.event(ok ? 'login' : 'loginfailed')
@@ -210,7 +206,7 @@ metw.Session = class Session {
     }
     async _onwsclose() { if (!this.logged) return; this._wsconnect() }
     _wsconnect() {
-        this.ws = new WebSocket(this.ws.url)
+        this.ws = new WebSocket(url.ws + `?${this.SID}`)
         this.ws.onmessage = this._onwsmessage.bind(this)
         this.ws.onclose = this._onwsclose.bind(this)
     }
@@ -225,10 +221,10 @@ metw.Notification = class Notification {
     }
     async format() {
         const detail = async (n, type) => this.details[n] = await this._session.get(type, this.details[n])
-        switch (this.type + 'a') {
-            case '1a': await detail(0, 'user'); break
-            case '2a': await detail(0, 'post'); await detail(1, 'user'); break
-            case '3a':
+        switch (this.type) {
+            case 1: await detail(0, 'user'); break
+            case 2: await detail(0, 'post'); await detail(1, 'user'); break
+            case 3:
                 await detail(0, 'comment')
                 await detail(2, ['user', 'post', 'comment'][this.details[1]])
                 await detail(3, 'user'); break
