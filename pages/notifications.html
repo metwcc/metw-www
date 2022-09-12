@@ -40,7 +40,7 @@
             if (n.type == 3) {
                 let comments = d.createElement('div'); comments.className = '_p-c _comments p-c'
                 if (n.details[1] == 1) comments.style = 'max-width: calc(100% - 2em); margin-left: 2em !important'
-                comments.appendChild(metw.gui.comment(n.details[n.details[1] == 2 ? 2 : 0]))
+                comments.appendChild(metw.gui.comment(n.details[n.details[1] == 2 ? 2 : 0], (n.details[1] == 2 ? n.details[0] : undefined)))
                 li.appendChild(comments)
             }
             if (!n.readen) li.style = 'background: var(--bg-1)', n.readen = true

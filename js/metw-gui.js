@@ -60,11 +60,11 @@
         ul.clear = () => { ul.innerHTML = '' }
         return ul
     },
-    comment(comment) {
+    comment(comment, highlightedComment, highlighted) {
         let _comment = d.createElement('div'), _loadMore = d.createElement('button'), cursor = 0, loadedCount = 0
         _loadMore.innerText = 'devamını yükle', _loadMore.className = '_load-more load-more'
         _comment.innerHTML = `
-            <div class="comment">
+            <div class="comment" style="${highlighted ? 'border-color: var(--bg-b-1)' : ''}">
                 <img class="avatar" onclick="app.redirect('/@${comment.user.name}')" src="${comment.user.avatarURL}" />
                 <div>
                     <span class="username" onclick="app.redirect('/@${comment.user.name}')">${comment.user.displayName}</span><span class="date">&nbsp;·&nbsp;${timeSince(comment.sentOn)}</span>
@@ -88,11 +88,12 @@
 
         let _replies = _comment.querySelector('.replies')
         _replies.appendChild(_loadMore)
-        for (let reply of comment.replies) _replies.insertBefore(this.comment(reply), _loadMore)
+        if (highlightedComment) _replies.insertBefore(this.comment(highlightedComment, undefined, true), _loadMore)
+        for (let reply of comment.replies) if (reply.id != highlightedComment?.id) _replies.insertBefore(this.comment(reply), _loadMore)
 
         _loadMore.onclick = async () => {
             var replies = await load(async () => await comment.get('replies', Math.min(...comment.replies.map(reply => reply.id))))
-            for (let reply of replies) _replies.insertBefore(this.comment(reply), _loadMore)
+            for (let reply of replies) if (reply != highlightedComment?.id) _replies.insertBefore(this.comment(reply), _loadMore)
             if (comment.replies.length >= comment.replyCount) _loadMore.remove()
         }
 
@@ -125,7 +126,7 @@
 
         return _comment
     },
-    async comments(post) {
+    async comments(post, highlightedComment) {
         var _comments = d.createElement('div'), _loadMore = d.createElement('button'), cursor = 0, loadedCount = 0
         _comments.className = '_p-c _comments', _loadMore.className = '_load-more'
         _comments.innerHTML = `
