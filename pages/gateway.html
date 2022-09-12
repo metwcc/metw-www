@@ -7,7 +7,7 @@
 <template>
     <form class="bg-1 bd-1" action="javascript:p.submit()">
         <h2>Title</h2>
-        <input class="bd-1" name="username" placeholder="Kullanıcı adı" oninput="acceptInput(event, /[\w\d-]*/g, 20)"/>
+        <input class="bd-1" name="username" placeholder="Kullanıcı adı" oninput="acceptInput(event, /[\w\d-\.]*/g, 20)"/>
         <input class="bd-1" name="password" placeholder="Şifre" type="password" oninput="acceptInput(event, /[\s\S]*/g, 128)"/>
         <input class="bd-1" name="confirm-password" placeholder="Şifreyi onayla" type="password" oninput="acceptInput(event, /[\s\S]*/g, 128)"/>
         <div class="captcha" data-sitekey="6LesMlYhAAAAAGyh8JzrNxbi0DsFTFnyxzLeecXt" data-theme="dark"></div>
