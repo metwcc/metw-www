@@ -292,7 +292,7 @@ metw.User = class User {
     async get(param, before) {
         if (param == 'comments') {
             var comments = (await this._session.bulkGet('comments', (await this._session.request({ path: `/comments?type=0&parent_id=${this.id}&before=${before ? before : 0}` }))[0])).filter(c => c.type == 0)
-            this.comments.push(...comments)
+            this.comments.push(...comments.filter(c => !this.comments.some(({ id }) => id == c.id)))
             return comments
         }
         var [response, ok] = await this._session.request({ path: `/users/:${this.id}/${param}?limit=30&${param == 'posts' ? 'offset' : 'before'}=${before ? before : 0}` }), cursor,
@@ -300,13 +300,11 @@ metw.User = class User {
         return ok ? (!cursor ? data : { data: data, cursor: cursor }) : []
     }
     async comment(content) {
-        var comment = new metw.Comment(
-            {
-                id: (await this._session.request({ path: `/comments?type=0&parent_id=${this.id}`, json: { content: content } }))[0],
-                user_id: this._session.user.id, user: this._session.user, parent_id: this.id, type: 1, content: content
-            }, this._session)
+        var id = (await this._session.request({ path: `/comments?type=0&parent_id=${this.id}`, json: { content: content }, retry: false }))[0]
+        if (Array.isArray(id)) return id
+        var comment = new metw.Comment({ id: id, user_id: this._session.user.id, user: this._session.user, parent_id: this.id, type: 0, content: content }, this._session)
         this.commentCount++
-        this._session.indexed.comments.push(comment); this.comments.unshift(comment)
+        this._session.indexed.raw.push(comment); this._session.indexed.comments.push(comment); this.comments.unshift(comment)
         return comment
     }
 
@@ -335,7 +333,7 @@ metw.Post = class Post {
     async get(param, before) {
         if (param == 'comments') {
             var comments = (await this._session.bulkGet('comments', (await this._session.request({ path: `/comments?type=1&parent_id=${this.id}&before=${before ? before : 0}` }))[0])).filter(c => c.type == 1)
-            this.comments.push(...comments)
+            this.comments.push(...comments.filter(c => !this.comments.some(({ id }) => id == c.id)))
             return comments
         }
     }
