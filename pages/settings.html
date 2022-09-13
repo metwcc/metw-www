@@ -17,7 +17,7 @@
             </div>
         </div>
         <div class="banner">
-            <span>Banner</span>
+            <span>Afiş</span>
             <div>
                 <img class="@banner" />
                 <span>
@@ -25,6 +25,13 @@
                     <button class="cancel" onclick="load(async () => await session.settings([{name: 'remove_banner'}]))">sil</button>
                 </span>
             </div>
+        </div>
+    </div>
+    <div class="notifications">
+        <h2>Bildirimler <span>DENEYSEL</span></h2>
+        <div>
+            <span></span>
+            <button class="ok">bildirimleri aç</button>
         </div>
     </div>
     <div class="password">
@@ -40,7 +47,7 @@
         <h2>Admin</h2>
         <div>
             <input class="message" placeholder="mesaj" />
-            <input class="code" placeholder="kod" oninput="acceptInput(event, /[\d]*/g, 3)"/>
+            <input class="code" placeholder="kod" oninput="acceptInput(event, /[\d]*/g, 3)" />
             <input class="version" placeholder="versiyon" />
             <button class="ok">gönder</button>
         </div>
@@ -58,6 +65,9 @@
     .p .profile .avatar img { width: min(5em, 100%); aspect-ratio: 1; border-radius: 50% }
     .p .profile .banner img { width: min(12em, 100%); aspect-ratio: 1.77; border-radius: .5em }
     .p .profile button { margin-top: .5em; font-size: .75em }
+
+    .p .notifications h2 span { padding: 0 .4em; background-color: var(--bg-b-1); border-radius: .3em; font-size: .7em; font-weight: normal }
+    .p .notifications div span { display: block; font-size: 1.1em }
 
     @media (max-width: 350px) { .p input { width: 100% } }
 
@@ -102,5 +112,26 @@
                 load(async () => await session.manage(data))
             }
         }
+
+        if (typeof Notification == 'function') {
+            Object.assign(p, {
+                notifications: {
+                    button: p.querySelector('.notifications div button'),
+                    text: p.querySelector('.notifications div span')
+                }
+            })
+            p.notifications.f = () => {
+                p.notifications.permission = ['denied', 'granted', 'default'].indexOf(Notification?.permission)
+                if (p.notifications.permission != 1) localStorage.setItem('notifications', 0)
+                p.notifications.button.style.display = ['none', 'block', 'block'][p.notifications.permission]
+                p.notifications.button.innerText = ['bildirimleri aç', 'bildirimleri kapat'][+localStorage.getItem('notifications')]
+                p.notifications.text.innerText = ['Bildirim iznini vermediniz, bildirimleri açmak için tarayıcı ayarlarınızı kullanınız', '', ''][p.notifications.permission]
+            }; p.notifications.f()
+            p.notifications.button.onclick = async () => {
+                await Notification.requestPermission()
+                localStorage.setItem('notifications', +!+localStorage.getItem('notifications'))
+                p.notifications.f()
+            }
+        } else { p.querySelector('.notifications').remove() }
     }
 </script>

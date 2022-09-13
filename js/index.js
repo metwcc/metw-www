@@ -5,13 +5,7 @@ var page = p = {}, info = {}
 var serviceWorker
 
 //#region FUNCTIONS
-const progress = (v) => {
-    var bar = d.getElementById('progress-bar')
-    if (v === 100) bar.style = 'width: 100%; transition: .3s'
-    else if (v === 0) bar.style = 'width: 0; height: 2px'
-    else bar.style = `width: ${v}%; height: 2px`
-}
-const load = async (f) => {
+async function load(f) {
     var bar = d.getElementById('loading-bar')
     bar.style = 'display: block; transition: 0; animation: none'; mouse.disable()
     setTimeout(() => bar.style = 'display: block; transition: .3s; loading-bar 1s ease-in-out infinite', 1)
@@ -21,7 +15,13 @@ const load = async (f) => {
     mouse.enable()
     return data
 }
-const timeSince = (date) => {
+function progress(v) {
+    var bar = d.getElementById('progress-bar')
+    if (v === 100) bar.style = 'width: 100%; transition: .3s'
+    else if (v === 0) bar.style = 'width: 0; height: 2px'
+    else bar.style = `width: ${v}%; height: 2px`
+}
+function timeSince(date) {
     var seconds = Math.floor((new Date() - date) / 1000), response = '', c = 0
     var interval = seconds / 31536000; if (c < 2 && interval > 1) { response += Math.floor(interval) + ' yıl '; c++ }
     interval = seconds / 2592000; if (c < 2 && interval % 12 > 1) { response += Math.floor(interval % 12) + ' ay '; c++ }
@@ -30,23 +30,24 @@ const timeSince = (date) => {
     interval = seconds / 60; if (c < 2 && interval % 60 > 1) { response += Math.floor(interval % 60) + ' dakika '; c++ }
     return !response ? 'şimdi' : response + ' önce'
 }
-const filedialog = (mime) => {
+function filedialog(mime) {
     return new Promise(resolve => {
         var input = d.createElement('input'); input.type = 'file', input.accept = mime
         input.click(); input.oninput = () => resolve(input)
     })
 }
-const toBase64 = (file) => {
+function toBase64(file) {
     return new Promise(resolve => {
         var reader = new FileReader()
         reader.readAsDataURL(file)
         reader.onload = () => resolve(reader.result)
     })
 }
-const urlBase64ToUint8Array = base64String => {
+function urlBase64ToUint8Array(base64String) {
     var rawData = window.atob((base64String + '='.repeat((4 - base64String.length % 4) % 4)).replace(/\-/g, '+').replace(/_/g, '/')), outputArray = new Uint8Array(rawData.length);
     for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i); return outputArray;
 }
+function isConstructor(func) { return (func && typeof func === "function" && func.prototype && func.prototype.constructor) === func }
 alert = (message, type) => {
     var list = d.querySelector('#alerts ul'), element = list.querySelector('li:first-of-type').cloneNode(true), delay = message.length * 100 + 500,
         span = d.createElement('span'), bg = `var(--bg-a-${['d', 's', 'e'][[undefined, 'success', 'error'].indexOf(type)]})`
@@ -239,6 +240,16 @@ session.onlogout = () => { session.onloginfailed(); app.redirect('') }
 
 session.onchangeavatar = () => { for (e of d.getElementsByClassName('@avatar')) e.src = session.user.avatarURL }
 session.onchangebanner = () => { for (e of d.getElementsByClassName('@banner')) e.src = session.user.bannerURL }
+session.onnotification = n => {
+    if (app.location.pathname[0] == 'bildirimler') {
+        p.list.insertBefore(p.notification(n), p.list.firstChild)
+        session.markNotificationsAsRead()
+    }
+    if (!d.hasFocus() && typeof Notification == 'function' && +localStorage.getItem('notifications')) {
+        var _notification = serviceWorker.showNotification(`${n.details.at(-1).displayName} ${['seni takip ediyor', 'gönderini beğendi', ['profiline yorum yazdı', 'gönderine yorum yazdı', 'yorumuna yanıt yazdı'][n.details[1]]][n.type - 1]}`)
+        _notification.onclick = () => { if (app.location.pathname[0] != 'bildirimler') app.redirect('/bildirimler'); return true } 
+    }
+}
 
 session.onupgradefound = () => w.location.reload()
 session.onupdatenotificationcount = (count) => {
@@ -327,7 +338,8 @@ w.onresize = () => {
     style.innerHTML = `body, body > * { height: ${window.innerHeight + 'px'} }`
     if (isNew) d.querySelector('body').appendChild(style)
 }
+w.onfocus = () => { session.setStatus('online') }
+w.onblur = () => { session.setStatus('offline') }
 
 const ontitlechange = new MutationObserver(([{ target }]) => gtag('config', gaId, { page_title: target.text, page_path: w.location.pathname }) )
 ontitlechange.observe(document.querySelector('title'), { childList: true })
-

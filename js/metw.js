@@ -33,7 +33,7 @@ metw.Session = class Session {
         this.user = { id: 0 }
         this.notificationCount = 0
         this.indexed = { users: [], posts: [], comments: [], raw: [], notifications: [] }
-        setInterval(() => { if (this.ws.readyState == 1) this.ws.send('0') }, 30000)
+        setInterval(() => { if (this.ws?.readyState == 1) this.ws.send('0') }, 30000)
     }
     async event(name, ...args) {
         if (typeof this['on' + name] == 'function') this['on' + name](...args)
@@ -92,6 +92,8 @@ metw.Session = class Session {
             return _new
         }
     }
+    async setStatus(status) { if (session.logged) { this.status = status; this.ws?.send('1' + ['online', 'offline', 'afk'].indexOf(status)) } }
+    async markNotificationsAsRead() { if (this.notificationCount != 0) await this.request({ path: '/notifications/read' }); this.notificationCount = 0; this.event('updatenotificationcount', 0) }
 
     async signup(username, password, captcha) {
         var [SID, ok] = await this.request({ path: '/signup', json: { username: username, password: password, captcha: captcha }, retry: false })
@@ -106,6 +108,7 @@ metw.Session = class Session {
         var [session, ok] = await this.request({ path: '/session', headers: { SID: this.SID } })
         if (ok) {
             this.user = new metw.User(session, this)
+            this.status = 'online'
             this.indexed = { users: [this.user], posts: [], comments: [], raw: [], notifications: [] }
             this.notificationCount = 0
             this._wsconnect()
@@ -170,7 +173,7 @@ metw.Session = class Session {
     async get(param, selector) {
         if (param == 'notifications') {
             var data = await this.bulkGet('notifications', (await this.request({ path: `/notifications?id=${this.user.id}&before=${selector || 0}` }))[0])
-            if (this.notificationCount != 0) this.request({ path: '/notifications/read' }); return data
+            await this.markNotificationsAsRead(); return data
         }
         var user = this.indexed[param + 's'].find(typeof selector == 'number' ? data => data.id == selector : user => user.name == selector)
         return user ||
@@ -204,8 +207,13 @@ metw.Session = class Session {
     async _onwsmessage(message) {
         var type = message.data[0], data = message.data.substring(1)
         switch (type) {
-            case '1': this.notificationCount += 1; this.event('updatenotificationcount', this.notificationCount); break
-            case '2': this.notificationCount = parseInt(data); this.event('updatenotificationcount', parseInt(data)); break
+            case '1':
+                this.notificationCount += 1; this.event('updatenotificationcount', this.notificationCount)
+                data = [...data.matchAll(/([\d]*)\,([\d]*)\[([\d\,]*)\]([\s\S]*)/g)][0].splice(1)
+                data[2] = data[2].split(',').map(i => +i)
+                data = new metw.Notification({ id: +data[0], type: +data[1], details: data[2], text: data[3] }, this)
+                await data.format(); this.event('notification', data); break
+            case '2': this.notificationCount = parseInt(data);  this.event('updatenotificationcount', parseInt(data)); break
         }
     }
     async _onwsclose() { if (!this.logged) return; this._wsconnect() }

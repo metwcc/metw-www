@@ -25,7 +25,7 @@ const fixStatic = async () => {
 
 self.onfetch = async event => {
     const request = event.request, url = new URL(request.url)
-    if (url.origin == self.origin) {
+    if (url.origin == self.origin && !url.pathname.startsWith('/api')) {
         event.respondWith((async () => {
             if (!cachesEnabled) {
                 const preloadResponse = await event.preloadResponse;
