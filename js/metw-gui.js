@@ -1,4 +1,16 @@
 ﻿metw.gui = {
+    richText(raw) {
+        return raw ? (' ' + raw).replace(/\</g, '&lt;').replace(/\>/g, '&gt;')
+            .replace(/(\s)\@([\w\d-\.]+)/g, (raw, text, name) => {
+                return `${text}<a class="href" href="javascript:app.redirect('/@${name}')">@${name}</a>`
+            }).substring(1)
+            .replace(/\*\*([\s\S]+)\*\*/g, (raw, text) => `<b>${text}</b>`)
+            .replace(/\*([\s\S]+)\*/g, (raw, text) => `<i>${text}</i>`)
+            .replace(/\_([\s\S]+)\_/g, (raw, text) => `<u>${text}</u>`)
+            .replace(/(https?)\:\/\/([\w\d\-\.]+)(?:\/([^\s]*))?/g, (raw, protocol, origin, pathname) => {
+                return `<a class="href" href="${raw}">${protocol}://${origin}/${pathname?.length > 10 ? pathname.substring(0, 16) + '...': pathname}</a>`
+            }).replace(/\n/g, '<br>') : ''
+    },
     post(post) {
         var _post = d.createElement('li')
         if (post.hasFlag('$ & "deleted"')) { _post.innerHTML = `gönderi silinmiş...`;  return _post }
@@ -6,7 +18,7 @@
             <img class="avatar" onclick="if (app.location.pathname[0] != '@${post.user.name}' || app.location.pathname.lenght > 1) app.redirect('/@${post.user.name}')" src="${post.user.avatarURL}" />
             <div>
                 <span class="username" onclick="if (app.location.pathname[0] != '@${post.user.name}' || app.location.pathname.lenght > 1) app.redirect('/@${post.user.name}')">${post.user.displayName}</span><span class="date">&nbsp;·&nbsp;${timeSince(post.sentOn)} ${post.hasFlag('$ & "edited"') ? '(düzenlendi)' : ''}</span>
-                <p class="content"></p>
+                <p class="content">${this.richText(post.content)}</p>
                 <div class="edit">
                     <textarea></textarea>
                     <div class="edit-buttons"><button class="cancel">iptal</button><button class="ok">kaydet</button></div>
@@ -20,7 +32,6 @@
                 </div>
             </div>`
         if (!(post.flags & 1)) _post.querySelector('.attachment').remove()
-        _post.querySelector('p').innerText = post.content
 
         var uls = () => { _post.querySelector('.buttons .like').style = post.liked ? 'color: #F91880; stroke: #F91880' : ''; _post.querySelector('.buttons .like .count').innerText = post.likeCount }; uls()
         _post.querySelector('.share').onclick = () => navigator.share({ title: 'metw', url: `/gönderi/${post.id}`, text: post.content })
@@ -43,7 +54,7 @@
                 }
                 edit.querySelector('.ok').onclick = async () => {
                     await load(async () => await post.edit(textarea.value))
-                    content.innerText = textarea.value
+                    content.innerHTML = this.richText(textarea.value)
                     if (!post.hasFlag('$ & "edited"')) _post.querySelector('.date').innerHTML += ' (düzenlendi)'
                     edit.querySelector('.cancel').click()
                 }
@@ -68,7 +79,7 @@
                 <img class="avatar" onclick="app.redirect('/@${comment.user.name}')" src="${comment.user.avatarURL}" />
                 <div>
                     <span class="username" onclick="app.redirect('/@${comment.user.name}')">${comment.user.displayName}</span><span class="date">&nbsp;·&nbsp;${timeSince(comment.sentOn)}</span>
-                    <p class="content"></p>
+                    <p class="content">${this.richText(comment.content)}</p>
                     <div class="buttons">
                         <span class="reply">${icons.reply}</span>
                         <span class="dots _popup-menu-button" onclick="popupMenu(event, [['report', 'bildir'], ['delete', 'sil']])">${icons.dots}</span>
@@ -84,7 +95,6 @@
                 </div>
             </div>
             <div class="replies"></div>`
-        _comment.querySelector('.content').innerText = comment.content 
 
         let _replies = _comment.querySelector('.replies')
         _replies.appendChild(_loadMore)

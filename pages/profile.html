@@ -1,10 +1,12 @@
 ﻿<script init>
     p.user = await session.get('user', app.location.pathname[0].substring(1))
-    if (!p.user) resolve(app.template.render('404'))
-    document.title = p.user.displayName + ' | metw'
-    p.user.logged = p.user.id == session.user.id;
-    p.user._online = await p.user.isOnline()
-    p._posts = await p.user.get('posts')
+    if (!p.user) app.template.render('404')
+    else {
+        document.title = p.user.displayName + ' | metw'
+        p.user.logged = p.user.id == session.user.id;
+        p.user._online = await p.user.isOnline()
+        p._posts = await p.user.get('posts')
+    }
 </script>
 
 <template>
@@ -141,7 +143,7 @@
         p.profile.follow.style.display = 'none'
         style.innerHTML = '.p .profile  .user  .avatar:after { content: "değiştir" }'; p.appendChild(style)
     }
-    else p.profile.bio.innerText = p.user.bio
+    else p.profile.bio.innerHTML = metw.gui.richText(p.user.bio)
     if (!session.logged) p.profile.follow.style.display = 'none'
     p.style.setProperty('--banner-url', `url("${p.user.bannerURL}")`)
     p.profile.onlineBadge.style.display = ['none', 'block'][+p.user._online]

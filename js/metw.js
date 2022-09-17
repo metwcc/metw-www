@@ -234,12 +234,21 @@ metw.Notification = class Notification {
     async format() {
         const detail = async (n, type) => this.details[n] = await this._session.get(type, this.details[n])
         switch (this.type) {
+            /* @[0] following you */
             case 1: await detail(0, 'user'); break
+            /* @[1] liked your post [0] */
             case 2: await detail(0, 'post'); await detail(1, 'user'); break
+            /* @[3] commented [0] your on [2] => [1] */
             case 3:
                 await detail(0, 'comment')
                 await detail(2, ['user', 'post', 'comment'][this.details[1]])
                 await detail(3, 'user'); break
+            /* @[1] tagged you on their post [0] */
+            case 4:
+                await detail(0, 'post')
+                await detail(1, 'user'); break
+            /* @[0] tagged you on their bio */
+            case 5: await detail(0, 'user'); break
         }
     }
 }

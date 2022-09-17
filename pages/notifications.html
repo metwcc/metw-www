@@ -37,8 +37,17 @@
 
         p.notification = n => {
             let li = d.createElement('li'), user = n.details.at(-1); li.className = 'notification'
-            li.innerHTML = `<div class="title"><a class="href" href="javascript:app.redirect('@${user.name}')">${user.displayName}</a> ${['seni takip ediyor', 'gönderini beğendi', ['profiline yorum yazdı', 'gönderine yorum yazdı', 'yorumuna yanıt yazdı'][n.details[1]]][n.type - 1]}<span class="date">&nbsp;·&nbsp;${timeSince(n.timestamp)}</span></div>`
-            if ([2, 3].includes(n.type) && (n.type != 3 || n.details[1] == 1)) { let post = metw.gui.posts([n.details.at(-2)]); post.className += ' p-c post'; li.appendChild(post) }
+            li.innerHTML = `
+            <div class="title">
+                <a class="href" href="javascript:app.redirect('@${user.name}')">${user.displayName}</a> 
+                ${['seni takip ediyor',
+                    'gönderini beğendi',
+                    ['profiline yorum yazdı', 'gönderine yorum yazdı', 'yorumuna yanıt yazdı'][n.details[1]],
+                    'gönderisinde seni etiketledi',
+                    'profilinde seni etiketledi'][n.type - 1]}
+                <span class="date">&nbsp;·&nbsp;${timeSince(n.timestamp)}</span>
+            </div>`
+            if ([2, 3, 4].includes(n.type) && (n.type != 3 || n.details[1] == 1) && (n.type != 4 || n.details[0] == 1)) { let post = metw.gui.posts([n.details.at(-2)]); post.className += ' p-c post'; li.appendChild(post) }
             if (n.type == 3) {
                 let comments = d.createElement('div'); comments.className = '_p-c _comments p-c'
                 if (n.details[1] == 1) comments.style = 'padding-left: 2em !important'
