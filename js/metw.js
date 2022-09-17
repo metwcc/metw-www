@@ -275,7 +275,7 @@ metw.User = class User {
     constructor(data, session) {
         this.id = data.id, this.name = data.name
         this.avatar = data.avatar, this.banner = data.banner
-        this.joinTimestamp = new Date(data.join_timestamp), this.lastOnline = data.last_online ? new Date(data.last_online) : new Date()
+        this.joinTimestamp = new Date(data.join_timestamp), this.lastOnline = new Date(data.last_online)
         this.followingCount = parseInt(data.following_count), this.followerCount = parseInt(data.follower_count), this.postCount = parseInt(data.post_count), this.commentCount = parseInt(data.comment_count)
         this.flags = data.flags, this.permissions = data.permissions, this.followed = data.followed
         this.bio = data.bio
@@ -331,7 +331,7 @@ metw.Post = class Post {
         this.id = data.id, this.userId = data.user_id, this.user = data.user
         this.likeCount = parseInt(data.like_count) || 0, this.liked = data.liked || false
         this.commentCount = parseInt(data.comment_count) || 0
-        this.sentOn = new Date(data.sent_on) || new Date()
+        this.sentOn = new Date(data.sent_on) || new Date
         this.content = data.content || ''
         this.flags = data.flags || 0
         this.comments = []
@@ -375,7 +375,7 @@ metw.Comment = class Comment {
         this.id = data.id, this.userId = data.user_id, this.user = data.user
         this.type = data.type; this.parentId = data.parent_id; this.topParentId = data.top_parent_id || 0
         this.replyCount = parseInt(data.reply_count) || 0
-        this.sentOn = new Date(data.sent_on) || new Date()
+        this.sentOn = new Date(data.sent_on) || new Date
         this.content = data.content
         this.flags = data.flags || 0
         this.replies = []
