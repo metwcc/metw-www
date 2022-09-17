@@ -156,9 +156,7 @@ metw.Session = class Session {
                 })
             if (key == 'notifications') {
                 let dataToGet = { users: [], posts: [], comments: [] }
-                dataToGet.users.push(..._data.filter(n => [1, 2].includes(n.type)).map(n => n.details[+(n.type == 2)]))
-                dataToGet.users.push(..._data.filter(n => n.type == 3 && n.details[1] == 0).map(n => n.details[2]))
-                dataToGet.users.push(..._data.filter(n => n.type == 3).map(n => n.details[3]))
+                dataToGet.users.push(..._data.filter(n => [1, 2].includes(n.type)).map(n => n.details.at(-1)))
                 dataToGet.posts.push(..._data.filter(n => n.type == 2).map(n => n.details[0]))
                 dataToGet.posts.push(..._data.filter(n => n.type == 3 && n.details[1] == 1).map(n => n.details[2]))
                 dataToGet.comments = _data.filter(n => n.type == 3).map(n => n.details[0])
