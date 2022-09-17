@@ -9,7 +9,7 @@
             .replace(/\_((?:(?!\_)[\s\S])+)\_/g, (raw, text) => `<u>${text}</u>`)
             .replace(/\~\~((?:(?!\~\~)[\s\S])+)\~\~/g, (raw, text) => `<del>${text}</del>`)
             .replace(/(https?)\:\/\/([\w\d\-\.]+)(?:\/([^\s]*))?/g, (raw, protocol, origin, pathname) => {
-                return `<a class="href" href="${raw}">${origin}/${(pathname?.length > 16 ? pathname.substring(0, 16) + '...': pathname) || ''}</a>`
+                return `<a class="href" href="${raw}">${origin}${pathname?.length ? '/' : ''}${(pathname?.length > 16 ? pathname.substring(0, 16) + '...': pathname) || ''}</a>`
             }).replace(/\n/g, '<br>') : ''
     },
     post(post) {
