@@ -4,9 +4,10 @@
             .replace(/(\s)\@([\w\d-\.]+)/g, (raw, text, name) => {
                 return `${text}<a class="href" href="javascript:app.redirect('/@${name}')">@${name}</a>`
             }).substring(1)
-            .replace(/\*\*([^\*]+)\*\*/g, (raw, text) => `<b>${text}</b>`)
-            .replace(/\*([^\*]+)\*/g, (raw, text) => `<i>${text}</i>`)
-            .replace(/\_([^\_]+)\_/g, (raw, text) => `<u>${text}</u>`)
+            .replace(/\*\*((?:(?!\*\*)[\s\S])+)\*\*/g, (raw, text) => `<b>${text}</b>`)
+            .replace(/\*((?:(?!\*)[\s\S])+)\*/g, (raw, text) => `<i>${text}</i>`)
+            .replace(/\_((?:(?!\_)[\s\S])+)\_/g, (raw, text) => `<u>${text}</u>`)
+            .replace(/\~\~((?:(?!\~\~)[\s\S])+)\~\~/g, (raw, text) => `<del>${text}</del>`)
             .replace(/(https?)\:\/\/([\w\d\-\.]+)(?:\/([^\s]*))?/g, (raw, protocol, origin, pathname) => {
                 return `<a class="href" href="${raw}">${protocol}://${origin}/${pathname?.length > 16 ? pathname.substring(0, 16) + '...': pathname}</a>`
             }).replace(/\n/g, '<br>') : ''
