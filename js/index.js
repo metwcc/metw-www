@@ -250,7 +250,8 @@ session.onnotification = n => {
         var _notification = serviceWorker.showNotification(`${n.details.at(-1).displayName} ${['seni takip ediyor', 'gönderini beğendi', ['profiline yorum yazdı', 'gönderine yorum yazdı', 'yorumuna yanıt yazdı'][n.details[1]]][n.type - 1]}`, {
             body: n.type == 1 ? undefined : n.details[0].content,
             icon: n.details.at(-1).avatarURL,
-            vibrate: [200, 100, 200, 100, 200, 100, 200]
+            vibrate: [200, 100, 200, 100, 200, 100, 200],
+            badge: '/images/logo/badge-96.png'
         })
         _notification.onclick = () => { if (app.location.pathname[0] != 'bildirimler') app.redirect('/bildirimler'); return true } 
     }
