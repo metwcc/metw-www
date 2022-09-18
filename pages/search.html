@@ -9,22 +9,23 @@
 
 <template>
     <h2>Ara</h2>
-    <div class="search-bar">
-        <input placeholder="herhangi bir şey yaz..." onkeypress="event.key === 'Enter' && p.querySelector('.search-bar button').click()" />
-        <button class="_inline-img ok" onclick="p.querySelector('.search-bar input').value && app.redirect(`/ara?q=${p.querySelector('.search-bar input').value}`)">
+    <form class="search-bar">
+        <input placeholder="herhangi bir şey yaz..." />
+        <button class="_inline-img ok" onclick="event.preventDefault(); p.querySelector('.search-bar input').value && app.redirect(`/ara?q=${p.querySelector('.search-bar input').value}`)">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
         </button>
-    </div>
+    </form>
     <ul class="_users users"></ul>
 </template>
 
 <style>
+    .p { padding: 2em 1em !important }
     .p h2 { margin: 0; font-weight: normal; font-size: 1.5em; text-align: center }
     .p ul { margin: 0; padding-top: 1em; padding-bottom: 0 }
-    .p div[class$=bar] { display: flex; margin-top: .5em; justify-content: center; align-items: center; gap: 1em }
-    .p .search-bar input { padding: 0 .5em; width: min(80%, 16em); background: inherit; border-bottom: .125em solid var(--bg-1); border-radius: 0 }
+    .p form[class$=bar] { display: flex; margin-top: .5em; justify-content: center; align-items: center; gap: 1em }
+    .p .search-bar input { padding: 0 .5em; width: min(70%, 16em); background: inherit; border-bottom: .125em solid var(--bg-1); border-radius: 0 }
     .p .users { max-width: 400px; margin: auto; padding-bottom: 0 }
-    .p > button { display: block; width: min(75%, 500px); margin: 1em auto 0 }
+    .p > button { display: block; width: min(75%, 500px); margin: 1em auto }
 </style>
 
 <script>
@@ -37,10 +38,10 @@
 
     p.loadMore = d.createElement('button'), p.loadMore.className = '_load-more', p.loadMore.innerHTML = 'devamını yükle'
     p.appendChild(p.posts)
-    if (p.data.posts.lenght && !(p.posts.lenght % 20)) p.appendChild(p.loadMore)
+    if (p.data.posts.length && !(p.data.posts.length % 15)) p.appendChild(p.loadMore)
     p.loadMore.onclick = async () => {
         p.data.posts = await load(async () =>  await session.search(p.query, p.data.posts.at(-1).id))
-        if (!p.data.posts.length || (p.data.posts.length % 20)) p.loadMore.remove()
+        if (!p.data.posts.length || (p.data.posts.length % 15)) p.loadMore.remove()
         if (p.data.posts.length) p.posts.append(p.data.posts)
     }
 </script>
