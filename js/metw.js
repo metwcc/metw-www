@@ -180,6 +180,7 @@ metw.Session = class Session {
             var data = await this.bulkGet('notifications', (await this.request({ path: `/notifications?id=${this.user.id}&before=${selector || 0}` }))[0])
             await this.markNotificationsAsRead(); return data
         }
+        if (!selector) return eval(`new metw.${param.charAt(0).toUpperCase() + param.substring(1)}({ user: this.user, this)`)
         var user = this.indexed[param + 's'].find(typeof selector == 'number' ? data => data.id == selector : user => user.name == selector)
         return user ||
             await (async () => {
