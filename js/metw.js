@@ -62,6 +62,13 @@ metw.Session = class Session {
     async explore() {
         return await this.bulkGet((await this.request({ path: '/explore' }))[0])
     }
+    async search (query, before) {
+        if (!before) {
+            var data = (await this.request({ path: `/explore/search?q=${encodeURI(query)}` }))[0]
+            data = await this.bulkGet({ posts: data.posts, users: [data.user] }), data.user = data.users[0]
+            return data
+        } else return await this.bulkGet('posts', (await this.request({ path: `/explore/search?q=${encodeURI(query)}&before=${before}` }))[0])
+    }
     async homepage(before) {
         return await this.bulkGet('posts', (await this.request({ path: `/homepage?id=${this.user.id}&before=${before ? before : 0}` }))[0])
     }

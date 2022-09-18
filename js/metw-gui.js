@@ -192,5 +192,11 @@
         }
         
         return _comments
+    },
+    user(user) {
+        let _user = d.createElement('li'); _user.className = `users-${user.id}`
+        _user.innerHTML = `<img src="${user.avatarURL}" />${user.displayName}<style>.users-${user.id}:before { background-image: url("${user.bannerURL}") !important }</style>`
+        _user.onclick = () => app.redirect(`/@${user.name}`)
+        return _user
     }
 }

@@ -149,6 +149,7 @@ const app = {
             case 'ayarlar': composeEnabled(false); return await this.template.render('settings')
             case 'gönderi': composeEnabled(true); return await this.template.render('post')
             case 'bildirimler': composeEnabled(false); return await this.template.render('notifications')
+            case 'ara': composeEnabled(false); return await this.template.render('search')
             case undefined: composeEnabled(true); return await this.template.render('homepage')
             default: composeEnabled(false); return await this.template.render('404')
         }
