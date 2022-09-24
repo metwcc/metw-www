@@ -158,8 +158,9 @@ metw.Session = class Session {
             }
             this.indexed.raw.push(..._data)
             if (key == 'comments') 
-                _data.forEach(comment => {
+                _data.forEach(async comment => {
                     if (comment.type == 2) this.indexed.raw.find(parent => (Object.getPrototypeOf(parent).constructor == metw.Comment) && (parent.id == comment.parentId) && (parent.replies.every(reply => reply.id != comment.id)))?.replies.push(comment)
+                    await comment.format()
                 })
             if (key == 'notifications') {
                 let dataToGet = { users: [], posts: [], comments: [] }
@@ -188,6 +189,7 @@ metw.Session = class Session {
                 if (!ok) return false
                 if (param != 'user') var user = await this.get('user', data.user_id)
                 data = eval(`new metw.${param.charAt(0).toUpperCase() + param.substring(1)}({ ...data, user: ${param != 'user' ? 'user' : undefined} }, this)`)
+                if (param == 'comment') await data.format()
                 this.indexed[param + 's'].push(data)
                 return data
             })()
@@ -241,13 +243,19 @@ metw.Notification = class Notification {
         const detail = async (n, type) => this.details[n] = await this._session.get(type, this.details[n])
         switch (this.type) {
             /* @[0] following you */
-            case 1: await detail(0, 'user'); break
+            case 1:
+                this._session.user.followerCount++
+                await detail(0, 'user'); break
             /* @[1] liked your post [0] */
-            case 2: await detail(0, 'post'); await detail(1, 'user'); break
+            case 2:
+                await detail(0, 'post'); await detail(1, 'user')
+                if (this._session.user.id != this.details[1].id) this.details[0].likeCount++
+                break
             /* @[3] commented [0] your on [2] => [1] */
             case 3:
                 await detail(0, 'comment')
                 await detail(2, ['user', 'post', 'comment'][this.details[1]])
+                this.details[2].commentCount++
                 await detail(3, 'user'); break
             /* @[1] tagged you on their post [0] */
             case 4:
@@ -379,9 +387,20 @@ metw.Post = class Post {
 }
 
 metw.Comment = class Comment {
+    static flagTester = new metw.util.BitwiseTester({
+        has_attachment: 0,
+        downvoted: 1,
+        edited: 2,
+        uneditable: 3,
+        deleted: 4
+    })
+
     constructor(data, session) {
         this.id = data.id, this.userId = data.user_id, this.user = data.user
-        this.type = data.types[0]; this.parentId = data.parent_ids[0]; this.topParentId = data.parent_ids[1]
+        this.type = data.types ? data.types[0] : 0
+        this.parentId = data.parent_ids ? data.parent_ids[0] : 0
+        this.topParentType = data.types ? data.types[1] : 0
+        this.topParentId = data.parent_ids ? data.parent_ids[1] : 0
         this.replyCount = parseInt(data.reply_count) || 0
         this.sentOn = new Date(data.sent_on) || new Date
         this.content = data.content
@@ -398,8 +417,17 @@ metw.Comment = class Comment {
             return newReplies
         }
     }
+    async format() {
+        this.parent = await session.get(['user', 'post', 'comment'][this.type], this.parentId)
+        if (this.topParentType && this.topParentId) this.topParent = await session.get(['user', 'post', 'comment'][this.topParentType], this.topParentId)
+    }
+    async delete() {
+        var response = (await this._session.request({ path: `/comments/${this.id}/delete` }))[0]
+        if (!response) return false
+        this.flags = this.flags | 16
+    }
     async reply(content) {
-        var id = (await this._session.request({ path: `/comments?type=2&parent_id=${this.id}&top_parent_id=${this.type != 2 ? this.parentId : (this.topParentId ? this.topParentId : 0)}`, json: { content: content }, retry: false }))[0]
+        var id = (await this._session.request({ path: `/comments?type=2&parent_id=${this.id}&top_parent_id=${this.type != 2 ? this.parentId : (this.topParentId ? this.topParentId : 0)}&top_parent_type=${this.type != 2 ? this.type : (this.topParentType ? this.topParentType     : 0)}`, json: { content: content }, retry: false }))[0]
         if (Array.isArray(id)) return id
         var reply = new metw.Comment(
             {
@@ -411,4 +439,5 @@ metw.Comment = class Comment {
         this.replies.unshift(reply)
         return reply
     }
+    hasFlag(flags) { return metw.Post.flagTester.eval(this.flags, flags) }
 }

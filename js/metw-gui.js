@@ -36,32 +36,39 @@
 
         var uls = () => { _post.querySelector('.buttons .like').style = post.liked ? 'color: #F91880; stroke: #F91880' : ''; _post.querySelector('.buttons .like .count').innerText = post.likeCount }; uls()
         _post.querySelector('.share').onclick = () => navigator.share({ title: 'metw', url: `/gönderi/${post.id}`, text: post.content })
-        _post.querySelector('.dots').onclick = event =>
-            popupMenu(event, [['report', 'bildir', console.log],
-            session.user.hasPermissions('$ & "admin" | $ & "posts.delete"') || post.user.id == session.user.id ? ['delete', 'sil', () => load(async () => { await post.delete(); _post.innerHTML = 'gönderi silindi' })] : false,
-            session.user.hasPermissions('$ & "admin" | $ & "posts.edit"') || post.user.id == session.user.id ? ['edit', 'düzenle', () => {
-                var edit = _post.querySelector('.edit'), content = _post.querySelector('.content'), targetHeight, contentHeight,
-                    textarea = edit.querySelector('textarea')
-                if (edit.style.height) return
-                textarea.value = post.content
-                textarea.oninput = () => { textarea.style.height = `calc(${textarea.scrollHeight}px + .05em)`, textarea.value = textarea.value.substring(0, 1024) }; textarea.oninput()
-                contentHeight = content.offsetHeight; content.style.height = contentHeight + 'px'
-                edit.style.height = 'unset'; targetHeight = edit.offsetHeight; edit.style.height = '0'
-                setTimeout(() => { edit.style = `transition: height .3s; height: ${targetHeight}px`, content.style.height = '0' }, 20)
-                setTimeout(() => edit.style.height = 'unset', 320)
-                edit.querySelector('.cancel').onclick = () => {
-                    edit.style.height = edit.offsetHeight + 'px', content.style.height = textarea.scrollHeight + 'px'
-                    setTimeout(() => edit.style.height = '0', 20); setTimeout(() => edit.style = '', 320)
-                }
-                edit.querySelector('.ok').onclick = async () => {
-                    await load(async () => await post.edit(textarea.value))
-                    content.innerHTML = this.richText(textarea.value)
-                    if (!post.hasFlag('$ & "edited"')) _post.querySelector('.date').innerHTML += ' (düzenlendi)'
-                    edit.querySelector('.cancel').click()
-                }
-            }] : false])
-        
-        _post.querySelector('.buttons .like').onclick = async () => { if (!session.logged) return; await load(async () => await post.like(!post.liked)); uls() }
+        if (session.logged) {
+            _post.querySelector('.dots').onclick = event =>
+                popupMenu(event, [['report', 'bildir', console.log],
+                session.user.hasPermissions('$ & "admin" | $ & "posts.delete"') || post.user.id == session.user.id ? ['delete', 'sil', () => load(async () => { await post.delete(); _post.innerHTML = 'gönderi silindi' })] : false,
+                session.user.hasPermissions('$ & "admin" | $ & "posts.edit"') || post.user.id == session.user.id ? ['edit', 'düzenle', () => {
+                    var edit = _post.querySelector('.edit'), content = _post.querySelector('.content'), targetHeight, contentHeight,
+                        textarea = edit.querySelector('textarea')
+                    if (edit.style.height) return
+                    textarea.value = post.content
+                    textarea.oninput = () => { textarea.style.height = `calc(${textarea.scrollHeight}px + .05em)`, textarea.value = textarea.value.substring(0, 1024) }; textarea.oninput()
+                    contentHeight = content.offsetHeight; content.style.height = contentHeight + 'px'
+                    edit.style.height = 'unset'; targetHeight = edit.offsetHeight; edit.style.height = '0'
+                    setTimeout(() => { edit.style = `transition: height .3s; height: ${targetHeight}px`, content.style.height = '0' }, 20)
+                    setTimeout(() => edit.style.height = 'unset', 320)
+                    edit.querySelector('.cancel').onclick = () => {
+                        edit.style.height = edit.offsetHeight + 'px', content.style.height = textarea.scrollHeight + 'px'
+                        setTimeout(() => edit.style.height = '0', 20); setTimeout(() => edit.style = '', 320)
+                    }
+                    edit.querySelector('.ok').onclick = async () => {
+                        await load(async () => await post.edit(textarea.value))
+                        content.innerHTML = this.richText(textarea.value)
+                        if (!post.hasFlag('$ & "edited"')) _post.querySelector('.date').innerHTML += ' (düzenlendi)'
+                        edit.querySelector('.cancel').click()
+                    }
+                }] : false])
+            _post.querySelector('.buttons .like').onclick = async () => { if (!session.logged) return; await load(async () => await post.like(!post.liked)); uls() }
+
+        }
+        else {
+            _post.querySelector('.dots').remove()
+            _post.querySelector('.like').classList.remove('like')
+        } 
+
         return _post
     },
     posts(posts) {
@@ -74,6 +81,7 @@
     },
     comment(comment, highlightedComment, highlighted) {
         let _comment = d.createElement('div'), _loadMore = d.createElement('button'), cursor = 0, loadedCount = 0
+        if (comment.hasFlag('$ & "deleted"')) { _comment.innerHTML = `<div class="comment">yorum silinmiş...</div>`; return _comment }
         _loadMore.innerText = 'devamını yükle', _loadMore.className = '_load-more load-more'
         _comment.innerHTML = `
             <div class="comment" style="${highlighted ? 'border-color: var(--bg-b-1)' : ''}">
@@ -83,7 +91,7 @@
                     <p class="content">${this.richText(comment.content)}</p>
                     <div class="buttons">
                         <span class="reply">${icons.reply}</span>
-                        <span class="dots _popup-menu-button" onclick="popupMenu(event, [['report', 'bildir'], ['delete', 'sil']])">${icons.dots}</span>
+                        <span class="dots _popup-menu-button">${icons.dots}</span>
                     </div>
                 </div>
             </div>
@@ -107,6 +115,11 @@
             for (let reply of replies) if (reply.id != highlightedComment?.id) _replies.insertBefore(this.comment(reply), _loadMore)
             if (comment.replies.length >= comment.replyCount - !!highlightedComment) _loadMore.remove()
         }
+        if (session.logged) _comment.querySelector('.dots').onclick = event =>
+            popupMenu(event, [['report', 'bildir', console.log],
+                session.user.hasPermissions('$ & "admin" | $ & "posts.delete"') || [comment.user.id, comment.topParent?.user?.id, comment.parent?.user?.id].includes(session.user.id) ?
+                    ['delete', 'sil', () => load(async () => { await comment.delete(); _comment.querySelector('.comment:first-of-type').innerHTML = 'yorum silindi' })] : false])
+        else _comment.querySelector('.dots').remove()
 
         if (comment.replies.length >= comment.replyCount - !!highlightedComment) _loadMore.remove()
 
