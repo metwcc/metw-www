@@ -317,7 +317,7 @@ metw.User = class User {
     async comment(content) {
         var id = (await this._session.request({ path: `/comments?type=0&parent_id=${this.id}`, json: { content: content }, retry: false }))[0]
         if (Array.isArray(id)) return id
-        var comment = new metw.Comment({ id: id, user_id: this._session.user.id, user: this._session.user, parent_id: this.id, type: 0, content: content }, this._session)
+        var comment = new metw.Comment({ id: id, user_id: this._session.user.id, user: this._session.user, parent_ids: [this.id], types: [0], content: content }, this._session)
         this.commentCount++
         this._session.indexed.raw.push(comment); this._session.indexed.comments.push(comment); this.comments.unshift(comment)
         return comment
@@ -359,7 +359,7 @@ metw.Post = class Post {
     async comment(content) {
         var id = (await this._session.request({ path: `/comments?type=1&parent_id=${this.id}`, json: { content: content }, retry: false }))[0]
         if (Array.isArray(id)) return id
-        var comment = new metw.Comment({ id: id, user_id: this._session.user.id, user: this._session.user, parent_id: this.id, type: 1, content: content }, this._session)
+        var comment = new metw.Comment({ id: id, user_id: this._session.user.id, user: this._session.user, parent_ids: [this.id], types: [1], content: content }, this._session)
         this.commentCount++
         this._session.indexed.raw.push(comment); this._session.indexed.comments.push(comment); this.comments.unshift(comment)
         return comment
@@ -381,7 +381,7 @@ metw.Post = class Post {
 metw.Comment = class Comment {
     constructor(data, session) {
         this.id = data.id, this.userId = data.user_id, this.user = data.user
-        this.type = data.type; this.parentId = data.parent_id; this.topParentId = data.top_parent_id || 0
+        this.type = data.types[0]; this.parentId = data.parent_ids[0]; this.topParentId = data.parent_ids[1]
         this.replyCount = parseInt(data.reply_count) || 0
         this.sentOn = new Date(data.sent_on) || new Date
         this.content = data.content
@@ -404,7 +404,7 @@ metw.Comment = class Comment {
         var reply = new metw.Comment(
             {
                 id: id,
-                user_id: this._session.user.id, user: this._session.user, parent_id: this.id, top_parent_id: this.top_parent_id, type: 2, reply_count: 0,
+                user_id: this._session.user.id, user: this._session.user, parent_ids: [this.id, this.topParentId], types: [1], reply_count: 0,
                 content: content
             }, this._session)
         this.replyCount++
