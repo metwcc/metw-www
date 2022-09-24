@@ -216,5 +216,5 @@
     }
     else p.posts.page.remove()
     if (p._posts) p.posts.list = metw.gui.posts(p._posts); p.posts.appendChild(p.posts.list)
-    session.onpost = (post) => { if (p.posts.pageNo == 0) p.posts.list.unshift(post) }
+    session.onpost = (post) => { if (p.posts.pageNo == 0 && p.user.logged) p.posts.list.unshift(post) }
 </script>
