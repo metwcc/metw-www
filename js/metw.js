@@ -408,8 +408,8 @@ metw.Comment = class Comment {
         this.id = data.id, this.userId = data.user_id, this.user = data.user
         this.type = data.types ? data.types[0] : 0
         this.parentId = data.parent_ids ? data.parent_ids[0] : 0
-        this.topParentType = data.types ? data.types[1] : 0
-        this.topParentId = data.parent_ids ? data.parent_ids[1] : 0
+        this.topParentType = data.types ? data.types[1] : undefined
+        this.topParentId = data.parent_ids ? data.parent_ids[1] : undefined
         this.replyCount = parseInt(data.reply_count) || 0
         this.sentOn = new Date(data.sent_on) || new Date
         this.content = data.content
