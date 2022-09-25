@@ -171,6 +171,7 @@ metw.Session = class Session {
                 dataToGet.users.push(..._data.map(n => n.details.at(-1)))
                 dataToGet.posts.push(..._data.filter(n => n.type == 2).map(n => n.details[0]))
                 dataToGet.posts.push(..._data.filter(n => n.type == 3 && n.details[1] == 1).map(n => n.details[2]))
+                dataToGet.posts.push(..._data.filter(n => n.type == 4).map(n => n.details[0]))
                 dataToGet.comments = _data.filter(n => n.type == 3).map(n => n.details[0])
                 dataToGet.comments.push(..._data.filter(n => n.type == 3 && n.details[1] == 2).map(n => n.details[2]))
                 for (let k of Object.keys(dataToGet)) { dataToGet[k] = Array.from(new Set(dataToGet[k])); if (!dataToGet[k].length) dataToGet[k] = [0]}
@@ -428,7 +429,7 @@ metw.Comment = class Comment {
     }
     async format() {
         this.parent = await session.get(['user', 'post', 'comment'][this.type], this.parentId)
-        if (this.topParentType != undefined && this.topParentId != undefined) this.topParent = await session.get(['user', 'post', 'comment'][this.topParentType], this.topParentId)
+        if (this.topParentType !== undefined && this.topParentId !== undefined) this.topParent = await session.get(['user', 'post', 'comment'][this.topParentType], this.topParentId)
     }
     async delete() {
         var response = (await this._session.request({ path: `/comments/${this.id}/delete` }))[0]
