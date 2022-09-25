@@ -8,12 +8,12 @@
     <meta name="page-type" content="Sosyal Medya">
     <title>metw</title>
     
-    <link rel="apple-touch-icon" sizes="192x192" href="/images/logo/circle-192.png">
-    <link rel="manifest" href="/manifest.json">
-    
+    <link rel="apple-touch-icon" sizes="192x192" href="/images/logo/circle-192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" />
+    <link rel="stylesheet" href="/css/dark-theme.css" />
+
     <style>
-        @import "https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap";
-        @import "/css/dark-theme.css";
         * { box-sizing: border-box; color: var(--color); font-family: "Source Code Pro", monospace; -webkit-tap-highlight-color: rgba(255, 255, 255, 0) !important; font-size: inherit }
         body > * { grid-area: 1 / 1; width: 100vw; height: 100vh }
         html { font-size: 1rem }
@@ -25,12 +25,13 @@
         @keyframes initial-load { 0% { margin-left: -2em } 100% { margin-left: calc(100% - 2em) } }
         #initial-load div:after { content: ""; display: block; width: 4em; height: 100%; background: var(--bg-1); animation: initial-load .8s ease-in-out infinite alternate }
     </style>
-    <script src="/js/etc.js" defer></script>
-    <script src="/js/metw.js" defer></script>
-    <script src="/js/metw-gui.js" defer></script>
-    <script src="/js/index.js" defer></script>
-    <script src="https://www.google.com/recaptcha/api.js" defer=""></script>
+    <script defer src="/js/etc.js"></script>
+    <script defer src="/js/metw.js"></script>
+    <script defer src="/js/metw-gui.js"></script>
+    <script defer src="/js/index.js"></script>
+    <script defer src="https://www.google.com/recaptcha/api.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-GGJ9ZP80M5"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3083289215126259" crossorigin="anonymous"></script>
     <script>const gaId = 'G-GGJ9ZP80M5'; window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag('js', new Date()); gtag('config', gaId)</script>
 </head>
 <body>
@@ -114,7 +115,5 @@
         </div>
     </main>
 
-    <style>
-        @import "/css/index.css";
-    </style>
+    <link rel="stylesheet" href="/css/index.css">
 </body>

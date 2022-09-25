@@ -427,12 +427,12 @@ metw.Comment = class Comment {
         this.flags = this.flags | 16
     }
     async reply(content) {
-        var id = (await this._session.request({ path: `/comments?type=2&parent_id=${this.id}&top_parent_id=${this.type != 2 ? this.parentId : (this.topParentId ? this.topParentId : 0)}&top_parent_type=${this.type != 2 ? this.type : (this.topParentType ? this.topParentType     : 0)}`, json: { content: content }, retry: false }))[0]
+        var id = (await this._session.request({ path: `/comments?type=2&parent_id=${this.id}&top_parent_id=${this.type == 2 ? (this.topParentId ? this.topParentId : this.parentId) : 0}&top_parent_type=${this.type == 2 ? (this.topParentType ? this.type : this.topParentType) : 0}`, json: { content: content }, retry: false }))[0]
         if (Array.isArray(id)) return id
         var reply = new metw.Comment(
             {
                 id: id,
-                user_id: this._session.user.id, user: this._session.user, parent_ids: [this.id, this.topParentId], types: [1], reply_count: 0,
+                user_id: this._session.user.id, user: this._session.user, parent_ids: [this.id, this.topParentId ? this.topParentId : this.parentId], types: [1], reply_count: 0,
                 content: content
             }, this._session)
         this.replyCount++
