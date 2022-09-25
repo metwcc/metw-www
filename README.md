@@ -1,4 +1,5 @@
 # www.metw.cc
-Açık kaynak kodlu sosyal medya
+Bir multi-milyarderin sahip olmadığı, açık kaynak kodu, kâr amacı gütmemeye çalışan sosyal medya platformu.
 
-Kâr amacı gütmryen, açık kaynak kodlu bir sosyal medya platformu. Henüz bitmedi...
+Front-end salt HTMl, css, js; back-end ise node.js-express ve PLpgSQL.  
+Henüz bitmedi, gerçi bu hiç bitemeyecek bir proje, devamlı geliştirilecek...
