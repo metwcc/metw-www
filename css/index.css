@@ -21,6 +21,11 @@ input:-webkit-autofill { border-color: var(--bd-2); -webkit-text-fill-color: var
 button.ok, button.cancel { padding: .25em 1em }
 button.ok { background-color: var(--bg-b-1) }
 
+@keyframes rotating {
+    from { -ms-transform: rotate(0deg); -moz-transform: rotate(0deg); -webkit-transform: rotate(0deg); -o-transform: rotate(0deg); transform: rotate(0deg) }
+    to { -ms-transform: rotate(-360deg); -moz-transform: rotate(-360deg); -webkit-transform: rotate(-360deg); -o-transform: rotate(-360deg); transform: rotate(-360deg) }
+}
+
 /*  MISC   */
 #down { display: none; background: var(--bg-g); flex-direction: column; z-index: 101; justify-content: center; align-items: center }
 #down span { width: 75%; margin-bottom: 1em; font-size: 1.5em; text-align: center }
@@ -64,6 +69,9 @@ button.ok { background-color: var(--bg-b-1) }
 #compose .image img { height: 6em; border-radius: .5em }
 #compose .image button { width: 1.5em; height: 1.5em; padding: .25em; right: 0; position: absolute; border-radius: 100%; background-color: red; transform: translate(50%, -50%) }
 #compose .image  svg { width: 1em; height: 1em }
+
+#refresh { display: flex; height: 0; position: absolute; top: 0; z-index: 99999; justify-content: center }
+#refresh svg { width: 2em; padding: .25em; top: -2em; position: absolute; background: var(--bg-b-1); border-radius: 50% }
 
 /*  APP   */
 main { display: flex; flex-direction: column }

@@ -235,6 +235,10 @@ metw.Session = class Session {
         this.ws.onmessage = this._onwsmessage.bind(this)
         this.ws.onclose = this._onwsclose.bind(this)
     }
+
+    clearCache() {
+        this.indexed = { users: [], posts: [], comments: [], raw: [], notifications: [] }
+    }
 }
 
 metw.Notification = class Notification {

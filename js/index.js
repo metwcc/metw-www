@@ -2,6 +2,7 @@
 const session = new metw.Session()
 const defaultAlert = alert
 var page = p = {}, info = {}
+var pageOuter = d.getElementById('page-outer')
 var serviceWorker
 
 //#region FUNCTIONS
@@ -77,6 +78,12 @@ function pinchZoom(imageElement) {
     })
     imageElement.addEventListener('touchend', (event) => { imageElement.style.transition = '.3s', margin.style.display = 'none', imageElement.style.position = '', imageElement.style.zIndex = imageElement.style.WebkitTransform = imageElement.style.transform = "" } )
 }
+
+const lerp = (A, B, t) => A + (B - A) * t
+const quadradicBezier = (A, B, C, t) => lerp(lerp(A, B, t), lerp(B, C, t), t)
+const map  = (val, in_min, in_max, out_min, out_max) => (val - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+
+
 alert = (message, type) => {
     var list = d.querySelector('#alerts ul'), element = list.querySelector('li:first-of-type').cloneNode(true), delay = message.length * 100 + 500,
         span = d.createElement('span'), bg = `var(--bg-a-${['d', 's', 'e'][[undefined, 'success', 'error'].indexOf(type)]})`
@@ -375,6 +382,25 @@ w.onresize = () => {
 }
 w.onfocus = () => { session.setStatus('online') }
 w.onblur = () => { session.setStatus('offline') }
+var refreshable = false, refreshTouchStart, refreshElement = d.querySelector('#refresh svg'), refreshY
+w.ontouchmove = ({ touches: [touch], touches }) => {
+    if (touches.length > 1) refreshable = false
+    if (pageOuter.scrollTop || !refreshable) return
+    refreshY = -(refreshTouchStart - touch.clientY) / 200
+    refreshY = quadradicBezier(0, 150, 150, refreshY > 1 ? 1 : refreshY)
+    refreshElement.style = `top: calc(-2em + ${refreshY}px); rotate: ${refreshY * -2.4}deg; opacity: ${map(refreshY, 0, 150, 0, 1)}`
+}
+w.ontouchend = async e => {
+    if (refreshY == 150) {
+        refreshY = 0
+        refreshElement.style = refreshElement.style + '; animation: rotating 1s ease-in-out infinite; top: 60px; transition: .3s'
+        session.clearCache(); await app.redirect(); refreshElement.style = 'transition: .3s'
+    } else if (mouse.state) refreshElement.style = 'transition: .3s'
+}
+w.ontouchstart = e => {
+    if (e.touches.length > 1 || !mouse.state) refreshable = false
+    else if (!pageOuter.scrollTop) refreshable = true, refreshTouchStart = e.touches[0].clientY
+}
 
 const ontitlechange = new MutationObserver(([{ target }]) => gtag('config', gaId, { page_title: target.text, page_path: w.location.pathname }) )
 ontitlechange.observe(document.querySelector('title'), { childList: true })
