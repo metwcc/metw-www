@@ -383,7 +383,7 @@ w.onresize = () => {
 w.onfocus = () => { session.setStatus('online') }
 w.onblur = () => { session.setStatus('offline') }
 var refreshable = false, refreshTouchStart, refreshElement = d.querySelector('#refresh svg'), refreshY
-w.ontouchmove = ({ touches: [touch], touches }) => {
+w.ontouchmove = ({ touches: [touch], touches, target }) => {
     if (touches.length > 1) refreshable = false
     if (pageOuter.scrollTop || !refreshable) return
     refreshY = -(refreshTouchStart - touch.clientY) / 200
@@ -398,7 +398,7 @@ w.ontouchend = async e => {
     } else if (mouse.state) refreshElement.style = 'transition: .3s'
 }
 w.ontouchstart = e => {
-    if (e.touches.length > 1 || !mouse.state) refreshable = false
+    if (e.touches.length > 1 || !mouse.state || e.target.scrollHeight > e.target.clientHeight) refreshable = false
     else if (!pageOuter.scrollTop) refreshable = true, refreshTouchStart = e.touches[0].clientY
 }
 
