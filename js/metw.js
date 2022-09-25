@@ -380,6 +380,7 @@ metw.Post = class Post {
         var response = (await this._session.request({ path: `/posts/${this.id}/delete` }))[0]
         if (!response) return false
         this.flags = this.flags | 16
+        this.user.postCount--
     }
     async edit(content) {
         var [id, ok] = await this._session.request({ path: `/posts/${this.id}/edit`, json: Object.assign({ content: content }) })
@@ -429,6 +430,7 @@ metw.Comment = class Comment {
         var response = (await this._session.request({ path: `/comments/${this.id}/delete` }))[0]
         if (!response) return false
         this.flags = this.flags | 16
+        this.parent.commentCount--
     }
     async reply(content) {
         var id = (await this._session.request({ path: `/comments?type=2&parent_id=${this.id}`, json: { content: content }, retry: false }))[0]
