@@ -169,10 +169,10 @@ metw.Session = class Session {
             if (key == 'notifications') {
                 let dataToGet = { users: [], posts: [], comments: [] }
                 dataToGet.users.push(..._data.map(n => n.details.at(-1)))
-                dataToGet.users.push(..._data.filter(n => n.type == 4).map(n => n.details[1]))
                 dataToGet.posts.push(..._data.filter(n => n.type == 2).map(n => n.details[0]))
                 dataToGet.posts.push(..._data.filter(n => n.type == 3 && n.details[1] == 1).map(n => n.details[2]))
                 dataToGet.comments = _data.filter(n => n.type == 3).map(n => n.details[0])
+                dataToGet.comments.push(..._data.filter(n => n.type == 3 && n.details[1] == 2).map(n => n.details[0]))
                 for (let k of Object.keys(dataToGet)) { dataToGet[k] = Array.from(new Set(dataToGet[k])); if (!dataToGet[k].length) dataToGet[k] = [0]}
                 await this.bulkGet(dataToGet)
                 await Promise.all(_data.map(n => n.format()))
