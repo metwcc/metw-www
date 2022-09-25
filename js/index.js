@@ -48,6 +48,35 @@ function urlBase64ToUint8Array(base64String) {
     for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i); return outputArray;
 }
 function isConstructor(func) { return (func && typeof func === "function" && func.prototype && func.prototype.constructor) === func }
+function pinchZoom(imageElement) {
+    let imageElementScale = 1, start = {}, margin = d.createElement('div')
+    margin.className = 'margin'
+    imageElement.parentNode.insertBefore(margin, imageElement)
+    margin.style = `height: ${imageElement.offsetHeight}px; display: none`
+    imageElement.addEventListener('load', () => margin.style.height = imageElement.offsetHeight + 'px')
+    const distance = (event) => Math.hypot(event.touches[0].pageX - event.touches[1].pageX, event.touches[0].pageY - event.touches[1].pageY)
+    imageElement.addEventListener('touchstart', (event) => {
+        if (event.touches.length === 2) {
+            event.preventDefault()
+            imageElement.style.transition = ''
+            imageElement.style.position = 'absolute'
+            margin.style.display = 'block'
+            start.x = (event.touches[0].pageX + event.touches[1].pageX) / 2
+            start.y = (event.touches[0].pageY + event.touches[1].pageY) / 2
+            start.distance = distance(event)
+        }
+    })
+    imageElement.addEventListener('touchmove', (event) => {
+        if (event.touches.length === 2) {
+            event.preventDefault()
+            let scale = event.scale || distance(event) / start.distance
+            imageElementScale = Math.min(Math.max(1, scale), 4)
+            imageElement.style.WebkitTransform = imageElement.style.transform = `translate3d(${(((event.touches[0].pageX + event.touches[1].pageX) / 2) - start.x) * 2}px, ${(((event.touches[0].pageY + event.touches[1].pageY) / 2) - start.y - imageElement.offsetHeight / 2) * 2}px, 0) scale(${imageElementScale})`
+            imageElement.style.zIndex = "9999"
+        }
+    })
+    imageElement.addEventListener('touchend', (event) => { imageElement.style.transition = '.3s', margin.style.display = 'none', imageElement.style.position = '', imageElement.style.zIndex = imageElement.style.WebkitTransform = imageElement.style.transform = "" } )
+}
 alert = (message, type) => {
     var list = d.querySelector('#alerts ul'), element = list.querySelector('li:first-of-type').cloneNode(true), delay = message.length * 100 + 500,
         span = d.createElement('span'), bg = `var(--bg-a-${['d', 's', 'e'][[undefined, 'success', 'error'].indexOf(type)]})`

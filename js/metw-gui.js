@@ -33,6 +33,7 @@
                 </div>
             </div>`
         if (!(post.flags & 1)) _post.querySelector('.attachment').remove()
+        else pinchZoom(_post.querySelector('.attachment'))
 
         var uls = () => { _post.querySelector('.buttons .like').style = post.liked ? 'color: #F91880; stroke: #F91880' : ''; _post.querySelector('.buttons .like .count').innerText = post.likeCount }; uls()
         _post.querySelector('.share').onclick = () => navigator.share({ title: 'metw', url: `/gönderi/${post.id}`, text: post.content })
