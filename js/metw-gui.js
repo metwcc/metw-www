@@ -117,7 +117,8 @@
         }
         if (session.logged) _comment.querySelector('.dots').onclick = event =>
             popupMenu(event, [['report', 'bildir', console.log],
-                session.user.hasPermissions('$ & "admin" | $ & "posts.delete"') || [comment.user.id, comment.topParent?.user?.id, comment.parent?.user?.id, (comment.type == 0 ? comment.parent?.id : 0)].includes(session.user.id) ?
+                session.user.hasPermissions('$ & "admin" | $ & "posts.delete"') ||
+                    [comment.user.id, comment.topParent?.user?.id, comment.parent?.user?.id, [comment.parent.id, comment.parent.user_id, [comment.topParentId, comment.topParent.user_id][comment.topParentType]][comment.type]].includes(session.user.id) ?
                     ['delete', 'sil', () => load(async () => { await comment.delete(); _comment.querySelector('.comment:first-of-type').innerHTML = 'yorum silindi' })] : false])
         else _comment.querySelector('.dots').remove()
 

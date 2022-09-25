@@ -423,7 +423,7 @@ metw.Comment = class Comment {
     }
     async format() {
         this.parent = await session.get(['user', 'post', 'comment'][this.type], this.parentId)
-        if (this.topParentType && this.topParentId) this.topParent = await session.get(['user', 'post', 'comment'][this.topParentType], this.topParentId)
+        if (this.topParentType != undefined && this.topParentId != undefined) this.topParent = await session.get(['user', 'post', 'comment'][this.topParentType], this.topParentId)
     }
     async delete() {
         var response = (await this._session.request({ path: `/comments/${this.id}/delete` }))[0]
@@ -431,7 +431,7 @@ metw.Comment = class Comment {
         this.flags = this.flags | 16
     }
     async reply(content) {
-        var id = (await this._session.request({ path: `/comments?type=2&parent_id=${this.id}&top_parent_id=${this.type == 2 ? (this.topParentId ? this.topParentId : this.parentId) : 0}&top_parent_type=${this.type == 2 ? (this.topParentType ? this.type : this.topParentType) : 0}`, json: { content: content }, retry: false }))[0]
+        var id = (await this._session.request({ path: `/comments?type=2&parent_id=${this.id}`, json: { content: content }, retry: false }))[0]
         if (Array.isArray(id)) return id
         var reply = new metw.Comment(
             {
