@@ -160,10 +160,10 @@ metw.Session = class Session {
                 if (!['users', 'notifications'].includes(key) && d.user_id) var user = await this.get('user', d.user_id)
                 _data.push(eval(`new metw.${key.charAt(0).toUpperCase() + key.slice(1, -1)}({ ...d, user: ${user ? 'user' : undefined} }, this)`))
             }
-            this.indexed.raw.push(..._data)
+            this.indexed[key].push(..._data)
             if (key == 'comments') 
                 _data.forEach(async comment => {
-                    if (comment.type == 2) this.indexed.raw.find(parent => (Object.getPrototypeOf(parent).constructor == metw.Comment) && (parent.id == comment.parentId) && (parent.replies.every(reply => reply.id != comment.id)))?.replies.push(comment)
+                    if (comment.type == 2) this.indexed.comments.find(parent => (Object.getPrototypeOf(parent).constructor == metw.Comment) && (parent.id == comment.parentId) && (parent.replies.every(reply => reply.id != comment.id)))?.replies.push(comment)
                     await comment.format()
                 })
             if (key == 'notifications') {
@@ -172,12 +172,11 @@ metw.Session = class Session {
                 dataToGet.posts.push(..._data.filter(n => n.type == 2).map(n => n.details[0]))
                 dataToGet.posts.push(..._data.filter(n => n.type == 3 && n.details[1] == 1).map(n => n.details[2]))
                 dataToGet.comments = _data.filter(n => n.type == 3).map(n => n.details[0])
-                dataToGet.comments.push(..._data.filter(n => n.type == 3 && n.details[1] == 2).map(n => n.details[0]))
+                dataToGet.comments.push(..._data.filter(n => n.type == 3 && n.details[1] == 2).map(n => n.details[2]))
                 for (let k of Object.keys(dataToGet)) { dataToGet[k] = Array.from(new Set(dataToGet[k])); if (!dataToGet[k].length) dataToGet[k] = [0]}
                 await this.bulkGet(dataToGet)
                 await Promise.all(_data.map(n => n.format()))
             }
-            this.indexed[key].push(..._data)
         }
 
     }
@@ -336,7 +335,7 @@ metw.User = class User {
         if (Array.isArray(id)) return id
         var comment = new metw.Comment({ id: id, user_id: this._session.user.id, user: this._session.user, parent_ids: [this.id], types: [0], content: content }, this._session)
         this.commentCount++
-        this._session.indexed.raw.push(comment); this._session.indexed.comments.push(comment); this.comments.unshift(comment)
+        this._session.indexed.comments.push(comment); this.comments.unshift(comment)
         return comment
     }
 
@@ -378,7 +377,7 @@ metw.Post = class Post {
         if (Array.isArray(id)) return id
         var comment = new metw.Comment({ id: id, user_id: this._session.user.id, user: this._session.user, parent_ids: [this.id], types: [1], content: content }, this._session)
         this.commentCount++
-        this._session.indexed.raw.push(comment); this._session.indexed.comments.push(comment); this.comments.unshift(comment)
+        this._session.indexed.comments.push(comment); this.comments.unshift(comment)
         return comment
     }
     async delete() {
@@ -422,7 +421,7 @@ metw.Comment = class Comment {
         if (param == 'replies') {
             var ids = (await this._session.request({ path: `/comments?type=2&parent_id=${this.id}&before=${before ? before : 0}` }))[0]
             await this._session.bulkGet('comments', ids)
-            var newReplies = ids.map(c => this._session.indexed.raw.concat(this._session.indexed.comments).find(r => (Object.getPrototypeOf(r).constructor == Comment) && (r.id == c) && (r.parentId == this.id))).filter(i => !!i)
+            var newReplies = ids.map(c => this._session.indexed.comments.find(r => (r.id == c) && (r.parentId == this.id))).filter(i => !!i)
             this.replies.push(...newReplies.filter(r => this.replies.every(s => s.id != r.id)))
             return newReplies
         }
