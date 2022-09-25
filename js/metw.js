@@ -33,7 +33,11 @@ metw.Session = class Session {
         this.user = { id: 0 }
         this.notificationCount = 0
         this.indexed = { users: [], posts: [], comments: [], raw: [], notifications: [] }
-        setInterval(() => { if (this.ws?.readyState == 1) this.ws.send('0') }, 30000)
+        setInterval(() => {
+            if (!this.logged) return
+            if (this.ws?.readyState == 1) this.ws.send('0')
+            if (this.ws?.readyState > 1) this._wsconnect()
+        }, 30000)
     }
     async event(name, ...args) {
         if (typeof this['on' + name] == 'function') this['on' + name](...args)
@@ -220,7 +224,7 @@ metw.Session = class Session {
                 data = [...data.matchAll(/([\d]*)\,([\d]*)\[([\d\,]*)\]([\s\S]*)/g)][0].splice(1)
                 data[2] = data[2].split(',').map(i => +i)
                 data = new metw.Notification({ id: +data[0], type: +data[1], details: data[2], text: data[3] }, this)
-                await data.format(); this.event('notification', data); break
+                await data.format(true); this.event('notification', data); break
             case '2': this.notificationCount = parseInt(data);  this.event('updatenotificationcount', parseInt(data)); break
         }
     }
@@ -239,23 +243,23 @@ metw.Notification = class Notification {
         this.readen = data.readen, this.timestamp = new Date(data.timestamp)
         this._session = session
     }
-    async format() {
+    async format(updateCounts) {
         const detail = async (n, type) => this.details[n] = await this._session.get(type, this.details[n])
         switch (this.type) {
             /* @[0] following you */
             case 1:
-                this._session.user.followerCount++
+                if (updateCounts) this._session.user.followerCount++
                 await detail(0, 'user'); break
             /* @[1] liked your post [0] */
             case 2:
                 await detail(0, 'post'); await detail(1, 'user')
-                if (this._session.user.id != this.details[1].id) this.details[0].likeCount++
+                if (updateCounts && this._session.user.id != this.details[1].id) this.details[0].likeCount++
                 break
             /* @[3] commented [0] your on [2] => [1] */
             case 3:
                 await detail(0, 'comment')
                 await detail(2, ['user', 'post', 'comment'][this.details[1]])
-                this.details[2].commentCount++
+                if (updateCounts) this.details[2].commentCount++
                 await detail(3, 'user'); break
             /* @[1] tagged you on their post [0] */
             case 4:
