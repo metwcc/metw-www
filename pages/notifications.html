@@ -55,7 +55,7 @@
                     goToPost.className = 'href', goToPost.style.fontSize = '.8em'
                     switch (n.details[2].topParentType) {
                         case 0: goToPost.innerText = 'profile git'; goToPost.onclick = () => app.redirect(`/@${n.details[2].topParent.name}/duvar`); break
-                        case 1: goToPost.innerText = 'gönderiye git';  goToPost.onclick = () => app.redirect(`/@${n.details[2].topParentId}`); break
+                        case 1: goToPost.innerText = 'gönderiye git';  goToPost.onclick = () => app.redirect(`/gönderi/${n.details[2].topParentId}`); break
                     }
                     li.querySelector('div.title').appendChild(goToPost)
                 }

@@ -120,7 +120,7 @@
             popupMenu(event, [['report', 'bildir', console.log],
                 session.user.hasPermissions('$ & "admin" | $ & "posts.delete"') ||
                     [comment.user.id, comment.topParent?.user?.id, comment.parent?.user?.id, [comment?.parent?.id, comment?.parent?.user_id, [comment?.topParentId, comment?.topParent?.user_id][comment.topParentType]][comment.type]].includes(session.user.id) ?
-                    ['delete', 'sil', () => load(async () => { await comment.delete(); _comment.querySelector('.comment:first-of-type').innerHTML = 'yorum silindi' })] : false])
+                    ['delete', 'sil', () => load(async () => { await comment.delete(); _comment.querySelector('.comment:first-of-type').innerHTML = 'yorum silindi'; _comment.querySelector('.replies').remove() })] : false])
         else _comment.querySelector('.dots').remove()
 
         if (comment.replies.length >= comment.replyCount - !!highlightedComment) _loadMore.remove()
