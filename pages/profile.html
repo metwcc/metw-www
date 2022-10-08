@@ -15,7 +15,7 @@
             <div class="user">
                 <div class="avatar"><img /><span class="online-badge"></span></div>
                 <div>
-                    <h1 class="name">@name</h1>
+                    <h1 class="name _inline-img">@name</h1>
                     <div class="bio">
                         <textarea oninput="acceptInput(event, /[\s\S]*/g, 512)"></textarea>
                     </div>
@@ -70,7 +70,8 @@
     .p .profile  .user   .avatar:hover:after { cursor: pointer; opacity: 1 }
     .p .profile  .user .avatar .online-badge { width: 1em; height: 1em; margin: .25em; position: absolute; bottom: 0; right: 0; border-radius: 50%; outline: .3em solid var(--bg-1); background: var(--bg-b-1); z-index: 3 }
     .p .profile  .user > div:last-of-type { display: flex; margin-left: 1em; flex-grow: 1; flex-direction: column }
-    .p .profile  .user  .name { margin: 0; font-size: 2em; font-weight: normal; word-break: break-all }
+    .p .profile  .user  .name { margin: 0; font-size: 2em; font-weight: normal; word-break: break-all; flex-wrap: wrap }
+    .p .profile  .user  .name img { margin-left: .25em }
     .p .profile  .user  .bio { margin: .25em; word-break: break-word }
     .p .profile  .user  .bio textarea { width: 100%; margin: .25em 0 0; background: transparent; border: .125em dashed var(--bd-2); border-radius: .25em; flex-grow: 1; resize: none }
     .p .profile  .user *::-webkit-scrollbar { width: .4em }
@@ -149,6 +150,9 @@
     if (!session.logged) p.profile.follow.style.display = 'none'
     p.style.setProperty('--banner-url', `url("${p.user.bannerURL}")`)
     p.profile.onlineBadge.style.display = ['none', 'block'][+p.user._online]
+
+    for (let v of ['mod', 'beta', 'bug_hunter', 'staff', 'premium', 'partner']) 
+        if (p.user.hasFlags(`$ & "${v}"`)) p.profile.name.innerHTML += `<img src="/images/svg/flags/${v}.svg"></img>`
 
     // follow & list
     p.profile.follow.updateState = (n) => {
