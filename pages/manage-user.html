@@ -85,7 +85,7 @@
         if (p.changeName) data.name = p.changeName.input.value
         if (p.editPermissions) data.permissions = p.chechBoxList.calculate(p.editPermissions.ul)
         if (p.editFlags) data.flags = p.chechBoxList.calculate(p.editFlags.ul)
-        if (session.user.id == p.user.id) Object.assign(session.user, data)
+        Object.assign(p.user, data)
         load(async () => await p.user.manage(data))
     }
 
