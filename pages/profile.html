@@ -197,9 +197,9 @@
     if (p.user.postCount > 30) {
         p.posts.pageCount = Math.ceil(p.user.postCount / 30)
         var refresh = () => {
-            for (let [index, element] of Array.from(p.posts.page.children).entries()) element.style = index == p.posts.pageNo + 1 ? 'color: white; font-weight: bold' : ''
-            p.posts.page.querySelector('li:first-of-type').style = p.posts.pageNo == 0 ? 'color: white; font-weight: bold' : ''
-            p.posts.page.querySelector('li:last-of-type').style = p.posts.pageNo == p.posts.pageCount - 1 ? 'color: white; font-weight: bold' : ''
+            for (let [index, element] of Array.from(p.posts.page.children).entries()) element.style = index == p.posts.pageNo + 1 ? 'color: var(--color); font-weight: bold' : ''
+            p.posts.page.querySelector('li:first-of-type').style = p.posts.pageNo == 0 ? 'color: var(--color); font-weight: bold' : ''
+            p.posts.page.querySelector('li:last-of-type').style = p.posts.pageNo == p.posts.pageCount - 1 ? 'color: var(--color); font-weight: bold' : ''
         }
         var renderPage = async () => {
             if (p.posts.pageNo > p.posts.pageCount - 1) return p.posts.pageNo = p.posts.pageCount - 1
