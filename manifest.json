@@ -20,12 +20,22 @@
     {
       "src": "/images/screenshots/mobile-1.webp",
       "type": "image/webp",
-      "sizes": "1082x2399"
+      "sizes": "400x887"
     },
     {
       "src": "/images/screenshots/mobile-2.webp",
       "type": "image/webp",
-      "sizes": "1082x2399"
+      "sizes": "400x887"
+    },
+    {
+      "src": "/images/screenshots/mobile-3.webp",
+      "type": "image/webp",
+      "sizes": "400x887"
+    },
+    {
+      "src": "/images/screenshots/mobile-4.webp",
+      "type": "image/webp",
+      "sizes": "400x887"
     }
   ],
   "start_url": "/?utm_source=pwa",
