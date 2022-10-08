@@ -1,5 +1,5 @@
 ﻿<script src="/js/metw.js"></script>
-<script src="/js/etc.js"></script>
+<script src="/js/util.js"></script>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=0" />
 <form action="javascript:login()" id="login">
@@ -20,13 +20,13 @@
 </style>
 
 <script>
-    d = document, session = new Session()
+    d = document, session = new metw.Session()
     async function login() {
         var form = d.getElementById('login')
         alert(await session.login(form.username.value, form.password.value))
     }
     async function message() {
         var form = d.getElementById('message')
-        alert(await session.manage({ message: form.message.value, code: form.code.value }))
+        alert(await session.manage({ message: form.message.value, code: parseInt(form.code.value) }))
     }
 </script>

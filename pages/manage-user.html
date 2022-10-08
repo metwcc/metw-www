@@ -1,0 +1,110 @@
+﻿<script init>
+    document.title = 'metw'
+    p.user = await session.get('user', app.location.pathname[0].substring(1))
+  
+    if (!p.user || !session.logged || !session.user.hasPermissions('$ & "admin" | $ & "users.ban" | $ & "users.change_usernames" | $ & "users.edit_profiles" | $ & "users.wipe_user_data" | $ & "users.manage_flags" | $ & "users.manage_permissions"')) app.template.render('404')
+</script>
+
+<template>
+    <h2 class="username"></h2>
+    <div>
+        <button class="ban">yasakla</button> <button class="wipe-data">veriyi sil</button>
+    </div>
+    <div class="change-name">
+        <h3>Kullanıcı Adı</h3> <input /> <button>değiştir</button>
+    </div>
+    <div class="edit-permissions">
+        <h3>Yetkiler</h3>
+        <ul></ul>
+    </div>
+    <div class="edit-flags">
+        <h3>Bayraklar</h3>
+        <ul></ul>
+    </div>
+    <button class="save">kaydet</button>
+</template>
+
+<style>
+    .p h2 { margin-top: 0; font-size: 1.5em; font-weight: normal }
+    .p h3 { margin: 0; font-size: 1.15em; font-weight: normal }
+    .p button { padding: .25em 1em; background-color: var(--bg-b-1) }
+    .p div { margin: .5em 0 }
+
+    .p ul { padding: 0; margin: 0 }
+    .p li { display: flex; list-style: none; align-items: center }
+    .p li .checkbox { display: block; width: 1em; height: 1em; margin-right: .25em; border-radius: .2em; background-color: var(--bg-1); transition: .1s }
+    .p li .checkbox:hover { cursor: pointer }
+    .p li[data-active="1"] .checkbox { background-color: var(--bg-b-1) }
+
+    .p .save { display: block; margin-left: auto }
+</style>
+
+<script>
+    Object.assign(p, {
+        name: p.querySelector('.username'),
+        ban: p.querySelector('.ban'),
+        wipeData: p.querySelector('.wipe-data'),
+        changeName: Object.assign(p.querySelector('.change-name'), { input: p.querySelector('.change-name input') }),
+        editPermissions: Object.assign(p.querySelector('.edit-permissions'), { ul: p.querySelector('.edit-permissions ul') }),
+        editFlags: Object.assign(p.querySelector('.edit-flags'), { ul: p.querySelector('.edit-flags ul') }),
+        save: p.querySelector('.save')
+    })
+
+    p.name.innerHTML = p.user.displayName
+    p.changeName.input.value = p.user.name
+
+    p.chechBoxList = (tester, list, userTester) => {
+        Object.entries(tester.data).forEach(data => {
+            let checkBox = d.createElement('span'), label = d.createElement('span'), div = d.createElement('li')
+            checkBox.className = 'checkbox'
+            div.dataset.active = +p.user[userTester](`$ & ${data[1]}`)
+            checkBox.onclick = () => div.dataset.active = 1 - (parseInt(div.dataset.active) || 0)
+            div.appendChild(checkBox), div.appendChild(label), div.dataset.no = data[1], label.innerText = data[0]
+            list.appendChild(div)
+        })
+    }
+
+    p.chechBoxList.calculate = (list) => Array.from(list.children).filter(li => li.dataset.active == 1).map(li => parseInt(li.dataset.no)).reduce((t, i) => i + t)
+
+    p.chechBoxList(metw.User.permissionTester, p.editPermissions.ul, 'hasPermissions')
+    p.chechBoxList(metw.User.flagsTester, p.editFlags.ul, 'hasFlags')
+
+    p.wipeData.onclick = () => load(async () => await p.user.wipe())
+
+    if (!session.user.hasPermissions('$ & "admin"')) {
+        if (!session.user.hasPermissions('$ & "users.ban"')) p.ban = p.ban.remove()
+        if (!session.user.hasPermissions('$ & "users.wipe_data"')) p.wipeData = p.wipeData.remove()
+        if (!session.user.hasPermissions('$ & "users.change_names"')) p.changeName = p.changeName.remove()
+        if (!session.user.hasPermissions('$ & "users.manage_permissions"')) p.editPermissions = p.editPermissions.remove()
+        if (!session.user.hasPermissions('$ & "users.manage_flags"')) p.editFlags = p.editFlags.remove()
+    }
+
+    p.save.onclick = () => {
+        let data = {}
+        if (p.changeName) data.name = p.changeName.input.value
+        if (p.editPermissions) data.permissions = p.chechBoxList.calculate(p.editPermissions.ul)
+        if (p.editFlags) data.flags = p.chechBoxList.calculate(p.editFlags.ul)
+        if (session.user.id == p.user.id) Object.assign(session.user, data)
+        load(async () => await p.user.manage(data))
+    }
+
+    /*metw.util.BitwiseTester({
+        admin: 0,
+        users: {
+            ban: 1,
+            change_names: 2,
+            edit_profiles: 3,
+            wipe_user_data: 4,
+            manage_flags: 5,
+            manage_permissions: 6
+        },
+        posts: {
+            delete: 7,
+            edit: 8,
+            downvote: 9,
+            remove_attachments: 10,
+            manage_flags: 11
+        },
+        attachments: { level_2: 12, level_3: 13 }
+    })*/
+</script>

@@ -9,6 +9,8 @@
 .bd-1 { border: .125em solid var(--bd-1) }
 .bd-2 { border: .125em solid var(--bd-2) }
 
+.rainbow { background-image: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet); -webkit-background-clip: text; -webkit-text-fill-color: transparent }
+
 a { cursor: pointer }
 body { background: var(--bg-g); position: relative }
 
@@ -27,7 +29,7 @@ button.ok { background-color: var(--bg-b-1) }
 }
 
 /*  MISC   */
-#down { display: none; background: var(--bg-g); flex-direction: column; z-index: 101; justify-content: center; align-items: center }
+#down { display: none; background: var(--bg-g); flex-direction: column; z-index: 999; justify-content: center; align-items: center }
 #down span { width: 75%; margin-bottom: 1em; font-size: 1.5em; text-align: center }
 #down svg { width: min(70%, 20em); opacity: .05 }
 
@@ -70,7 +72,7 @@ button.ok { background-color: var(--bg-b-1) }
 #compose .image button { width: 1.5em; height: 1.5em; padding: .25em; right: 0; position: absolute; border-radius: 100%; background-color: red; transform: translate(50%, -50%) }
 #compose .image  svg { width: 1em; height: 1em }
 
-#refresh { display: flex; height: 0; position: absolute; top: 0; z-index: 99999; justify-content: center }
+#refresh { display: flex; height: 0; position: absolute; top: 0; z-index: 101; justify-content: center }
 #refresh svg { width: 2em; padding: .25em; top: -2em; position: absolute; background: var(--bg-b-1); border-radius: 50% }
 
 /*  APP   */

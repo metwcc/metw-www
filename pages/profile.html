@@ -2,7 +2,7 @@
     p.user = await session.get('user', app.location.pathname[0].substring(1))
     if (!p.user) app.template.render('404')
     else {
-        document.title = p.user.displayName + ' | metw'
+        document.title = `@${p.user.name} | metw`
         p.user.logged = p.user.id == session.user.id;
         p.user._online = await p.user.isOnline()
         p._posts = await p.user.get('posts')
@@ -135,7 +135,7 @@
 
 
     // load profile
-    p.profile.name.innerText = p.user.displayName
+    p.profile.name.innerHTML = p.user.displayName
     p.profile.avatar.src = p.user.avatarURL
     if (p.user.logged) {
         var textarea = p.profile.bio.querySelector('textarea'), style = d.createElement('style')
@@ -172,7 +172,7 @@
         p.followList.loadMore.style.display = ['block', 'none'][+(p.followList.count >= p.user[`${t.slice(0, -1) }Count`])]
         for (let user of data.data) {
             let li = d.createElement('li')
-            li.innerHTML = `<img src="${user.avatarURL}" /><span>${user.name}</span>`
+            li.innerHTML = `<img src="${user.avatarURL}" /><span>${user.displayName}</span>`
             li.onclick = () => app.redirect(`/@${user.name}`)
             p.followList.ul.appendChild(li)
         }
@@ -181,7 +181,7 @@
         if (!p.user[`${t.slice(0, -1) }Count`]) return
         p.followList.loadMore.onclick = '', p.followList.loadMore.style.display = 'none'
         p.followList.style = 'display: flex', p.followList.count = 0
-        p.followList.querySelector('.title span').innerText = `${p.user.displayName} kullanıcısının ${t == 'followers' ? 'takipçi' : 'takip'}leri (${p.user[t.slice(0, -1) + 'Count']})`
+        p.followList.querySelector('.title span').innerHTML = `${p.user.displayName} kullanıcısının ${t == 'followers' ? 'takipçi' : 'takip'}leri (${p.user[t.slice(0, -1) + 'Count']})`
         await p.followList.render(t, 0)
         p.followList.loadMore.onclick = () => p.followList.render(t, p.followList.cursor), p.followList.style = 'display: flex'
         setTimeout(() => p.followList.style = 'display: flex; transform: none; opacity: 1', 20)

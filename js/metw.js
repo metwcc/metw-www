@@ -283,9 +283,9 @@ metw.User = class User {
         admin: 0,
         users: {
             ban: 1,
-            change_usernames: 2,
+            change_names: 2,
             edit_profiles: 3,
-            wipe_user_data: 4,
+            wipe_datas: 4,
             manage_flags: 5,
             manage_permissions: 6
         },
@@ -297,6 +297,17 @@ metw.User = class User {
             manage_flags: 11
         },
         attachments: { level_2: 12, level_3: 13 }
+    })
+    static flagsTester = new metw.util.BitwiseTester({
+        staff: 0,
+        mod: 1,
+        partner: 2,
+        premium: 3,
+        beta: 4,
+        bug_hunter: 5,
+        deleted: 6,
+        banned: 7,
+        rainbow_name: 8
     })
 
     constructor(data, session) {
@@ -310,7 +321,10 @@ metw.User = class User {
         this._session = session
     }
 
-    get displayName() { return '@' + this.name }
+    get displayName() {
+        return this.hasFlags('$ & "deleted"') ? 'hesap silindi' :
+            this.hasFlags('$ & "rainbow_name"') ? `<span class="rainbow">@${this.name}</span>` : `@${this.name}`
+    }
     get avatarURL() { return url.cdn + `${!this.avatar ? '/assets/avatars/1' : '/usercontent/' + this.id + '/0' + this.avatar}` }
     get bannerURL() { return !this.banner ? 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' : url.cdn + '/usercontent/' + this.id + '/1' + this.banner }
 
@@ -321,6 +335,13 @@ metw.User = class User {
 
     async isOnline() {
         return (await this._session.request({ path: `/users/:${this.id}/online` }))[0]
+    }
+
+    async manage(json) {
+        await session.request({ path: `/users/:${this.id}/manage`, json: json })
+    }
+    async wipe(json) {
+        await session.request({ path: `/users/:${this.id}/wipe` })
     }
 
     async get(param, before) {
@@ -343,6 +364,7 @@ metw.User = class User {
     }
 
     hasPermissions(permissions) { return metw.User.permissionTester.eval(this.permissions, permissions) }
+    hasFlags(flags) { return metw.User.flagsTester.eval(this.flags, flags) }
 }
 
 metw.Post = class Post {

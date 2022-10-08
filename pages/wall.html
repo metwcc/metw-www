@@ -1,7 +1,7 @@
 ﻿<script init>
     p.user = await session.get('user', app.location.pathname[0].substring(1))
     if (!p.user) resolve(app.template.render('404'))
-    document.title = p.user.displayName + ' | metw'
+    document.title = `@${p.user.name} | metw`
     p._comments = await metw.gui.comments(p.user) 
 </script>
 
@@ -21,6 +21,6 @@
 
 <script>
     p.querySelector('img').src = p.user.avatarURL
-    p.querySelector('h2').innerText = p.user.name
+    p.querySelector('h2').innerHTML = p.user.displayName
     p.appendChild(p._comments)
 </script>

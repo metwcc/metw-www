@@ -177,7 +177,10 @@ const app = {
     async load() {
         this.location.format()
         var composeEnabled = (e) => d.getElementById('compose-button').style.marginLeft = e ? '' : '-5em'
-        if (this.location.pathname[0]?.[0] == '@') { composeEnabled(true); return await this.template.render(this.location.pathname[1] == 'duvar' ? 'wall' : 'profile') }
+        if (this.location.pathname[0]?.[0] == '@') {
+            composeEnabled(this.location.pathname[1] != 'yönet')
+            return await this.template.render(this.location.pathname[1] ? { duvar: 'wall', 'yönet': 'manage-user' }[this.location.pathname[1]] || '404' : 'profile' )
+        }
         switch (this.location.pathname[0]) {
             case 'keşfet': composeEnabled(true); return await this.template.render('explore')
             case 'katıl': composeEnabled(false); return await this.template.render('gateway')
@@ -265,7 +268,7 @@ session.onlogin = () => {
     localStorage.setItem('SID', session.SID)
     for (e of d.getElementsByClassName('@logged')) e.style.display = ''
     for (e of d.getElementsByClassName('@non-logged')) e.style.display = 'none'
-    for (e of d.getElementsByClassName('@username')) e.innerText = session.user.displayName
+    for (e of d.getElementsByClassName('@username')) e.innerHTML = session.user.displayName
     for (e of d.getElementsByClassName('@avatar')) e.src = session.user.avatarURL
 }
 session.onloginfailed = () => {
@@ -347,9 +350,11 @@ d.querySelector('#compose .cancel-upload').onclick = async () => { composeAttach
 //#endregion
 
 
+var loaded = false
 w.onload = async () => {
+    loaded = true
     w.onresize()
-
+    
     try { info = await fetch(url.backend + '/').then(r => raw = r).then(r => r.json()) }
     catch { w.location.replace('/offline.html') }
 
@@ -399,7 +404,7 @@ w.ontouchend = async e => {
 }
 w.ontouchstart = e => {
     if (pageOuter.scrollTop || e.touches.length > 1 || !mouse.state || e.target.scrollHeight > e.target.clientHeight ||
-        ['INPUT', 'TEXTAREA'].includes(e.target.tagName) || e.target.closest('.disable-refresh')) refreshable = false
+        ['INPUT', 'TEXTAREA'].includes(e.target.tagName) || e.target.closest('.disable-refresh') || !loaded) refreshable = false
     else refreshable = true, refreshTouchStart = e.touches[0].clientY
 }
 
