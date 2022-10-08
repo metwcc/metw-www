@@ -80,7 +80,8 @@ button.cancel { border: .05em solid var(--bd-1) }
 #message-box > div { max-width: 75%; padding: 1em 2em; background-color: var(--bg-1); outline: 200vmax solid var(--bg-1a); border-radius: .5em }
 #message-box .title { font-size: 1.5em; word-break: break-word }
 #message-box .content { margin: 1em 0; word-break: break-word }
-#message-box button { font-size: 1.25em; float: right; margin-left: .5em }
+#message-box .buttons { display: flex; gap: .5em; flex-wrap: wrap; flex-direction: row-reverse }
+#message-box button { font-size: 1.25em }
 
 /*  APP   */
 main { display: flex; flex-direction: column }
