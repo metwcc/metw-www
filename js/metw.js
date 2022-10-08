@@ -206,7 +206,7 @@ metw.Session = class Session {
                 _param[key] = _param[key].slice(0, 50).filter((id, index, array) => array.indexOf(id) == index && !this.indexed[key].some(data => data.id == id))
                 if (!_param[key].length) _param[key].push(0)
             }
-            if (Object.values(_param).some(v => v.length)) var [data, ok] = await this.request({ path: `/bulk?id=${this.user.id}`, json: _param })
+            if (Object.values(_param).some(v => v.length) && !Object.values(_param).flat().every(v => !v)) var [data, ok] = await this.request({ path: `/bulk?id=${this.user.id}`, json: _param })
             if (ok) await this.index(Array.isArray(data) ? { [Object.keys(_param)[0]]: data } : data)
             Object.keys(param).forEach(key => response[key] = param[key].map(id => this.indexed[key].find(i => i.id == id)).filter(i => !!i))
             return response

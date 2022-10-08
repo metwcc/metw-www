@@ -385,7 +385,7 @@ w.onblur = () => { session.setStatus('offline') }
 var refreshable = false, refreshTouchStart, refreshElement = d.querySelector('#refresh svg'), refreshY
 w.ontouchmove = ({ touches: [touch], touches, target }) => {
     if (touches.length > 1) refreshable = false
-    if (pageOuter.scrollTop || !refreshable) return
+    if (!refreshable) return
     refreshY = -(refreshTouchStart - touch.clientY) / 200
     refreshY = quadradicBezier(0, 150, 150, refreshY > 1 ? 1 : refreshY)
     refreshElement.style = `top: calc(-2em + ${refreshY}px); rotate: ${refreshY * -2.4}deg; opacity: ${map(refreshY, 0, 150, 0, 1)}`
@@ -398,8 +398,9 @@ w.ontouchend = async e => {
     } else if (mouse.state) refreshElement.style = 'transition: .3s'
 }
 w.ontouchstart = e => {
-    if (e.touches.length > 1 || !mouse.state || e.target.scrollHeight > e.target.clientHeight) refreshable = false
-    else if (!pageOuter.scrollTop) refreshable = true, refreshTouchStart = e.touches[0].clientY
+    if (pageOuter.scrollTop || e.touches.length > 1 || !mouse.state || e.target.scrollHeight > e.target.clientHeight ||
+        ['INPUT', 'TEXTAREA'].includes(e.target.tagName) || e.target.closest('.disable-refresh')) refreshable = false
+    else refreshable = true, refreshTouchStart = e.touches[0].clientY
 }
 
 const ontitlechange = new MutationObserver(([{ target }]) => gtag('config', gaId, { page_title: target.text, page_path: w.location.pathname }) )
