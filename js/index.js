@@ -78,6 +78,19 @@ function pinchZoom(imageElement) {
     })
     imageElement.addEventListener('touchend', (event) => { imageElement.style.transition = '.3s', margin.style.display = 'none', imageElement.style.position = '', imageElement.style.zIndex = imageElement.style.WebkitTransform = imageElement.style.transform = "" } )
 }
+function askFor(title, content, ok = 'onayla', cancel = 'iptal') {
+    return new Promise(resolve => {
+        var box = d.getElementById('message-box'), _ok = box.querySelector('.ok'), _cancel = box.querySelector('.cancel')
+        box.querySelector('.title').innerHTML = title, box.querySelector('.content').innerHTML = content
+        _ok.innerHTML = ok.toLocaleUpperCase(), _cancel.innerHTML = cancel.toLocaleUpperCase()
+        box.style = 'display: grid'
+        setTimeout(() => box.style = 'display: grid; transform: none; opacity: 1', 20)
+        var close = () => (box.style = 'display: grid', setTimeout(() => box.style = '', 300))
+        _ok.onclick = () => (resolve(true), close())
+        _cancel.onclick = () => (resolve(false), close())
+    })
+}
+
 
 const lerp = (A, B, t) => A + (B - A) * t
 const quadradicBezier = (A, B, C, t) => lerp(lerp(A, B, t), lerp(B, C, t), t)

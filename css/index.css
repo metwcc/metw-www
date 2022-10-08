@@ -21,7 +21,8 @@ button:active { filter: brightness(120%) }
 input:-webkit-autofill { border-color: var(--bd-2); -webkit-text-fill-color: var(--color); box-shadow: 0 0 0 100vh inset var(--bg-2) }
 
 button.ok, button.cancel { padding: .25em 1em }
-button.ok { background-color: var(--bg-b-1) }
+button.ok { background-color: var(--bg-b-1); border: .05em solid var(--bg-b-1) }
+button.cancel { border: .05em solid var(--bd-1) }
 
 @keyframes rotating {
     from { -ms-transform: rotate(0deg); -moz-transform: rotate(0deg); -webkit-transform: rotate(0deg); -o-transform: rotate(0deg); transform: rotate(0deg) }
@@ -74,6 +75,12 @@ button.ok { background-color: var(--bg-b-1) }
 
 #refresh { display: flex; height: 0; position: absolute; top: 0; z-index: 101; justify-content: center }
 #refresh svg { width: 2em; padding: .25em; top: -2em; position: absolute; background: var(--bg-b-1); border-radius: 50% }
+
+#message-box { display: none; place-items: center; z-index: 50; transform: scale(.8); opacity: 0; transition: .3s }
+#message-box > div { max-width: 75%; padding: 1em 2em; background-color: var(--bg-1); outline: 200vmax solid var(--bg-1a); border-radius: .5em }
+#message-box .title { font-size: 1.5em; word-break: break-word }
+#message-box .content { margin: 1em 0; word-break: break-word }
+#message-box button { font-size: 1.25em; float: right; margin-left: .5em }
 
 /*  APP   */
 main { display: flex; flex-direction: column }
