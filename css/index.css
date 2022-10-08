@@ -1,4 +1,4 @@
-* { box-sizing: border-box; transition: color ease .5s !important }
+* { box-sizing: border-box }
 
 .href { color: var(--link); font-weight: bold; text-decoration: underline .125em }
 .href:hover { cursor: pointer }
