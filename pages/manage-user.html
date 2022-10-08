@@ -44,7 +44,7 @@
         name: p.querySelector('.username'),
         ban: p.querySelector('.ban'),
         wipeData: p.querySelector('.wipe-data'),
-        changeName: Object.assign(p.querySelector('.change-name'), { input: p.querySelector('.change-name input') }),
+        changeName: Object.assign(p.querySelector('.change-name'), { input: p.querySelector('.change-name input'), button: p.querySelector('.change-name button') }),
         editPermissions: Object.assign(p.querySelector('.edit-permissions'), { ul: p.querySelector('.edit-permissions ul') }),
         editFlags: Object.assign(p.querySelector('.edit-flags'), { ul: p.querySelector('.edit-flags ul') }),
         save: p.querySelector('.save')
@@ -71,6 +71,7 @@
     p.chechBoxList(metw.User.flagsTester, p.editFlags.ul, 'hasFlags')
 
     p.wipeData.onclick = () => load(async () => await p.user.wipe())
+    p.changeName.button.onclick = () => load(async () => await p.user.manage({ name: p.changeName.input.value }))
 
     if (!session.user.hasPermissions('$ & "admin"')) {
         if (!session.user.hasPermissions('$ & "users.ban"')) p.ban = p.ban.remove()
@@ -88,24 +89,4 @@
         Object.assign(p.user, data)
         load(async () => await p.user.manage(data))
     }
-
-    /*metw.util.BitwiseTester({
-        admin: 0,
-        users: {
-            ban: 1,
-            change_names: 2,
-            edit_profiles: 3,
-            wipe_user_data: 4,
-            manage_flags: 5,
-            manage_permissions: 6
-        },
-        posts: {
-            delete: 7,
-            edit: 8,
-            downvote: 9,
-            remove_attachments: 10,
-            manage_flags: 11
-        },
-        attachments: { level_2: 12, level_3: 13 }
-    })*/
 </script>
