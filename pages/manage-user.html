@@ -64,7 +64,7 @@
         })
     }
 
-    p.chechBoxList.calculate = (list) => Array.from(list.children).filter(li => li.dataset.active == 1).map(li => parseInt(li.dataset.no)).push(0).reduce((t, i) => i + t)
+    p.chechBoxList.calculate = (list) => [0, ...Array.from(list.children).filter(li => li.dataset.active == 1).map(li => parseInt(li.dataset.no))].reduce((t, i) => i + t)
 
     p.chechBoxList(metw.User.permissionTester, p.editPermissions.ul, 'hasPermissions')
     p.chechBoxList(metw.User.flagsTester, p.editFlags.ul, 'hasFlags')
