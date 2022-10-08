@@ -1,7 +1,7 @@
 ﻿{
   "name": "metw.cc",
   "short_name": "metw",
-  "description": "Açık kaynak kodlu bir blog sitesi",
+  "description": "Bir hesap oluşturun veya metw.cc'ye giriş yapın - Arkadaşlarınız ve ailenizle bağlantıda kalmanın basit bir yolu!",
   "icons": [
     {
       "src": "/images/logo/circle-192.png",
@@ -14,6 +14,18 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/images/screenshots/mobile-1.webp",
+      "type": "image/webp",
+      "sizes": "1082x2399"
+    },
+    {
+      "src": "/images/screenshots/mobile-2.webp",
+      "type": "image/webp",
+      "sizes": "1082x2399"
     }
   ],
   "start_url": "/?utm_source=pwa",
