@@ -25,7 +25,7 @@
 </template>
 
 <style>
-    .p h2 { margin-top: 0; font-size: 1.5em; font-weight: normal }
+    .p h2 { margin-top: 0; font-size: 1.5em; font-weight: normal; cursor: pointer }
     .p h3 { margin: 0; font-size: 1.15em; font-weight: normal }
     .p button { padding: .25em 1em; background-color: var(--bg-b-1) }
     .p div { margin: .5em 0 }
@@ -51,6 +51,7 @@
     })
 
     p.name.innerHTML = p.user.displayName
+    p.name.onclick = () => app.redirect(`/@${p.user.name}`)
     p.changeName.input.value = p.user.name
 
     p.chechBoxList = (tester, list, userTester) => {
