@@ -33,11 +33,13 @@ metw.Session = class Session {
         this.user = { id: 0 }
         this.notificationCount = 0
         this.indexed = { users: [], posts: [], comments: [], raw: [], notifications: [] }
+        var dummyCounter = 0
         setInterval(() => {
+            dummyCounter++
             if (!this.logged) return
-            if (this.ws?.readyState == 1) this.ws.send('0')
+            if (this.ws?.readyState == 1 && dummyCounter > 60) { this.ws.send('0'); dummyCounter = 0 }
             if (this.ws?.readyState > 1) this._wsconnect()
-        }, 30000)
+        }, 500)
     }
     async event(name, ...args) {
         if (typeof this['on' + name] == 'function') this['on' + name](...args)

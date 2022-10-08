@@ -61,7 +61,7 @@
                 if (!p.posts.cursor) loadMore.remove()
                 p.posts.append(p.posts.data)
             }
-            p.innerHTML += '<br />'
+            p.appendChild(d.createElement('br'))
         } else {
             p.innerHTML += `
                 <div class="quiet">

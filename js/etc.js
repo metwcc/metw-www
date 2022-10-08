@@ -12,5 +12,5 @@
 }
 const url = window.location.hostname == 'www.metw.cc' ?
     { backend: 'https://api.metw.cc/v1', cdn: 'https://dpupind62kwme.cloudfront.net', ws: 'wss://api.metw.cc/v1/ws' } :
-    { backend: 'http://api.metw/utb', cdn: 'https://s3.amazonaws.com/cdn.metw.cc/utb', ws: 'ws://192.168.1.200/api/ws' }
+    { backend: 'http://api.metw/utb', cdn: 'https://s3.amazonaws.com/cdn.metw.cc/utb', ws: 'ws://api.metw/utb/ws' }
 const publicVapidKey = 'BKN8z1ZV6W03lysfQx6Dm5MQounUoaad_f-VG2phhxdxZfOF-PX24Jz-S-MufPSIXd183Bz14__F0krdsqxvT2c'
