@@ -1,5 +1,6 @@
 :root {
     --color: #101010;
+    --color-n: #EDEDED;
     --bg-g: #e3e3e3;
     --bg-n: #9e2acd;
     --bg-a-d: #2c4889;
@@ -21,6 +22,7 @@
 @media (prefers-color-scheme:dark) {
     :root {
         --color: #EDEDED;
+        --color-n: #EDEDED;
         --bg-g: #121212; /* body */
         --bg-n: #1F1F1F; /* nav */
 
@@ -38,7 +40,6 @@
         --bd-1: #5a5a5a80;
         --bg-2: #121212;
         --bd-2: #313131;
-
         --link: #820cb1;
         --shadow-1: #0008 0 0 .125em
     }

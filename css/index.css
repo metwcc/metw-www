@@ -78,6 +78,7 @@ button.ok { background-color: var(--bg-b-1) }
 /*  APP   */
 main { display: flex; flex-direction: column }
 
+nav, nav * { color: var(--color-n) }
 nav { background: var(--bg-n); user-select: none; box-shadow: var(--shadow-1); z-index: 20 }
 nav > div { display: flex; padding: .3125em; margin: 0 auto; max-width: 1200px; justify-content: space-between; align-items: center }
 nav  .n-name { font-size: 2em; margin-left: .3125em }
