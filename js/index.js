@@ -80,12 +80,13 @@ function pinchZoom(imageElement) {
 }
 function askFor(title, content, ok = 'onayla', cancel = 'iptal') {
     return new Promise(resolve => {
-        var box = d.getElementById('message-box'), _ok = box.querySelector('.ok'), _cancel = box.querySelector('.cancel')
+        var box = d.getElementById('message-box'), _ok = box.querySelector('.ok'), _cancel = box.querySelector('.cancel'), random = Math.random()
         box.querySelector('.title').innerHTML = title, box.querySelector('.content').innerHTML = content
+        box.dataset.id = random
         _ok.innerHTML = ok.toLocaleUpperCase(), _cancel.innerHTML = cancel.toLocaleUpperCase()
         box.style = 'display: grid'
         setTimeout(() => box.style = 'display: grid; transform: none; opacity: 1', 20)
-        var close = () => (box.style = 'display: grid', setTimeout(() => box.style = '', 300))
+        var close = () => (box.style = 'display: grid', setTimeout(() => box.dataset.id == random && (box.style = ''), 300))
         _ok.onclick = () => (resolve(true), close())
         _cancel.onclick = () => (resolve(false), close())
     })

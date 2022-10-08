@@ -70,7 +70,7 @@
     p.chechBoxList(metw.User.permissionTester, p.editPermissions.ul, 'hasPermissions')
     p.chechBoxList(metw.User.flagsTester, p.editFlags.ul, 'hasFlags')
 
-    p.wipeData.onclick = async () => await askFor('Veriyi Sil', 'Kullanıcının bütün verilerini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.', ok = 'evet') && load(async () => await p.user.wipe())
+    p.wipeData.onclick = async () => await askFor('Veriyi Sil', 'Kullanıcının bütün verilerini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.', ok = 'sil') && setTimeout(async () => await askFor('Veriyi Sil', `${p.user.displayName} kullanıcısının bütün verileri silinecek.`) && load(async () => await p.user.wipe()), 100)
     p.changeName.button.onclick = () => load(async () => await p.user.manage({ name: p.changeName.input.value }))
 
     if (!session.user.hasPermissions('$ & "admin"')) {

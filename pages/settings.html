@@ -12,7 +12,7 @@
                 <img class="@avatar" />
                 <span>
                     <button class="ok" onclick="session.etc.changeAvatar()">değiştir</button>
-                    <button class="cancel" onclick="(async () => await askFor('Profil Fotoğrafını Sil', 'Profil fotoğrafını silmek istediğinizden emin misiniz?', ok = 'evet') && load(async () => await session.settings([{name: 'remove_avatar'}])))()">sil</button>
+                    <button class="cancel" onclick="(async () => await askFor('Profil Fotoğrafını Sil', 'Profil fotoğrafını silmek istediğinizden emin misiniz?', ok = 'sil') && load(async () => await session.settings([{name: 'remove_avatar'}])))()">sil</button>
                 </span>
             </div>
         </div>
@@ -22,7 +22,7 @@
                 <img class="@banner" />
                 <span>
                     <button class="ok" onclick="session.etc.changeBanner()">değiştir</button>
-                    <button class="cancel" onclick="(async () => await askFor('Profil Arkaplanını Sil', 'Profil arkaplanını silmek istediğinizden emin misiniz?', ok = 'evet') && load(async () => await session.settings([{name: 'remove_banner'}])))()">sil</button>
+                    <button class="cancel" onclick="(async () => await askFor('Profil Arkaplanını Sil', 'Profil arkaplanını silmek istediğinizden emin misiniz?', ok = 'sil') && load(async () => await session.settings([{name: 'remove_banner'}])))()">sil</button>
                 </span>
             </div>
         </div>

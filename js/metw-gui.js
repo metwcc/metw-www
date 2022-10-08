@@ -41,7 +41,7 @@
             _post.querySelector('.dots').onclick = event =>
                 popupMenu(event, [['report', 'bildir', console.log],
                     session.user.hasPermissions('$ & "admin" | $ & "posts.delete"') || post.user.id == session.user.id ? ['delete', 'sil', async () =>
-                        await askFor('Gönderiyi Sil', 'Gönderiyi silmek istediğinizden emin misiniz?', ok = 'evet') && await load(async () => { await post.delete(); _post.innerHTML = 'gönderi silindi' })] : false,
+                        await askFor('Gönderiyi Sil', 'Gönderiyi silmek istediğinizden emin misiniz?', ok = 'sil') && await load(async () => { await post.delete(); _post.innerHTML = 'gönderi silindi' })] : false,
                 session.user.hasPermissions('$ & "admin" | $ & "posts.edit"') || post.user.id == session.user.id ? ['edit', 'düzenle', () => {
                     var edit = _post.querySelector('.edit'), content = _post.querySelector('.content'), targetHeight, contentHeight,
                         textarea = edit.querySelector('textarea')
@@ -121,7 +121,7 @@
             popupMenu(event, [['report', 'bildir', console.log],
                 session.user.hasPermissions('$ & "admin" | $ & "posts.delete"') ||
                     [comment.user.id, comment.topParent?.user?.id, comment.parent?.user?.id, [comment?.parent?.id, comment?.parent?.user_id, [comment?.topParentId, comment?.topParent?.user_id][comment.topParentType]][comment.type]].includes(session.user.id) ?
-                    ['delete', 'sil', async () => await askFor('Yorumu Sil', 'Yorumu silmek istediğinizden emin misiniz?', ok = 'evet') && load(async () => { await comment.delete(); _comment.querySelector('.comment:first-of-type').innerHTML = 'yorum silindi'; _comment.querySelector('.replies').remove() })] : false])
+                    ['delete', 'sil', async () => await askFor('Yorumu Sil', 'Yorumu silmek istediğinizden emin misiniz?', ok = 'sil') && load(async () => { await comment.delete(); _comment.querySelector('.comment:first-of-type').innerHTML = 'yorum silindi'; _comment.querySelector('.replies').remove() })] : false])
         else _comment.querySelector('.dots').remove()
 
         if (comment.replies.length >= comment.replyCount - !!highlightedComment) _loadMore.remove()
