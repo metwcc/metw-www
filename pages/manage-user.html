@@ -2,7 +2,7 @@
     document.title = 'metw'
     p.user = await session.get('user', app.location.pathname[0].substring(1))
   
-    if (!p.user || !session.logged || !!session.user.hasPermissions('$ & "admin" | $ & "users.ban" | $ & "users.change_names" | $ & "users.edit_profiles" | $ & "users.wipe_datas" | $ & "users.manage_flags" | $ & "users.manage_permissions"')) app.template.render('404')
+    if (!p.user || !session.logged || !session.user.hasPermissions('$ & "admin" | $ & "users.ban" | $ & "users.change_names" | $ & "users.edit_profiles" | $ & "users.wipe_datas" | $ & "users.manage_flags" | $ & "users.manage_permissions"')) app.template.render('404')
 </script>
 
 <template>
