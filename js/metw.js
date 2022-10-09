@@ -37,7 +37,7 @@ metw.Session = class Session {
         setInterval(() => {
             dummyCounter++
             if (!this.logged) return
-            if (this.ws?.readyState == 1 && dummyCounter > 20) { this.ws.send('0'); dummyCounter = 0 }
+            if (this.ws?.readyState == 1 && dummyCounter > 60) { this.ws.send('0'); dummyCounter = 0 }
             if (this.ws?.readyState > 1) this._wsconnect()
         }, 500)
     }
