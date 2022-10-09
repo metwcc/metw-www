@@ -166,7 +166,7 @@
         await load(async () => await p.user.follow(!p.user.followed))
         p.profile.follow.updateState(p.user.followed)
     }
-    if (!session.logged || !session.user.hasPermissions('$ & "admin" | $ & "users.ban" | $ & "users.change_usernames" | $ & "users.edit_profiles" | $ & "users.wipe_user_data" | $ & "users.manage_flags" | $ & "users.manage_permissions"')) p.querySelector('#manage-button').remove()
+    if (!session.logged || !session.user.hasPermissions('$ & "admin" | $ & "users.ban" | $ & "users.change_names" | $ & "users.edit_profiles" | $ & "users.wipe_datas" | $ & "users.manage_flags" | $ & "users.manage_permissions"')) p.querySelector('#manage-button').remove()
 
     p.followList.render = async (t, after) => {
         var data = await load(async () => await p.user.get(t, after))
