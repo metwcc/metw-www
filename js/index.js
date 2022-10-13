@@ -391,6 +391,7 @@ w.onload = async () => {
     
     d.getElementById('initial-load').style = 'opacity: 0'
     setTimeout(() => d.getElementById('initial-load').remove(), 300)
+    setTimeout(() => fetch('https://www.google-analytics.com/g/collect').catch(e => alert('Reklam engelleyiciniz işe yaramış gibi görünüyor.')), 400)
 }
 w.onpopstate = () => { if (!mouse.state) return w.history.pushState(null, null); app.load() }
 w.onresize = () => {
