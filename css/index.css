@@ -42,11 +42,10 @@ button.cancel { border: .05em solid var(--bd-1) }
 #disable-mouse { display: none; z-index: 99; cursor: wait }
 
 #alerts { display: block; z-index: 99; width: fit-content; height: fit-content; place-self: end }
-#alerts ul { max-width: calc(100vw - 4em); max-height: 50vh; padding: 0; overflow: hidden auto; word-break: break-all }
+#alerts ul { max-width: calc(100vw - 6em); max-height: 80vh; padding: 0; overflow: hidden auto; word-break: break-all }
 #alerts  ul::-webkit-scrollbar { width: 0 }
-#alerts  li { display: flex; width: fit-content; padding: .5em .5em .75em; margin: .5em 2em 0 auto; background: var(--bg-a-d); position: relative; flex-direction: row-reverse; list-style: none; border-radius: .25em; font-size: 1em; max-width: 75vw; overflow: hidden; transform: translateX(3em); opacity: 0; transition: transform .3s, opacity .3s; word-break: break-word }
+#alerts  li { display: flex; width: fit-content; padding: .5em .5em .75em; margin: .5em 1em 0 auto; background: var(--bg-a-d); position: relative; flex-direction: row-reverse; list-style: none; border-radius: .25em; font-size: 1em; max-width: 75vw; overflow: hidden; transform: translateX(3em); opacity: 0; transition: transform .3s, opacity .3s; word-break: break-word }
 #alerts  li:first-of-type { display: none }
-#alerts  li:last-of-type { margin-bottom: 1em }
 #alerts   svg { display: flex; width: 1em; margin-left: .25em; flex-shrink: 0; align-self: start }
 #alerts   div { width: 0; height: .25em; position: absolute; left: 0; bottom: 0; background: var(--color); transition: 2s linear }
 
