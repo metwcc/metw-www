@@ -1,7 +1,7 @@
 ﻿const w = window, d = document
 const session = new metw.Session()
 const defaultAlert = alert
-var page = p = {}, info = {}
+var page = p = {}, info = {}, pageHistory = []
 var pageOuter = d.getElementById('page-outer')
 var serviceWorker
 
@@ -179,6 +179,7 @@ const app = {
                     for (let script of scripts[0]) await new Promise(resolve => eval(`(async resolve => { ${script}; resolve() })`)(resolve))
                     setTimeout(() => d.getElementById('loading-bar').style.height = '0', 2)
                     for (let script of scripts[1]) { var e = d.createElement('script'); e.innerHTML = script; page.appendChild(e) }
+                    pageHistory.unshift([oldPage, pageOuter.scrollTop]); pageHistory.splice(32)
                     oldPage.parentNode.replaceChild(page, oldPage); d.querySelector('.page-outer').scroll(0, 0)
                 } else { this.data[name] = await fetch.stream(`/pages/${name}.html`, progress).then(r => r.text()); await this.render(name) }
             })
@@ -392,8 +393,33 @@ w.onload = async () => {
     d.getElementById('initial-load').style = 'opacity: 0'
     setTimeout(() => d.getElementById('initial-load').remove(), 300)
     setTimeout(() => fetch('https://www.google-analytics.com/g/collect').catch(e => alert('Reklam engelleyiciniz işe yaramış gibi görünüyor.')), 400)
+
+    var refreshable = false, refreshTouchStart, refreshElement = d.querySelector('#refresh svg'), refreshY
+    w.ontouchmove = ({ touches: [touch], touches, target }) => {
+        if (touches.length > 1) refreshable = false
+        if (!refreshable) return
+        refreshY = -(refreshTouchStart - touch.clientY) / 200
+        refreshY = quadradicBezier(0, 150, 150, refreshY > 1 ? 1 : refreshY)
+        refreshElement.style = `top: calc(-2em + ${refreshY}px); rotate: ${refreshY * -2.4}deg; opacity: ${map(refreshY, 0, 150, 0, 1)}`
+    }
+    w.ontouchend = async e => {
+        if (refreshY == 150) {
+            refreshY = 0
+            refreshElement.style = refreshElement.style + '; animation: rotating 1s ease-in-out infinite; top: 60px; transition: .3s'
+            session.clearCache(); await app.redirect(); refreshElement.style = 'transition: .3s'
+        } else if (mouse.state) refreshElement.style = 'transition: .3s'
+    }
+    w.ontouchstart = e => {
+        if (pageOuter.scrollTop || e.touches.length > 1 || !mouse.state || e.target.scrollHeight > e.target.clientHeight ||
+            ['INPUT', 'TEXTAREA'].includes(e.target.tagName) || e.target.closest('.disable-refresh') || !loaded) refreshable = false
+        else refreshable = true, refreshTouchStart = e.touches[0].clientY
+    }
 }
-w.onpopstate = () => { if (!mouse.state) return w.history.pushState(null, null); app.load() }
+w.onpopstate = () => {
+    if (!mouse.state) return w.history.pushState(null, null)
+    var [newPage, scrollTop] = pageHistory.shift()
+    newPage ? (page.parentNode.replaceChild(newPage, page), ([pageOuter.scrollTop, page] = [scrollTop, newPage])) : app.load()
+}
 w.onresize = () => {
     var style = d.getElementsByClassName('@resize')[0], isNew = !style
     if (isNew) style = d.createElement('style'), style.className = '@resize'
@@ -402,26 +428,6 @@ w.onresize = () => {
 }
 w.onfocus = () => { session.setStatus('online') }
 w.onblur = () => { session.setStatus('offline') }
-var refreshable = false, refreshTouchStart, refreshElement = d.querySelector('#refresh svg'), refreshY
-w.ontouchmove = ({ touches: [touch], touches, target }) => {
-    if (touches.length > 1) refreshable = false
-    if (!refreshable) return
-    refreshY = -(refreshTouchStart - touch.clientY) / 200
-    refreshY = quadradicBezier(0, 150, 150, refreshY > 1 ? 1 : refreshY)
-    refreshElement.style = `top: calc(-2em + ${refreshY}px); rotate: ${refreshY * -2.4}deg; opacity: ${map(refreshY, 0, 150, 0, 1)}`
-}
-w.ontouchend = async e => {
-    if (refreshY == 150) {
-        refreshY = 0
-        refreshElement.style = refreshElement.style + '; animation: rotating 1s ease-in-out infinite; top: 60px; transition: .3s'
-        session.clearCache(); await app.redirect(); refreshElement.style = 'transition: .3s'
-    } else if (mouse.state) refreshElement.style = 'transition: .3s'
-}
-w.ontouchstart = e => {
-    if (pageOuter.scrollTop || e.touches.length > 1 || !mouse.state || e.target.scrollHeight > e.target.clientHeight ||
-        ['INPUT', 'TEXTAREA'].includes(e.target.tagName) || e.target.closest('.disable-refresh') || !loaded) refreshable = false
-    else refreshable = true, refreshTouchStart = e.touches[0].clientY
-}
 
 const ontitlechange = new MutationObserver(([{ target }]) => gtag('config', gaId, { page_title: target.text, page_path: w.location.pathname }) )
 ontitlechange.observe(document.querySelector('title'), { childList: true })
