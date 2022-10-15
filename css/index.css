@@ -11,7 +11,7 @@
 
 .rainbow { background-image: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet); -webkit-background-clip: text; -webkit-text-fill-color: transparent }
 
-a { cursor: pointer }
+a { cursor: pointer; text-decoration: none }
 body { background: var(--bg-g); position: relative }
 
 button, input, textarea { padding: .25em; outline: none; background: var(--bg-1); border-radius: .25em; transition: .3s; border: none; outline: none }
@@ -145,9 +145,9 @@ nav  .n-buttons .notification-count { display: none; margin: 0 !important; paddi
 @media screen and (max-width: 600px) { ._p-c li { padding: 1.5em 1.5em } }
 ._p-c  .buttons { display: flex; align-items: center; justify-content: space-between }
 ._p-c  .buttons svg { stroke: inherit; height: 1em; width: 1em }
-._p-c  .buttons span { height: 1.25em; opacity: .5; display: inline-flex; align-items: center; transition: .3s; stroke: var(--color); user-select: none }
-._p-c  .buttons  span:hover { transform: scale(1.05); opacity: .75; cursor: pointer }
-._p-c  .buttons  span:active { transform: scale(1.1); opacity: 1 }
+._p-c  .buttons a { height: 1.25em; opacity: .5; display: inline-flex; align-items: center; transition: .3s; stroke: var(--color); user-select: none }
+._p-c  .buttons  a:hover { transform: scale(1.05); opacity: .75; cursor: pointer }
+._p-c  .buttons  a:active { transform: scale(1.1); opacity: 1 }
 ._p-c  .buttons  .comment:hover { color: #1B8BD7; stroke: #1B8BD7 }
 ._p-c  .buttons  .like:hover { color: #F91880; stroke: #F91880 }
 ._p-c  .buttons  .like .count { color: inherit }

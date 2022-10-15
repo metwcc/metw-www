@@ -91,7 +91,12 @@ function askFor(title, content, ok = 'onayla', cancel = 'iptal') {
         _cancel.onclick = () => (resolve(false), close())
     })
 }
-
+function anchor({ ctrlKey, shiftKey, target }) {
+    var a = target.closest('a')
+    if (!a.getAttribute('href').startsWith('/')) a.href = `${w.location.pathname}/${a.getAttribute('href')}`
+    if (ctrlKey || shiftKey) return true
+    else { app.redirect(a.href || '/'); return false }
+}
 
 const lerp = (A, B, t) => A + (B - A) * t
 const quadradicBezier = (A, B, C, t) => lerp(lerp(A, B, t), lerp(B, C, t), t)
@@ -166,6 +171,9 @@ const app = {
             if (window.location.search.startsWith('?/')) window.history.pushState(null, '', window.location.search.substring(2).replace('&', '?')); return [this.pathname, this.search] = [pathname, search]
         }
     },
+    formatElement(e) {
+        Array.from(e.getElementsByClassName('a')).forEach(a => a.onclick = anchor)
+    },
     template: {
         data: {},
         async render(name) {
@@ -181,6 +189,7 @@ const app = {
                     for (let script of scripts[1]) { var e = d.createElement('script'); e.innerHTML = script; page.appendChild(e) }
                     pageHistory.unshift([oldPage, pageOuter.scrollTop]); pageHistory.splice(32)
                     oldPage.parentNode.replaceChild(page, oldPage); d.querySelector('.page-outer').scroll(0, 0)
+                    app.formatElement(p)
                 } else { this.data[name] = await fetch.stream(`/pages/${name}.html`, progress).then(r => r.text()); await this.render(name) }
             })
         }
@@ -281,6 +290,7 @@ w.addEventListener('resize', () => { if (crop.style.display == 'grid') crop.refl
 //#region SESSION
 session.onlogin = () => {
     localStorage.setItem('SID', session.SID)
+    for (e of d.getElementsByClassName('@logged-url')) e.href = `/@${session.user.name}`
     for (e of d.getElementsByClassName('@logged')) e.style.display = ''
     for (e of d.getElementsByClassName('@non-logged')) e.style.display = 'none'
     for (e of d.getElementsByClassName('@username')) e.innerHTML = session.user.displayName
@@ -369,7 +379,8 @@ var loaded = false
 w.onload = async () => {
     loaded = true
     w.onresize()
-    
+    app.formatElement(d)
+
     try { info = await fetch(url.backend + '/').then(r => raw = r).then(r => r.json()) }
     catch { w.location.replace('/offline.html') }
 

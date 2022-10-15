@@ -16,9 +16,9 @@
         var _post = d.createElement('li')
         if (post.hasFlag('$ & "deleted"')) { _post.innerHTML = `gönderi silinmiş...`;  return _post }
         _post.innerHTML = `
-            <img loading="lazy" class="avatar" onclick="if (app.location.pathname[0] != '@${post.user.name}' || app.location.pathname.lenght > 1) app.redirect('/@${post.user.name}')" src="${post.user.avatarURL}" />
+            <img loading="lazy" class="avatar" onclick="app.redirect('/@${post.user.name}')" src="${post.user.avatarURL}" />
             <div>
-                <span class="username" onclick="if (app.location.pathname[0] != '@${post.user.name}' || app.location.pathname.lenght > 1) app.redirect('/@${post.user.name}')">${post.user.displayName}</span><span class="date">&nbsp;·&nbsp;${timeSince(post.sentOn)} ${post.hasFlag('$ & "edited"') ? '(düzenlendi)' : ''}</span>
+                <a class="username a" href="/@${post.user.name}">${post.user.displayName}</span><span class="date">&nbsp;·&nbsp;${timeSince(post.sentOn)} ${post.hasFlag('$ & "edited"') ? '(düzenlendi)' : ''}</a>
                 <p class="content">${this.richText(post.content)}</p>
                 <div class="edit">
                     <textarea></textarea>
@@ -26,14 +26,15 @@
                 </div>
                 <img class="attachment" loading="lazy" src="${post.hasFlag('$ & "has_attachment"') ? (url.cdn + '/attachments/' + post.id) : ''}" />
                 <div class="buttons">
-                    <span class="_inline-img comment" onclick="app.redirect('/gönderi/${post.id}')" comment">${icons.comment}&nbsp;${post.commentCount}</span>
-                    <span class="_inline-img like">${icons.like}&nbsp;<a class="count">${post.likeCount}</a></span>
-                    <span class="share">${icons.share}</span>
-                    <span class="dots _popup-menu-button">${icons.dots}</span>
+                    <a class="_inline-img comment a" href="/gönderi/${post.id}" comment">${icons.comment}&nbsp;${post.commentCount}</a>
+                    <a class="_inline-img like">${icons.like}&nbsp;<span class="count">${post.likeCount}</span></a>
+                    <a class="share">${icons.share}</a>
+                    <a class="dots _popup-menu-button">${icons.dots}</a>
                 </div>
             </div>`
         if (!(post.flags & 1)) _post.querySelector('.attachment').remove()
         else pinchZoom(_post.querySelector('.attachment'))
+        app.formatElement(_post)
 
         var uls = () => { _post.querySelector('.buttons .like').style = post.liked ? 'color: #F91880; stroke: #F91880' : ''; _post.querySelector('.buttons .like .count').innerText = post.likeCount }; uls()
         _post.querySelector('.share').onclick = () => navigator.share({ title: 'metw', url: `/gönderi/${post.id}`, text: post.content })
@@ -89,11 +90,11 @@
             <div class="comment" style="${highlighted ? 'border-color: var(--bg-b-1)' : ''}">
                 <img loading="lazy" class="avatar" onclick="app.redirect('/@${comment.user.name}')" src="${comment.user.avatarURL}" />
                 <div>
-                    <span class="username" onclick="app.redirect('/@${comment.user.name}')">${comment.user.displayName}</span><span class="date">&nbsp;·&nbsp;${timeSince(comment.sentOn)}</span>
+                    <a class="username a" href="/@${comment.user.name}">${comment.user.displayName}</a><span class="date">&nbsp;·&nbsp;${timeSince(comment.sentOn)}</span>
                     <p class="content">${this.richText(comment.content)}</p>
                     <div class="buttons">
-                        <span class="reply">${icons.reply}</span>
-                        <span class="dots _popup-menu-button">${icons.dots}</span>
+                        <a class="reply">${icons.reply}</a>
+                        <a class="dots _popup-menu-button">${icons.dots}</a>
                     </div>
                 </div>
             </div>
@@ -106,6 +107,7 @@
                 </div>
             </div>
             <div class="replies"></div>`
+        app.formatElement(_comment)
 
         let _replies = _comment.querySelector('.replies')
         _replies.appendChild(_loadMore)
