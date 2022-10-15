@@ -16,7 +16,7 @@
         var _post = d.createElement('li')
         if (post.hasFlag('$ & "deleted"')) { _post.innerHTML = `gönderi silinmiş...`;  return _post }
         _post.innerHTML = `
-            <img class="avatar" onclick="if (app.location.pathname[0] != '@${post.user.name}' || app.location.pathname.lenght > 1) app.redirect('/@${post.user.name}')" src="${post.user.avatarURL}" />
+            <img loading="lazy" class="avatar" onclick="if (app.location.pathname[0] != '@${post.user.name}' || app.location.pathname.lenght > 1) app.redirect('/@${post.user.name}')" src="${post.user.avatarURL}" />
             <div>
                 <span class="username" onclick="if (app.location.pathname[0] != '@${post.user.name}' || app.location.pathname.lenght > 1) app.redirect('/@${post.user.name}')">${post.user.displayName}</span><span class="date">&nbsp;·&nbsp;${timeSince(post.sentOn)} ${post.hasFlag('$ & "edited"') ? '(düzenlendi)' : ''}</span>
                 <p class="content">${this.richText(post.content)}</p>
@@ -24,7 +24,7 @@
                     <textarea></textarea>
                     <div class="edit-buttons"><button class="cancel">iptal</button><button class="ok">kaydet</button></div>
                 </div>
-                <img class="attachment" src="${post.hasFlag('$ & "has_attachment"') ? (url.cdn + '/attachments/' + post.id) : ''}" />
+                <img class="attachment" loading="lazy" src="${post.hasFlag('$ & "has_attachment"') ? (url.cdn + '/attachments/' + post.id) : ''}" />
                 <div class="buttons">
                     <span class="_inline-img comment" onclick="app.redirect('/gönderi/${post.id}')" comment">${icons.comment}&nbsp;${post.commentCount}</span>
                     <span class="_inline-img like">${icons.like}&nbsp;<a class="count">${post.likeCount}</a></span>
@@ -87,7 +87,7 @@
         _loadMore.innerText = 'devamını yükle', _loadMore.className = '_load-more load-more'
         _comment.innerHTML = `
             <div class="comment" style="${highlighted ? 'border-color: var(--bg-b-1)' : ''}">
-                <img class="avatar" onclick="app.redirect('/@${comment.user.name}')" src="${comment.user.avatarURL}" />
+                <img loading="lazy" class="avatar" onclick="app.redirect('/@${comment.user.name}')" src="${comment.user.avatarURL}" />
                 <div>
                     <span class="username" onclick="app.redirect('/@${comment.user.name}')">${comment.user.displayName}</span><span class="date">&nbsp;·&nbsp;${timeSince(comment.sentOn)}</span>
                     <p class="content">${this.richText(comment.content)}</p>

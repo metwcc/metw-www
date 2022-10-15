@@ -58,7 +58,7 @@
             if (!(p.posts.data.length % 30)) p.appendChild(loadMore)
             loadMore.onclick = async () => {
                 p.posts.data = await load(async () => await session.homepage(p.posts.data.at(-1)?.id))
-                if (!p.posts.cursor) loadMore.remove()
+                if (!p.posts.data.length || p.posts.data.length % 30) loadMore.remove()
                 p.posts.append(p.posts.data)
             }
             p.appendChild(d.createElement('br'))
