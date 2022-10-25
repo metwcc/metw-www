@@ -1,16 +1,17 @@
 ﻿metw.gui = {
     richText(raw) {
-        return raw ? (' ' + raw).replace(/\</g, '&lt;').replace(/\>/g, '&gt;')
+        return raw ? (' ' + raw)
             .replace(/(\s)\@([\w\d-\.]+)/g, (_, text, name) => 
                 `${text}<a class="href" href="javascript:app.redirect('/@${name}')">@${name.replace(/\_/, '&#95')}</a>`
             ).substring(1)
-            .replace(/(https?)\:\/\/([\w\d\-\.]+)(?:\/([^\s]*))?/g, (raw, protocol, origin, pathname) => 
+            .replace(/(https?)\:\/\/(\s+)(?:\/([^\s]*))?/g, (raw, protocol, origin, pathname) => 
                 `<a class="href" href="${raw}" target="blank">${(origin + (pathname?.length ? '/' : '') + ((pathname?.length > 16 ? pathname.substring(0, 16) + '...' : pathname) || '')).replace(/\_/, '&#95')}</a>`
             )
             .replace(/\*\*((?:(?!\*\*)[\s\S])+)\*\*/g, (raw, text) => `<b>${text}</b>`)
             .replace(/\*((?:(?!\*)[\s\S])+)\*/g, (raw, text) => `<i>${text}</i>`)
             .replace(/\_((?:(?!\_)[\s\S])+)\_/g, (raw, text) => `<u>${text}</u>`)
-            .replace(/\~\~((?:(?!\~\~)[\s\S])+)\~\~/g, (raw, text) => `<del>${text}</del>`).replace(/\n/g, '<br>') : ''
+            .replace(/\~\~((?:(?!\~\~)[\s\S])+)\~\~/g, (raw, text) => `<del>${text}</del>`).replace(/\n/g, '<br>')
+            .replace(/\</g, '&lt;').replace(/\>/g, '&gt;') : ''
     },
     post(post) {
         var _post = d.createElement('li')
@@ -37,7 +38,7 @@
         app.formatElement(_post)
 
         var uls = () => { _post.querySelector('.buttons .like').style = post.liked ? 'color: #F91880; stroke: #F91880' : ''; _post.querySelector('.buttons .like .count').innerText = post.likeCount }; uls()
-        _post.querySelector('.share').onclick = () => navigator.share({ title: 'metw', url: `/gönderi/${post.id}`, text: post.content })
+        _post.querySelector('.share').onclick = () => navigator.share({ title: 'metw', url: `http://metw.cc/g${post.id}`, text: post.content })
         if (session.logged) {
             _post.querySelector('.dots').onclick = event =>
                 popupMenu(event, [['report', 'bildir', console.log],
