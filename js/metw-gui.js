@@ -4,7 +4,7 @@
             .replace(/(\s)\@([\w\d-\.]+)/g, (_, text, name) => 
                 `${text}<a class="href" href="javascript:app.redirect('/@${name}')">@${name.replace(/\_/, '&#95')}</a>`
             ).substring(1)
-            .replace(/(https?)\:\/\/(\s+)(?:\/([^\s]*))?/g, (raw, protocol, origin, pathname) => 
+            .replace(/(https?)\:\/\/(\S+)(?:\/(\S*))?/g, (raw, protocol, origin, pathname) => 
                 `<a class="href" href="${raw.replace(/\&lt;/g, '<')}" target="blank">${(origin + (pathname?.length ? '/' : '') + ((pathname?.length > 16 ? pathname.substring(0, 16) + '...' : pathname) || '')).replace(/\_/, '&#95')}</a>`
             )
             .replace(/\*\*((?:(?!\*\*)[\s\S])+)\*\*/g, (raw, text) => `<b>${text}</b>`)
