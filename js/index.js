@@ -93,7 +93,6 @@ function askFor(title, content, ok = 'onayla', cancel = 'iptal') {
 }
 function anchor({ ctrlKey, shiftKey, target }) {
     var a = target.closest('a')
-    if (!a.getAttribute('href').startsWith('/')) a.href = `${w.location.pathname}/${a.getAttribute('href')}`
     if (ctrlKey || shiftKey) return true
     else { app.redirect(a.href || '/'); return false }
 }
@@ -172,7 +171,10 @@ const app = {
         }
     },
     formatElement(e) {
-        Array.from(e.getElementsByClassName('a')).forEach(a => a.onclick = anchor)
+        Array.from(e.getElementsByClassName('a')).forEach(a => {
+            if (!a.getAttribute('href')?.startsWith('/')) a.href = `${w.location.pathname}/${a.getAttribute('href')}`
+            a.onclick = anchor
+        })
     },
     template: {
         data: {},

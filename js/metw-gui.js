@@ -1,16 +1,19 @@
 ﻿metw.gui = {
     richText(raw) {
-        return raw ? (' ' + raw).replace(/\</g, '&lt;')
-            .replace(/(\s)\@([\w\d-\.]+)/g, (_, text, name) => 
+        return raw ? raw.replace(/\</g, '&lt;').replace(/\>/g, '&gt;')
+            .replace(/([^\w\d]?)\@([\w\d-\.\/]+)/g, (_, text, name) => 
                 `${text}<a class="href" href="javascript:app.redirect('/@${name}')">@${name.replace(/\_/, '&#95')}</a>`
-            ).substring(1)
-            .replace(/(https?)\:\/\/(\S+)(?:\/(\S*))?/g, (raw, protocol, origin, pathname) => 
-                `<a class="href" href="${raw.replace(/\&lt;/g, '<')}" target="blank">${(origin + (pathname?.length ? '/' : '') + ((pathname?.length > 16 ? pathname.substring(0, 16) + '...' : pathname) || '')).replace(/\_/, '&#95')}</a>`
             )
+            .replace(/(https?)\:\/\/([\w\d\.\-ğüışöç]+)(?:\/([\w\d\.-ğüşıöç\;\,\?\:\@\&\=\+\$\!\(\)\#\/\%]*))?/g, (raw, protocol, origin, pathname) => 
+                `<a class="href" href="${raw.replace(/\&lt;/g, '<')}" target="blank">${(origin + (pathname?.length ? '/' : '') +
+                    ((pathname?.length > 16 ? pathname.substring(0, 16) + '...' : pathname) || ''))}</a>`
+            ).replace(/((([^<>])+(?:(?=<[^>]*>[^\<]*<\/[^>]*>))))*([^<>]*$)/g, text => 
+                text.replace(/ /g, '&nbsp;')
+                    .replace(/\_((?:(?!\_)[\s\S])+)\_/g, (raw, text) => `<u>${text}</u>`))
             .replace(/\*\*((?:(?!\*\*)[\s\S])+)\*\*/g, (raw, text) => `<b>${text}</b>`)
             .replace(/\*((?:(?!\*)[\s\S])+)\*/g, (raw, text) => `<i>${text}</i>`)
-            .replace(/\_((?:(?!\_)[\s\S])+)\_/g, (raw, text) => `<u>${text}</u>`)
-            .replace(/\~\~((?:(?!\~\~)[\s\S])+)\~\~/g, (raw, text) => `<del>${text}</del>`).replace(/\n/g, '<br>') : ''
+            .replace(/\~\~((?:(?!\~\~)[\s\S])+)\~\~/g, (raw, text) => `<del>${text}</del>`)
+            .replace(/\n/g, '<br>') : ''
     },
     post(post) {
         var _post = d.createElement('li')
@@ -18,7 +21,7 @@
         _post.innerHTML = `
             <img loading="lazy" class="avatar" onclick="app.redirect('/@${post.user.name}')" src="${post.user.avatarURL}" />
             <div>
-                <a class="username a" href="/@${post.user.name}">${post.user.displayName}</span><span class="date">&nbsp;·&nbsp;${timeSince(post.sentOn)} ${post.hasFlag('$ & "edited"') ? '(düzenlendi)' : ''}</a>
+                <a class="username a" href="/@${post.user.name}">${post.user.displayName}</a><span class="date">&nbsp;·&nbsp;${timeSince(post.sentOn)} ${post.hasFlag('$ & "edited"') ? '(düzenlendi)' : ''}</span>
                 <p class="content">${this.richText(post.content)}</p>
                 <div class="edit">
                     <textarea></textarea>
