@@ -1,13 +1,14 @@
 ﻿metw.gui = {
     richText(raw) {
+        var _ = /(([^<>]+)(?:(?=<[^>]*>[^\<]*<\/[^>]*>))+|[^>]*$)/g;
         return raw ? raw.replace(/\</g, '&lt;').replace(/\>/g, '&gt;')
-            .replace(/([^\w\d]?)\@([\w\d-\.\/]+)/g, (_, text, name) => 
-                `${text}<a class="href" href="javascript:app.redirect('/@${name}')">@${name.replace(/\_/, '&#95')}</a>`
-            )
-            .replace(/(https?)\:\/\/([\w\d\.\-ğüışöç]+)(?:\/([\w\d\.-ğüşıöç\;\,\?\:\@\&\=\+\$\!\(\)\#\/\%]*))?/g, (raw, protocol, origin, pathname) => 
+            .replace(/(https?)\:\/\/([\w\d\.\-ğüışöç]+)(?:\/([\w\d\.-ğüşıöç\;\,\?\:\@\&\=\+\$\!\(\)\#\/\%]*))?/g, (raw, protocol, origin, pathname) =>
                 `<a class="href" href="${raw.replace(/\&lt;/g, '<')}" target="blank">${(origin + (pathname?.length ? '/' : '') +
                     ((pathname?.length > 16 ? pathname.substring(0, 16) + '...' : pathname) || ''))}</a>`
-            ).replace(/((([^<>])+(?:(?=<[^>]*>[^\<]*<\/[^>]*>))))*([^<>]*$)/g, text => 
+            ).replace(_, text => text.replace(/([^\w\d]?)\@([\w\d-\.\/]+)/g, (_, text, name) => 
+                `${text}<a class="href" href="javascript:app.redirect('/@${name}')">@${name.replace(/\_/, '&#95')}</a>`
+            ))
+            .replace(_, text => 
                 text.replace(/ /g, '&nbsp;')
                     .replace(/\_((?:(?!\_)[\s\S])+)\_/g, (raw, text) => `<u>${text}</u>`))
             .replace(/\*\*((?:(?!\*\*)[\s\S])+)\*\*/g, (raw, text) => `<b>${text}</b>`)
