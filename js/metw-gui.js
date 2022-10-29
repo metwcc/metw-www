@@ -3,17 +3,18 @@
         var _ = /(([^<>]+)(?:(?=<[^>]*>[^\<]*<\/[^>]*>))+|[^>]*$)/g;
         return raw ? raw.replace(/\</g, '&lt;').replace(/\>/g, '&gt;')
             .replace(/(https?)\:\/\/([\w\d\.\-ğüışöç]+)(?:\/([\w\d\.-ğüşıöç\;\,\?\:\@\&\=\+\$\!\(\)\#\/\%]*))?/g, (raw, protocol, origin, pathname) =>
-                `<a class="href" href="${raw.replace(/\&lt;/g, '<')}" target="blank">${(origin + (pathname?.length ? '/' : '') +
-                    ((pathname?.length > 16 ? pathname.substring(0, 16) + '...' : pathname) || ''))}</a>`
+                `<wbr><a class="href" href="${raw.replace(/\&lt;/g, '<')}" target="blank">${(origin + (pathname?.length ? '/' : '') +
+                    ((pathname?.length > 16 ? pathname.substring(0, 16) + '...' : pathname) || ''))}</a><wbr>`
             ).replace(_, text => text.replace(/([^\w\d]?)\@([\w\d-\.\/]+)/g, (_, text, name) => 
-                `${text}<a class="href" href="javascript:app.redirect('/@${name}')">@${name.replace(/\_/, '&#95')}</a>`
+                `<wbr>${text}<a class="href" href="javascript:app.redirect('/@${name}')">@${name.replace(/\_/, '&#95')}</a><wbr>`
             ))
             .replace(_, text => 
-                text.replace(/ /g, '&nbsp;')
+                text.replace(/ /g, '&nbsp;<wbr>')
                     .replace(/\_((?:(?!\_)[\s\S])+)\_/g, (raw, text) => `<u>${text}</u>`))
             .replace(/\*\*((?:(?!\*\*)[\s\S])+)\*\*/g, (raw, text) => `<b>${text}</b>`)
             .replace(/\*((?:(?!\*)[\s\S])+)\*/g, (raw, text) => `<i>${text}</i>`)
             .replace(/\~\~((?:(?!\~\~)[\s\S])+)\~\~/g, (raw, text) => `<del>${text}</del>`)
+            .replace(/##((?:(?!##)[\s\S])+)##/g, (raw, text) => `<span class="rainbow">${text}</span>`)
             .replace(/\n/g, '<br>') : ''
     },
     post(post) {
