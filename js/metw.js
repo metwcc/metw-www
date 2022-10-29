@@ -274,6 +274,12 @@ metw.Notification = class Notification {
                 await detail(1, 'user'); break
             /* @[0] tagged you on their bio */
             case 5: await detail(0, 'user'); break
+            /* @[3] commented [0] your on [2] => [1] */
+            case 6:
+                await detail(0, 'comment')
+                await detail(2, ['user', 'post', 'comment'][this.details[1]])
+                if (updateCounts) this.details[2].commentCount++
+                await detail(3, 'user'); break
         }
     }
 }

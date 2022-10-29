@@ -44,11 +44,12 @@
                     'gönderini beğendi',
                     ['profiline yorum yazdı', 'gönderine yorum yazdı', 'yorumuna yanıt yazdı'][n.details[1]],
                     'gönderisinde seni etiketledi',
-                'profilinde seni etiketledi'][n.type - 1]}
+                    'profilinde seni etiketledi',
+                    'yorumunda seni etiketledi'][n.type - 1]}
                 <span class="date">·&nbsp;${timeSince(n.timestamp)}</span>
             </div>`
-            if ([2, 3, 4].includes(n.type) && (n.type != 3 || n.details[1] == 1)) { let post = metw.gui.posts([n.details.at(-2)]); post.className += ' p-c post'; li.appendChild(post) }
-            if (n.type == 3) {
+            if ([2, 3, 4, 6].includes(n.type) && (![3, 6].includes(n.type) || n.details[1] == 1)) { let post = metw.gui.posts([n.details.at(-2)]); post.className += ' p-c post'; li.appendChild(post) }
+            if ([3, 6].includes(n.type)) {
                 let comments = d.createElement('div'); comments.className = '_p-c _comments p-c'
                 if (n.details[1] == 2 && n.details[2].topParentId) {
                     let goToPost = d.createElement('a')
