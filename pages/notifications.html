@@ -60,11 +60,11 @@
                     }
                     li.querySelector('div.title').appendChild(goToPost)
                 }
-                else {
+                else if (n.type == 6) {
                     let goToPost = d.createElement('a')
                     goToPost.className = 'href a', goToPost.style.fontSize = '.8em'
-                    switch (n.details[2].type) {
-                        case 0: goToPost.innerText = 'profile git'; goToPost.href = `/@${n.details[2].parent.name}/duvar`; break
+                    switch (n.details[1]) {
+                        case 0: goToPost.innerText = 'profile git'; goToPost.href = `/@${n.details[2].name}/duvar`; break
                         case 1: goToPost.innerText = 'gönderiye git'; goToPost.href = `/gönderi/${n.details[2].parentId}`; break
                     }
                     li.querySelector('div.title').appendChild(goToPost)
