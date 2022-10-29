@@ -51,12 +51,12 @@
             if ([2, 3, 4, 6].includes(n.type) && (![3, 6].includes(n.type) || n.details[1] == 1)) { let post = metw.gui.posts([n.details.at(-2)]); post.className += ' p-c post'; li.appendChild(post) }
             if ([3, 6].includes(n.type)) {
                 let comments = d.createElement('div'); comments.className = '_p-c _comments p-c'
-                if (n.details[1] == 2 && n.details[2].topParentId) {
+                if (n.details[1] == 2 && n.details[0].topParentId) {
                     let goToPost = d.createElement('a')
                     goToPost.className = 'href a', goToPost.style.fontSize = '.8em'
-                    switch (n.details[2].topParentType) {
-                        case 0: goToPost.innerText = 'profile git'; goToPost.href = `/@${n.details[2].topParent.name}/duvar`; break
-                        case 1: goToPost.innerText = 'gönderiye git'; goToPost.href = `/gönderi/${n.details[2].topParentId}`; break
+                    switch (n.details[0].topParentType) {
+                        case 0: goToPost.innerText = 'profile git'; goToPost.href = `/@${n.details[0].topParent.name}/duvar`; break
+                        case 1: goToPost.innerText = 'gönderiye git'; goToPost.href = `/gönderi/${n.details[0].topParentId}`; break
                     }
                     li.querySelector('div.title').appendChild(goToPost)
                 }
@@ -65,7 +65,7 @@
                     goToPost.className = 'href a', goToPost.style.fontSize = '.8em'
                     switch (n.details[1]) {
                         case 0: goToPost.innerText = 'profile git'; goToPost.href = `/@${n.details[2].name}/duvar`; break
-                        case 1: goToPost.innerText = 'gönderiye git'; goToPost.href = `/gönderi/${n.details[2].parentId}`; break
+                        case 1: goToPost.innerText = 'gönderiye git'; goToPost.href = `/gönderi/${n.details[2].id}`; break
                     }
                     li.querySelector('div.title').appendChild(goToPost)
                 }
