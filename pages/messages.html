@@ -175,7 +175,7 @@
 
     p.addChannel = (channel, top) => {
         var li = d.createElement('li'), other = channel.users.find(u => u.id != session.user.id) || channel.users[0]
-        li.innerHTML = `<img src="${other.avatarURL}" /> <div><span class="name">${other.name}</span><span class="details">${channel.unreadenCount ? (channel.unreadenCount > 50 ? '50+' : channel.unreadenCount) + ' yeni mesaj' : ''}</span></div>`
+        li.innerHTML = `<img src="${other.avatarURL}" /> <div><span class="name">${other.displayName}</span><span class="details">${channel.unreadenCount ? (channel.unreadenCount > 50 ? '50+' : channel.unreadenCount) + ' yeni mesaj' : ''}</span></div>`
         li.onclick = () => p.connectChat(channel)
         if (top) p.channels.prepend(li)
         else p.channels.appendChild(li)
