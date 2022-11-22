@@ -174,11 +174,13 @@
     }
 
     p.addChannel = (channel, top) => {
+        if (p.channels[channel.id]) return
         var li = d.createElement('li'), other = channel.users.find(u => u.id != session.user.id) || channel.users[0]
         li.innerHTML = `<img src="${other.avatarURL}" /> <div><span class="name">${other.displayName}</span><span class="details">${channel.unreadenCount ? (channel.unreadenCount > 50 ? '50+' : channel.unreadenCount) + ' yeni mesaj' : ''}</span></div>`
         li.onclick = () => p.connectChat(channel)
         if (top) p.channels.prepend(li)
         else p.channels.appendChild(li)
+        p.channels[channel.id] = li
         return li
     }
 
@@ -199,7 +201,7 @@
     }
 
 
-    if (p.channels.data.length) p.channels.innerHTML = '', p.channels.data.forEach(c => p.channels[c.id] = p.addChannel(c))
+    if (p.channels.data.length) p.channels.innerHTML = '', p.channels.data.forEach(c => p.addChannel(c))
     if (p._data?.length) p.connectChat(...p._data, null)
     p.onpopstate = async e => {
         if (app.location.pathname[1]) {
