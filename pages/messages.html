@@ -157,7 +157,9 @@
         e && e.preventDefault()
         if (!p.dm.form.textarea.value.replace(/\s/g, '')) return
         if (p.dm.form.textarea.value.length > 1024) return alert.error('Mesaj 1024 karakterden uzun olamaz.')
-        var message = await load(async () => await p.dm.active.send(p.dm.form.textarea.value))
+        var content = p.dm.form.textarea.value
+        p.dm.form.textarea.value = ''
+        var message = await load(async () => await p.dm.active.send(content))
         if (!message) return null
         p.addMessages.f([message], message.from, true)
         if (p.channels[p.dm.active.id]) p.channels.prepend(p.channels[p.dm.active.id])
@@ -166,7 +168,6 @@
             p.channels.data.push(p.dm.active)
             p.addChannel(p.dm.active, true)
         }
-        p.dm.form.textarea.value = ''
         p.dm.form.textarea.style.height = 'unset'
     }
     p.dm.form.onkeypress = ({ key, shiftKey }) => {
