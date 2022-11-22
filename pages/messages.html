@@ -215,7 +215,7 @@
         }
     }
 
-    p.channels.loaded = p.dm.messages.data.length, p.channels.busy = false
+    p.channels.loaded = p.channels.data.length, p.channels.busy = false
     if (p.channels.loaded == 20)
         p.channels.onscroll = async () => {
             if (!p.channels.busy && p.channels.scrollHeight - p.channels.scrollTop - p.channels.clientHeight < 10 && !(p.channels.loaded % 20)) {
