@@ -35,7 +35,7 @@
             </div>
             <ul></ul>
             <form>
-                <textarea name="textarea" placeholder="yazmaya başla..." rows="1" oninput="event.target.style.height = `calc(${event.target.scrollHeight}px)`"></textarea>
+                <textarea name="textarea" placeholder="yazmaya başla..." rows="1"></textarea>
                 <button><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg></button>
             </form>
         </div>
@@ -155,7 +155,7 @@
 
     p.dm.form.onsubmit = async e => {
         e && e.preventDefault()
-        if (!p.dm.form.textarea.value.replace(/\s/g, '')) return
+        if (!p.dm.form.textarea.value.replace(/\s/g, '')) return false
         if (p.dm.form.textarea.value.length > 1024) return alert.error('Mesaj 1024 karakterden uzun olamaz.')
         var content = p.dm.form.textarea.value
         p.dm.form.textarea.value = ''
@@ -170,9 +170,14 @@
         }
         p.dm.form.textarea.style.height = 'unset'
     }
-    p.dm.form.onkeypress = ({ key, shiftKey }) => {
-        if (key == 'Enter' && !shiftKey) p.dm.form.onsubmit()
-    }
+    p.dm.form.textarea.addEventListener('keypress', e => {
+        e.target.style.height = `calc(${e.target.scrollHeight}px)`
+        if (e.key == 'Enter' && !e.shiftKey) {
+            p.dm.form.onsubmit()
+            e.target.style.height = 'fit-content'
+            return e.preventDefault()
+        }
+    })
 
     p.addChannel = (channel, top) => {
         if (p.channels[channel.id]) return
