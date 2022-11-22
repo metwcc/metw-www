@@ -251,7 +251,7 @@ metw.Session = class Session {
                 data = data.split(',')
                 var { messages: [message] } = await this.bulkGet({ messages: [data[0]] }), channel = this.indexed.channels.find(channel => channel.id == message.channelId)
                 if (channel) { channel.unreadenCount++; channel.messageCount++ }
-                else channel = await this.get('channel', message.channelId)
+                else [channel] = await this.bulkGet('channels', [message.channelId])
                 message.channel = channel
                 this.event('message', message)
         }

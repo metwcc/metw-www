@@ -156,7 +156,7 @@
     p.profile.onlineBadge.style.display = ['none', 'block'][+p.user._online]
 
     for (let v of ['mod', 'beta', 'bug_hunter', 'staff', 'premium', 'partner']) if (p.user.hasFlags(`$ & "${v}"`)) p.profile.name.innerHTML += `<img src="/images/svg/flags/${v}.svg"></img>`
-    p.profile.startChat.onclick = async () => app.redirect(`/mesajlar/${await p.user.dm()}`)
+    p.profile.startChat.onclick = async () => app.redirect(`/mesajlar/${await load(async () => await p.user.dm())}`)
 
 
     // follow & list

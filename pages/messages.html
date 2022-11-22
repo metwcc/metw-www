@@ -74,7 +74,7 @@
     .p .dm  .title button svg { height: 100%; aspect-ratio: 1 / 1 }
     .p .dm  .title div { display: flex; gap: 1em; align-items: center }
     .p .dm  .title  img { width: 2em; height: 2em; border-radius: 50% }
-    .p .dm  .title  span { font-size: 1.5em }
+    .p .dm  .title > div > span { font-size: 1.5em }
 
     .p  ul { display: flex; margin: 0; padding: 1em 2em; flex-direction: column-reverse; gap: 1em; flex-grow: 1; overflow-y: auto }
     .p   ul::-webkit-scrollbar-thumb { background-color: var(--bg-1) }
@@ -189,8 +189,13 @@
     }
 
     session.onmessage = async message => {
-        if (p.dm.active.id == message.channelId) p.addMessages.f([message], message.from, true), await message.channel.read()
+        if (p.dm.active?.id == message.channelId) p.addMessages.f([message], message.from, true), await message.channel.read()
         else if (p.channels[message.channelId]) p.channels[message.channelId].querySelector('.details').innerHTML = message.channel.unreadenCount ? (message.channel.unreadenCount > 50 ? '50+' : message.channel.unreadenCount) + ' yeni mesaj' : ''
+        else {
+            if (!p.channels.data.length) p.channels.innerHTML = ''
+            p.channels.data.push(p.dm.active)
+            p.addChannel(message.channel, true)
+        }
     }
 
 
@@ -209,5 +214,5 @@
     }
 
     addEventListener('resize', p.resize, true)
-    p.clear = () => removeEventListener('resize', p.resize, true)
+    p.clear = () => { delete session.onmessage; removeEventListener('resize', p.resize, true) }
 </script>
