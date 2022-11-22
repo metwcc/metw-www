@@ -146,12 +146,11 @@
         p.profile.avatar.classList.add('@avatar')
         p.profile.avatar.parentElement.onclick = () => session.etc.changeAvatar()
         textarea.value = p.user.bio; textarea.addEventListener('focusout', () => load(async () => await session.settings([{ name: 'update_bio', content: textarea.value }])))
-        p.profile.follow.style.display = 'none'
-        p.profile.startChat.style.display = 'none'
+        p.profile.startChat.style.display = p.profile.follow.style.display = 'none'
         style.innerHTML = '.p .profile  .user  .avatar:after { content: "değiştir" }'; p.appendChild(style)
     }
     else p.profile.bio.innerHTML = metw.gui.richText(p.user.bio)
-    if (!session.logged) p.profile.follow.style.display = 'none'
+    if (!session.logged) p.profile.startChat.style.display = p.profile.follow.style.display = 'none'
     p.style.setProperty('--banner-url', `url("${p.user.bannerURL}")`)
     p.profile.onlineBadge.style.display = ['none', 'block'][+p.user._online]
 
