@@ -4,6 +4,7 @@
 </script>
 
 <template>
+    <button onclick="(async () => await askFor('Çıkış Yap', 'Çıkış yapmak istediğinizden emin misiniz?', ok = 'çıkış yap') && session.disconnect())()" class="logout ok _inline-img"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>&nbsp;Çıkış yap</button>
     <div class="profile">
         <h2>Profil</h2>
         <div class="avatar">
@@ -60,6 +61,8 @@
     .p > div > div { padding: .25em }
     .p > div > div span { font-size: 1.25em }
     .p > div > div > div { display: flex; flex-wrap: wrap; align-items: end }
+
+    .p .logout { margin-bottom: 1em }
 
     .p .profile div img { height: auto; margin-right: .5em; border: .125em solid var(--bd-1) }
     .p .profile .avatar img { width: min(5em, 100%); aspect-ratio: 1; border-radius: 50% }

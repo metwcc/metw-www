@@ -1,0 +1,213 @@
+﻿<script init>
+    Object.assign(p, {
+        dm: p.querySelector('.dm'),
+        channels: p.querySelector('.channels')
+    })
+    Object.assign(p.dm, {
+        messages: p.dm.querySelector('ul'),
+        main: p.dm.querySelector('.main'),
+        home: p.dm.querySelector('.home'),
+        form: p.dm.querySelector('form')
+    })
+    p.channels.data = await session.get('channels')
+    if (app.location.pathname[1]) {
+        p._data = await session.bulkGet('channels', [app.location.pathname[1]])
+        if (p._data[0]) p._data.push(await p._data[0].get('messages'))
+    }
+</script>
+
+<template>
+    <ul class="channels">
+        <li>
+            Görünüşe göre hiç direk mesajınız yok. Sohbet başlatmak için kullanıcı profiline gidin.
+        </li>
+    </ul>
+    <div class="dm disable-refresh">
+        <div class="home">
+            <b>Mesajlar</b>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg>
+            <span>Bir arkadaşınıza özel mesaj gönderin</span>
+        </div>
+        <div class="main">
+            <div class="title">
+                <div><img /> <span></span></div>
+                <button><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+            <ul></ul>
+            <form>
+                <textarea name="textarea" placeholder="yazmaya başla..." rows="1" oninput="event.target.style.height = `calc(${event.target.scrollHeight}px)`"></textarea>
+                <button><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg></button>
+            </form>
+        </div>
+    </div>
+</template>
+
+<style>
+    .p { display: flex; height: 100%; padding: 0 !important }
+
+    .p .channels { display: flex; margin: 0; padding: 1em 0; min-width: 330px; flex-grow: 1; flex-direction: column; overflow: hidden auto }
+    .p .channels li { display: flex; padding: .5em 1em; list-style: none; gap: 1em; align-items: center; position: relative }
+    .p .channels li:after { content: ''; display: block; position: absolute; inset: -.05em -.125em; background: var(--bg-1); z-index: -1; transition: .2s; opacity: 0 }
+    .p .channels li:hover { cursor: pointer }
+    .p .channels li:hover::after { opacity: .25 }
+    .p .channels  img { width: 3em; height: 3em; border-radius: 50% }
+    .p .channels  div { display: flex; flex-direction: column; overflow: hidden }
+    .p .channels   .name { font-size: 1.2em }
+    .p .channels   .details { font-size: .8em; opacity: .5 }
+
+    .p .dm { display: none; position: relative; border-left: 1px solid var(--bg-1); flex-grow: 2 }
+    .p .dm > * { position: absolute; inset: 0 }
+
+    .p .dm .main { display: none; flex-direction: column }
+
+    .p .dm .home { display: flex; flex-direction: column; align-items: center; justify-content: center }
+    .p .dm .home b { font-size: 1.5em }
+    .p .dm .home svg { width: 6em; height: 6em }
+
+    .p .dm  form { display: flex; margin: 1em; width: calc(100% - 2em); border-radius: 2em; background-color: var(--bg-1); align-items: center }
+    .p .dm  form textarea { flex-grow: 1; padding-left: 2em; margin: .5em 0; max-height: 5em; resize: none; background-color: transparent }
+    .p .dm  form button { display: grid; margin: .5em; padding: .5em; width: 2em; height: 2em; box-sizing: content-box; border-radius: 100%; place-items: center; background-color: var(--bg-b-1) }
+    .p .dm  form svg { width: 75%; height: 75%; transform: rotate(90deg) }
+    
+    .p .dm  .title { display: flex; padding: 1em 2em; align-content: center; justify-content: space-between; border-bottom: 1px solid var(--bg-1) }
+    .p .dm  .title button { padding: .5em; width: fit-content; border-radius: 50%; background: none }
+    .p .dm  .title button svg { height: 100%; aspect-ratio: 1 / 1 }
+    .p .dm  .title div { display: flex; gap: 1em; align-items: center }
+    .p .dm  .title  img { width: 2em; height: 2em; border-radius: 50% }
+    .p .dm  .title  span { font-size: 1.5em }
+
+    .p  ul { display: flex; margin: 0; padding: 1em 2em; flex-direction: column-reverse; gap: 1em; flex-grow: 1; overflow-y: auto }
+    .p   ul::-webkit-scrollbar-thumb { background-color: var(--bg-1) }
+    .p   .message { display: flex; list-style: none; padding: 0; align-items: flex-end; gap: .5em }
+    .p   .message > img { width: 1.75em; height: 1.75em; border-radius: 50% }
+    .p   .message > div { display: flex; flex-direction: column-reverse; gap: .25em }
+    .p   .message > div > div { display: inline-block; width: fit-content; padding: 1em; word-break: break-word; background-color: var(--bg-1); border-radius: 2em }
+    .p   .from-me { flex-direction: row-reverse }
+    .p   .from-me div { align-items: flex-end }
+    .p   .from-me > div > div { background-color: var(--bg-b-1) }
+
+    @media screen and (min-width: 750px) {
+        .p .channels { flex-basis: 330px; flex-grow: 0 }
+        .p .dm { display: block }
+    }
+    @media screen and (max-width: 330px) {
+        .p .channels { min-width: 0 }
+    }
+</style>
+
+<script>
+    p.addMessages = _messages => {
+        if (!_messages.length) return
+        var messages = [[[], _messages[0].from]], i = 0
+        for (let message of _messages) {
+            if (messages[i][1].id != message.from.id) { i++; messages[i] = [[], message.from] }
+            messages[i][0].push(message)
+        }
+        messages.forEach(m => p.addMessages.f(...m))
+    }
+    p.addMessages.f = (messages, user, bottom) => {
+        if (p.addMessages.last?.[1] == user.id && bottom) {
+            p.addMessages.last[0].innerHTML = `${messages.map(message => '<div>' + metw.gui.richText(message.content) + '</div>').join('')}` + p.addMessages.last[0].innerHTML 
+        }
+        else {
+            var li = d.createElement('li'); li.className = 'message' + (user.id == session.user.id ? ' from-me' : '')
+            li.innerHTML = `<img src="${user.avatarURL}" /><div class="message-div">${messages.map(message => '<div>' + metw.gui.richText(message.content) + '</div>').join('')}</div>`
+            if (bottom) p.dm.messages.prepend(li)
+            else p.dm.messages.appendChild(li)
+            if (!p.addMessages.last || p.addMessages.last[2] < messages[0].id) p.addMessages.last = [li.querySelector('.message-div'), user.id, messages[0].id]
+        }
+    }
+
+
+    p.connectChat = async (channel, messages, pushState = true) => {
+        p.dm.messages.data = messages ? messages : await load(async () => await channel.get('messages'))
+        p.dm.active = channel, channel.read()
+        if (pushState) history.pushState(null, '', '/mesajlar/' + channel.id)
+
+        try { p.channels[channel.id].querySelector('.details').innerHTML = '' } catch { }
+        p.dm.form.textarea.value = p.dm.messages.innerHTML = ''
+        p.dm.main.style.display = 'flex', p.dm.home.style.display = 'none', p.resize()
+        var other = channel.users.find(u => u.id != session.user.id) || channel.users[0]
+        p.dm.main.querySelector('.title img').src = other.avatarURL
+        p.dm.main.querySelector('.title span').innerHTML = other.displayName
+        delete p.addMessages.last
+
+        p.addMessages(p.dm.messages.data)
+        var loadedMessages = p.dm.messages.data.length, busy = false
+        if (loadedMessages == 20) 
+            p.dm.messages.onscroll = async () => {
+                if (!busy && p.dm.messages.scrollHeight - p.dm.messages.clientHeight + p.dm.messages.scrollTop < 10 && loadedMessages < channel.messageCount) {
+                    busy = true
+                    p.dm.messages.data = await load(async () => await channel.get('messages', p.dm.messages.data.at(-1).id))
+                    p.addMessages(p.dm.messages.data)
+                    loadedMessages += p.dm.messages.data.length
+                    busy = false
+                }
+            }
+        else delete p.dm.messages.onsroll
+    }
+
+    p.dm.querySelector('.title button').onclick = e => {
+        p.dm.main.style.display = 'none', p.dm.home.style.display = 'flex', p.dm.active = false; p.resize()
+        if (e) history.pushState(null, null, '/mesajlar')
+    }
+
+
+    p.dm.form.onsubmit = async e => {
+        e && e.preventDefault()
+        if (p.dm.form.textarea.value.match('[^\s]')?.length < 1) return
+        if (p.dm.form.textarea.value.length > 1024) return alert.error('Mesaj 1024 karakterden uzun olamaz.')
+        var message = await load(async () => await p.dm.active.send(p.dm.form.textarea.value))
+        if (!message) return null
+        p.addMessages.f([message], message.from, true)
+        if (p.channels[p.dm.active.id]) p.channels.prepend(p.channels[p.dm.active.id])
+        else {
+            if (!p.channels.data.length) p.channels.innerHTML = ''
+            p.channels.data.push(p.dm.active)
+            p.addChannel(p.dm.active, true)
+        }
+        p.dm.form.textarea.value = ''
+        p.dm.form.textarea.style.height = 'unset'
+    }
+    p.dm.form.onkeypress = ({ key, shiftKey }) => {
+        if (key == 'Enter' && !shiftKey) p.dm.form.onsubmit()
+    }
+
+    p.addChannel = (channel, top) => {
+        var li = d.createElement('li'), other = channel.users.find(u => u.id != session.user.id) || channel.users[0]
+        li.innerHTML = `<img src="${other.avatarURL}" /> <div><span class="name">${other.name}</span><span class="details">${channel.unreadenCount ? (channel.unreadenCount > 50 ? '50+' : channel.unreadenCount) + ' yeni mesaj' : ''}</span></div>`
+        li.onclick = () => p.connectChat(channel)
+        if (top) p.channels.prepend(li)
+        else p.channels.appendChild(li)
+        return li
+    }
+
+    p.resize = function resize() {
+        if (p.dm.active && innerWidth < 750) p.dm.style.display = 'flex', p.channels.style.display = 'none'
+        else if (p.dm.active) p.dm.style.display = p.channels.style.display = 'flex'
+        else p.dm.style.display = p.channels.style.display = ''
+    }
+
+    session.onmessage = async message => {
+        if (p.dm.active.id == message.channelId) p.addMessages.f([message], message.from, true), await message.channel.read()
+        else if (p.channels[message.channelId]) p.channels[message.channelId].querySelector('.details').innerHTML = message.channel.unreadenCount ? (message.channel.unreadenCount > 50 ? '50+' : message.channel.unreadenCount) + ' yeni mesaj' : ''
+    }
+
+
+    if (p.channels.data.length) p.channels.innerHTML = '', p.channels.data.forEach(c => p.channels[c.id] = p.addChannel(c))
+    if (p._data?.length) p.connectChat(...p._data, null)
+    p.onpopstate = async e => {
+        if (app.location.pathname[1]) {
+            var channel = await session.bulkGet('channels', [app.location.pathname[1]])
+            if (channel.length) p.connectChat(channel[0], null, null)
+            return false
+        }
+        if (app.location.pathname[0] == 'mesajlar') {
+            p.dm.querySelector('.title button').onclick()
+            return false
+        }
+    }
+
+    addEventListener('resize', p.resize, true)
+    p.clear = () => removeEventListener('resize', p.resize, true)
+</script>

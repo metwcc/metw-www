@@ -97,7 +97,7 @@ nav  .n-buttons > a span { display: none }
 nav  .n-buttons div { display: flex; gap: .5em }
 nav  .n-buttons div a img { border-radius: 50% }
 nav  .n-buttons  div:first-of-type a span:first-of-type { margin-left: .25em }
-nav  .n-buttons .notification-count { display: none; margin: 0 !important; padding: .1em .3em; top: 0; right: 0; transform: translate(-.3em, .5em); position: absolute; font-size: .5em; border-radius: 1em; background-color: var(--bg-b-1) }
+nav  .n-buttons .count { display: none; margin: 0 !important; padding: .1em .3em; top: 0; right: 0; transform: translate(-.3em, .5em); position: absolute; font-size: .5em; border-radius: 1em; background-color: var(--bg-b-1) }
 
 .page-outer { height: 100%; overflow: hidden auto }
 .page-outer::-webkit-scrollbar-thumb { background-color: var(--bg-1) }

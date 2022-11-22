@@ -31,8 +31,8 @@ metw.Session = class Session {
     constructor(SID) {
         this.SID = SID
         this.user = { id: 0 }
-        this.notificationCount = 0
-        this.indexed = { users: [], posts: [], comments: [], raw: [], notifications: [] }
+        this.notificationCount = this.messageCount = 0
+        this.clearCache()
         var dummyCounter = 0
         setInterval(() => {
             dummyCounter++
@@ -122,8 +122,8 @@ metw.Session = class Session {
         if (ok) {
             this.user = new metw.User(session, this)
             this.status = 'online'
-            this.indexed = { users: [this.user], posts: [], comments: [], raw: [], notifications: [] }
-            this.notificationCount = 0
+            this.clearCache()
+            this.notificationCount = this.messageCount = 0
             this._wsconnect()
         }
         this.logged = ok
@@ -131,8 +131,8 @@ metw.Session = class Session {
         return this.SID
     }
     async disconnect() {
-        this.indexed = { users: [], posts: [], comments: [], raw: [], notifications: [] }
-        this.notificationCount = 0
+        this.clearCache()
+        this.notificationCount = this.messageCount = 0
         this.user = { id: 0 }
         this.logged = false, this.SID = undefined
         this.ws.close()
@@ -163,22 +163,34 @@ metw.Session = class Session {
                 _data.push(eval(`new metw.${key.charAt(0).toUpperCase() + key.slice(1, -1)}({ ...d, user: ${user ? 'user' : undefined} }, this)`))
             }
             this.indexed[key].push(..._data)
-            if (key == 'comments') 
-                _data.forEach(async comment => {
-                    if (comment.type == 2) this.indexed.comments.find(parent => (Object.getPrototypeOf(parent).constructor == metw.Comment) && (parent.id == comment.parentId) && (parent.replies.every(reply => reply.id != comment.id)))?.replies.push(comment)
-                    await comment.format()
-                })
-            if (key == 'notifications') {
-                let dataToGet = { users: [], posts: [], comments: [] }
-                dataToGet.users.push(..._data.map(n => n.details.at(-1)))
-                dataToGet.posts.push(..._data.filter(n => n.type == 2).map(n => n.details[0]))
-                dataToGet.posts.push(..._data.filter(n => n.type == 3 && n.details[1] == 1).map(n => n.details[2]))
-                dataToGet.posts.push(..._data.filter(n => n.type == 4).map(n => n.details[0]))
-                dataToGet.comments = _data.filter(n => n.type == 3).map(n => n.details[0])
-                dataToGet.comments.push(..._data.filter(n => n.type == 3 && n.details[1] == 2).map(n => n.details[2]))
-                for (let k of Object.keys(dataToGet)) { dataToGet[k] = Array.from(new Set(dataToGet[k])); if (!dataToGet[k].length) dataToGet[k] = [0]}
-                await this.bulkGet(dataToGet)
-                await Promise.all(_data.map(n => n.format()))
+            switch (key) {
+                case 'comments':
+                    _data.forEach(async comment => {
+                        if (comment.type == 2) this.indexed.comments.find(parent => (Object.getPrototypeOf(parent).constructor == metw.Comment) && (parent.id == comment.parentId) && (parent.replies.every(reply => reply.id != comment.id)))?.replies.push(comment)
+                        await comment.format()
+                    })
+                    break;
+                case 'notifications':
+                    let dataToGet = { users: [], posts: [], comments: [] }
+                    dataToGet.users.push(..._data.map(n => n.details.at(-1)))
+                    dataToGet.posts.push(..._data.filter(n => n.type == 2).map(n => n.details[0]))
+                    dataToGet.posts.push(..._data.filter(n => n.type == 3 && n.details[1] == 1).map(n => n.details[2]))
+                    dataToGet.posts.push(..._data.filter(n => n.type == 4).map(n => n.details[0]))
+                    dataToGet.comments = _data.filter(n => n.type == 3).map(n => n.details[0])
+                    dataToGet.comments.push(..._data.filter(n => n.type == 3 && n.details[1] == 2).map(n => n.details[2]))
+                    for (let k of Object.keys(dataToGet)) { dataToGet[k] = Array.from(new Set(dataToGet[k])); if (!dataToGet[k].length) dataToGet[k] = [0] }
+                    await this.bulkGet(dataToGet)
+                    await Promise.all(_data.map(n => n.format()))
+                    break
+                case 'channels':
+                    var users = await this.bulkGet('users', Array.from(new Set(_data.map(d => d.users).flat())))
+                    _data.forEach(d => d.users = d.users.map(u => users.find(i => i.id == u)))
+                    break
+                case 'messages':
+                    var users = await this.bulkGet('users', Array.from(new Set(_data.map(d => d.from))))
+                    _data.forEach(d => d.from = users.find(i => i.id == d.from))
+                    break
+                default: break
             }
         }
 
@@ -187,6 +199,10 @@ metw.Session = class Session {
         if (param == 'notifications') {
             var data = await this.bulkGet('notifications', (await this.request({ path: `/notifications?id=${this.user.id}&before=${selector || 0}` }))[0])
             await this.markNotificationsAsRead(); return data
+        }
+        if (param == 'channels') {
+            var data = await this.bulkGet('channels', (await this.request({ path: `/channels?${selector ? 'before=' + selector : ''}` }))[0])
+            return data
         }
         if (!selector) return eval(`new metw.${param.charAt(0).toUpperCase() + param.substring(1)}({ user: this.user }, this)`)
         var user = this.indexed[param + 's'].find(typeof selector == 'number' ? data => data.id == selector : user => user.name == selector)
@@ -214,7 +230,7 @@ metw.Session = class Session {
             return response
         }
         var _ids = ids.slice(0, 100).filter((id, index, array) => array.indexOf(id) == index && !this.indexed[param].some(data => data.id == id))
-        if (_ids.length) var [data, ok] = await this.request({ path: `/${param}/bulk?id=${this.user.id}`, json: _ids })
+        if (_ids.filter(i => i != undefined).length) var [data, ok] = await this.request({ path: `/${param}/bulk?id=${this.user.id}`, json: _ids })
         if (ok) await this.index({ [param]: data })
         return ids.map(id => this.indexed[param].find(i => i.id == id)).filter(i => !!i)
     }
@@ -223,12 +239,21 @@ metw.Session = class Session {
         var type = message.data[0], data = message.data.substring(1)
         switch (type) {
             case '1':
-                this.notificationCount += 1; this.event('updatenotificationcount', this.notificationCount)
+                this.notificationCount += 1; this.event('updatenotificationcount', this.notificationCount > '50' ? '50+' : this.notificationCount)
                 data = [...data.matchAll(/([\d]*)\,([\d]*)\[([\d\,]*)\]([\s\S]*)/g)][0].splice(1)
                 data[2] = data[2].split(',').map(i => +i)
                 data = new metw.Notification({ id: +data[0], type: +data[1], details: data[2], text: data[3] }, this)
                 await data.format(true); this.event('notification', data); break
-            case '2': this.notificationCount = parseInt(data);  this.event('updatenotificationcount', parseInt(data)); break
+            case '2': this.notificationCount = parseInt(data); this.event('updatenotificationcount', this.notificationCount > '50' ? '50+' : this.notificationCount); break
+            case '3': this.messageCount = parseInt(data); this.event('updatemessagecount', this.messageCount > '50' ? '50+' : this.messageCount); break
+            case '4':
+                this.messageCount++; this.event('updatemessagecount', this.messageCount > '50' ? '50+' : this.messageCount)
+                data = data.split(',')
+                var { messages: [message] } = await this.bulkGet({ messages: [data[0]] }), channel = this.indexed.channels.find(channel => channel.id == message.channelId)
+                if (channel) { channel.unreadenCount++; channel.messageCount++ }
+                else channel = await this.get('channel', message.channelId)
+                message.channel = channel
+                this.event('message', message)
         }
     }
     async _onwsclose() { if (!this.logged) return; this._wsconnect() }
@@ -239,7 +264,7 @@ metw.Session = class Session {
     }
 
     clearCache() {
-        this.indexed = { users: [], posts: [], comments: [], raw: [], notifications: [] }
+        this.indexed = { users: [], posts: [], comments: [], raw: [], notifications: [], channels: [], messages: [] }
     }
 }
 
@@ -324,6 +349,7 @@ metw.User = class User {
         this.flags = data.flags, this.permissions = data.permissions, this.followed = data.followed
         this.bio = data.bio
         this.comments = []
+        this.dmId = data.dm_id
         this._session = session
     }
 
@@ -367,6 +393,13 @@ metw.User = class User {
         this.commentCount++
         this._session.indexed.comments.push(comment); this.comments.unshift(comment)
         return comment
+    }
+
+    async dm() {
+        if (this.dmId) return this.dmId
+        var [data, ok] = await session.request({ path: `/users/:${this.id}/dm` })
+        if (!ok) return false
+        else return this.dmId = data
     }
 
     hasPermissions(permissions) { return metw.User.permissionTester.eval(this.permissions, permissions) }
@@ -481,4 +514,38 @@ metw.Comment = class Comment {
         return reply
     }
     hasFlag(flags) { return metw.Post.flagTester.eval(this.flags, flags) }
+}
+
+metw.Channel = class Channel {
+    constructor(data, session) {
+        this.users = data.users, this.lastMessage = data.last_message, this.id = data.id, this._session = session, this.messageCount = Number(data.message_count), this.unreadenCount = Number(data.unreaden_count)
+    }
+
+    async get(param, before) {
+        if (param == 'messages') {
+            var [data, ok] = await this._session.request({ path: `/channels/${this.id}/messages?${before ? 'before=' + before : ''}` })
+            return ok ? await this._session.bulkGet('messages', data) : []
+        }
+    }
+
+    async read() {
+        await this._session.request({ path: `/channels/${this.id}/read` })
+        this.unreadenCount = 0
+    }
+
+    async send(content) {
+        var [id, ok] = await this._session.request({ path: `/channels/${this.id}`, json: { content: content } })
+        if (ok) {
+            var message = new metw.Message({ id, from: this._session.user, content: content }, this._session)
+            this._session.indexed.messages.push(message)
+            return message
+        }
+        else return null
+    }
+}
+
+metw.Message = class Message {
+    constructor(data, session) {
+        this.from = data.from, this.content = data.content, this.channelId = data.channel_id, this.sentOn = data.sent_on ? new Date(data.sent_on) : new Date(), this.id = data.id, this._session = session
+    }
 }

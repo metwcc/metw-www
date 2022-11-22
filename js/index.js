@@ -164,10 +164,11 @@ const app = {
     location: { 
         search: [],
         pathname: [],
-        format() {
+        format(formatOnly) {
             let [pathname, ...search_] = ((window.location.pathname == '/' && window.location.search.startsWith('?/')) ? decodeURI(window.location.search).substring(1) : `${decodeURI(window.location.pathname)}&${decodeURI(window.location.search.substring(1))}`).split('&'), search = { 'args': [], 'kwargs': {} }
             pathname = pathname.split('/').filter(function (e) { return e != ''; }); for (let x = 0; x < search_.length; x++) { let a = search_[x].split('='); if (a.length == 1) { search.args.push(a[0]) } else { search.kwargs[a[0]] = a[1] } }; delete search_
-            if (window.location.search.startsWith('?/')) window.history.pushState(null, '', window.location.search.substring(2).replace('&', '?')); return [this.pathname, this.search] = [pathname, search]
+            if (window.location.search.startsWith('?/') && !formatOnly) window.history.pushState(null, '', window.location.search.substring(2).replace('&', '?'))
+            return [this.pathname, this.search] = [pathname, search]
         }
     },
     formatElement(e) {
@@ -181,6 +182,7 @@ const app = {
         async render(name) {
             await load(async () => {
                 if (this.data[name]) {
+                    p.clear && p.clear()
                     var scripts = [[], []], oldPage = d.getElementById('page')
                     page = p = d.getElementById('page').cloneNode(true)
                     page.innerHTML = this.data[name].replace(/<script init>([\s\S]*?)<\/script>/g, (raw, data) => { scripts[0].push(data); return '' })
@@ -209,6 +211,7 @@ const app = {
         }
         switch (this.location.pathname[0]) {
             case 'keşfet': composeEnabled(true); return await this.template.render('explore')
+            case 'mesajlar': composeEnabled(false); return await this.template.render('messages')
             case 'katıl': composeEnabled(false); return await this.template.render('gateway')
             case 'giriş': composeEnabled(false); return await this.template.render('gateway')
             case 'ayarlar': composeEnabled(false); return await this.template.render('settings')
@@ -325,8 +328,11 @@ session.onnotification = n => {
 }
 
 session.onupgradefound = () => w.location.reload()
-session.onupdatenotificationcount = (count) => {
+session.onupdatenotificationcount = count => {
     for (e of d.getElementsByClassName('@notification-count')) e.style.display = count ? 'block' : 'none', e.innerHTML = count
+}
+session.onupdatemessagecount = count => {
+    for (e of d.getElementsByClassName('@message-count')) e.style.display = count ? 'block' : 'none', e.innerHTML = count
 }
 
 session.ondown = (data) => {
@@ -429,10 +435,17 @@ w.onload = async () => {
         else refreshable = true, refreshTouchStart = e.touches[0].clientY
     }
 }
-w.onpopstate = () => {
-    if (!mouse.state) return w.history.pushState(null, null)
+w.onpopstate = async e => {
+    app.location.format(true)
+    if (!mouse.state) return history.pushState(null, null)
+    if (p.onpopstate && await p.onpopstate(e) === false) return
     var [newPage, scrollTop] = pageHistory.shift()
-    newPage ? (page.parentNode.replaceChild(newPage, page), ([pageOuter.scrollTop, page] = [scrollTop, newPage])) : app.load()
+    p.clear && p.clear()
+    if (newPage) {
+        page.parentNode.replaceChild(newPage, page), ([pageOuter.scrollTop, page] = [scrollTop, newPage])
+        p = page = newPage
+    }
+    else app.load()
 }
 w.onresize = () => {
     var style = d.getElementsByClassName('@resize')[0], isNew = !style
@@ -442,6 +455,11 @@ w.onresize = () => {
 }
 w.onfocus = () => { session.setStatus('online') }
 w.onblur = () => { session.setStatus('offline') }
+
+history.pushStateOld = history.pushState
+history.pushState = function () { history.pushStateOld.apply(this, arguments), app.location.format(true) }
+history.replaceStateOld = history.replaceState
+history.replaceState = function () { history.replaceStateOld.apply(this, arguments), app.location.format(true) }
 
 const ontitlechange = new MutationObserver(([{ target }]) => gtag('config', gaId, { page_title: target.text, page_path: w.location.pathname }) )
 ontitlechange.observe(document.querySelector('title'), { childList: true })

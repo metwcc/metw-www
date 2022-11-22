@@ -36,7 +36,8 @@
                 <span onclick="p.followList.start('followings')"><span class="following-count">123</span> takip</span>
             </div>
             <div class="buttons">
-                <a href="duvar" class="_inline-img a"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path></svg>duvar</a>
+                <a href="duvar" class="_inline-img a"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>duvar</a>
+                <a class="_inline-img start-chat"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>mesaj</a>
                 <a href="yönet" class="_inline-img a" id="manage-button"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>yönet</a>
             </div>
         </div>
@@ -124,8 +125,8 @@
         name: p.profile.querySelector('.name'), avatar: p.profile.querySelector('.avatar img'), bio: p.profile.querySelector('.bio'),
         followerCount: p.querySelector('.follower-count'), followingCount: p.querySelector('.following-count'),
         follow: Object.assign(p.profile.querySelector('.follow button'), { followSpan: p.profile.querySelector('.follow-span'), unfollowSpan: p.profile.querySelector('.unfollow-span') }),
-        onlineBadge: p.profile.querySelector('.online-badge')
-
+        onlineBadge: p.profile.querySelector('.online-badge'),
+        startChat: p.profile.querySelector('.start-chat')
     })
     Object.assign(p.followList, {
         ul: p.followList.querySelector('ul'),
@@ -146,6 +147,7 @@
         p.profile.avatar.parentElement.onclick = () => session.etc.changeAvatar()
         textarea.value = p.user.bio; textarea.addEventListener('focusout', () => load(async () => await session.settings([{ name: 'update_bio', content: textarea.value }])))
         p.profile.follow.style.display = 'none'
+        p.profile.startChat.style.display = 'none'
         style.innerHTML = '.p .profile  .user  .avatar:after { content: "değiştir" }'; p.appendChild(style)
     }
     else p.profile.bio.innerHTML = metw.gui.richText(p.user.bio)
@@ -153,8 +155,9 @@
     p.style.setProperty('--banner-url', `url("${p.user.bannerURL}")`)
     p.profile.onlineBadge.style.display = ['none', 'block'][+p.user._online]
 
-    for (let v of ['mod', 'beta', 'bug_hunter', 'staff', 'premium', 'partner']) 
-        if (p.user.hasFlags(`$ & "${v}"`)) p.profile.name.innerHTML += `<img src="/images/svg/flags/${v}.svg"></img>`
+    for (let v of ['mod', 'beta', 'bug_hunter', 'staff', 'premium', 'partner']) if (p.user.hasFlags(`$ & "${v}"`)) p.profile.name.innerHTML += `<img src="/images/svg/flags/${v}.svg"></img>`
+    p.profile.startChat.onclick = async () => app.redirect(`/mesajlar/${await p.user.dm()}`)
+
 
     // follow & list
     p.profile.follow.updateState = (n) => {
