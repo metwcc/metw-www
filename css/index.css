@@ -132,6 +132,7 @@ nav  .n-buttons .count { display: none; margin: 0 !important; padding: .1em .3em
 ._p-c  li:first-of-type { margin: 0 }
 ._p-c > * > div { flex-grow: 1; position: relative }
 ._p-c  div { flex-basis: 100% }
+._p-c  .username { word-break: break-all }
 ._p-c  .avatar { width: 2.75em; height: 2.75em; margin-right: .5em; border-radius: 50%; cursor: pointer }
 ._p-c   .avatar:hover,
 ._p-c   .username:hover { cursor: pointer }

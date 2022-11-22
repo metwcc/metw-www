@@ -2,8 +2,8 @@
     richText(raw) {
         var _ = /(([^<>]+)(?:((?=<[^>]*>[^\<]*<\/[^>]*>))|(<[^\/]*\/>))+|[^>]*$)/g;
         return raw ? raw.replace(/\</g, '&lt;').replace(/\>/g, '&gt;')
-            .replace(/(https?)\:\/\/([\w\d\.\-ğüışöç]+)(?:\/([\w\d\.\-ğüşıöç\;\,\?\:\@\&\=\+\$\!\(\)\#\/\%]*))?/g, (raw, protocol, origin, pathname) => `<wbr/><a class="href" href="${raw.replace(/\&lt;/g, '<')}" target="blank">${(origin + (pathname?.length ? '/' : '') + ((pathname?.length > 16 ? pathname.substring(0, 16) + '...' : pathname) || ''))}</a><wbr>`)
-            .replace(_, text => text.replace(/([^\w\d]?)\@([\w\d-\.\/]+)/g, (_, text, name) => `s${text}<a class="href" href="javascript:app.redirect('/@${name}')">@${name.replace(/\_/, '&#95')}</a><wbr/>`))
+            .replace(/(https?)\:\/\/([\w\d\.\-ğüışöç]+)(?:\/([\w\d\.\-ğüşıöç\;\,\?\:\@\&\=\+\$\!\(\)\#\/\%]*))?/g, (raw, protocol, origin, pathname) => `<a class="href" href="${raw.replace(/\&lt;/g, '<')}" target="blank">${(origin + (pathname?.length ? '/' : '') + ((pathname?.length > 16 ? pathname.substring(0, 16) + '...' : pathname) || ''))}</a>`)
+            .replace(_, text => text.replace(/([^\w\d]?)\@([\w\d-\.\/]+)/g, (_, text, name) => `${text}<a class="href" href="javascript:app.redirect('/@${name}')">@${name.replace(/\_/, '&#95')}</a><wbr/>`))
             .replace(_, text => text.replace(/ /g, '&nbsp;<wbr>').replace(/\_((?:(?!\_)[\s\S])+)\_/g, (raw, text) => `<u>${text}</u>`))
             .replace(/\*\*((?:(?!\*\*)[\s\S])+)\*\*/g, (raw, text) => `<b>${text}</b>`)
             .replace(/\*((?:(?!\*)[\s\S])+)\*/g, (raw, text) => `<i>${text}</i>`)
@@ -17,7 +17,7 @@
         _post.innerHTML = `
             <img loading="lazy" class="avatar" onclick="app.redirect('/@${post.user.name}')" src="${post.user.avatarURL}" />
             <div>
-                <a class="username a" href="/@${post.user.name}">${post.user.displayName}</a><span class="date">&nbsp;·&nbsp;${timeSince(post.sentOn)} ${post.hasFlag('$ & "edited"') ? '(düzenlendi)' : ''}</span>
+                <a class="username a" href="/@${post.user.name}">${post.user.displayName}</a><span class="date"> · ${timeSince(post.sentOn)} ${post.hasFlag('$ & "edited"') ? '(düzenlendi)' : ''}</span>
                 <p class="content">${this.richText(post.content)}</p>
                 <div class="edit">
                     <textarea></textarea>
@@ -89,7 +89,7 @@
             <div class="comment" style="${highlighted ? 'border-color: var(--bg-b-1)' : ''}">
                 <img loading="lazy" class="avatar" onclick="app.redirect('/@${comment.user.name}')" src="${comment.user.avatarURL}" />
                 <div>
-                    <a class="username a" href="/@${comment.user.name}">${comment.user.displayName}</a><span class="date">&nbsp;·&nbsp;${timeSince(comment.sentOn)}</span>
+                    <a class="username a" href="/@${comment.user.name}">${comment.user.displayName}</a><span class="date"> · ${timeSince(comment.sentOn)}</span>
                     <p class="content">${this.richText(comment.content)}</p>
                     <div class="buttons">
                         <a class="reply">${icons.reply}</a>
