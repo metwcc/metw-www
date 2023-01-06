@@ -116,7 +116,7 @@ alert = (message, type) => {
 }
 alert.error = (message) => alert(message, 'error')
 alert.success = (message) => alert(message, 'success')
-fetch.stream = async (url, progress, fetchInit) => {
+fetchStream = async (url, progress, fetchInit) => {
     progress(0)
     return await fetch(url, fetchInit).then((res) => {
         var contentLenght = res.headers.get('content-length'), downloadLength = 0
@@ -194,7 +194,7 @@ const app = {
                     pageHistory.unshift([oldPage, pageOuter.scrollTop]); pageHistory.splice(32)
                     oldPage.parentNode.replaceChild(page, oldPage); d.querySelector('.page-outer').scroll(0, 0)
                     app.formatElement(p)
-                } else { this.data[name] = await fetch.stream(`/pages/${name}.html`, progress).then(r => r.text()); await this.render(name) }
+                } else { this.data[name] = await fetchStream(`/pages/${name}.html`, progress).then(r => r.text()); await this.render(name) }
             })
         }
     },
