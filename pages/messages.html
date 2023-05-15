@@ -84,7 +84,9 @@
     .p   .message > div > div { display: inline-block; width: fit-content; padding: 1em; word-break: break-word; background-color: var(--bg-1); border-radius: 2em }
     .p   .from-me { flex-direction: row-reverse }
     .p   .from-me div { align-items: flex-end }
-    .p   .from-me > div > div { background-color: var(--bg-b-1) }
+    .p   .from-me > div > div { background-color: var(--bg-b-1); filter: brightness(1.15); }
+    .p   .from-me > div > div span { fiter: brightness(.8675) }
+    .p   .from-me > div > div .href { color: var(--bg-1) }
 
     @media screen and (min-width: 750px) {
         .p .channels { flex-basis: 330px; flex-grow: 0 }
@@ -107,7 +109,7 @@
     }
     p.addMessages.f = (messages, user, bottom) => {
         if (p.addMessages.last?.[1] == user.id && bottom) {
-            p.addMessages.last[0].innerHTML = `${messages.map(message => '<div>' + metw.gui.richText(message.content) + '</div>').join('')}` + p.addMessages.last[0].innerHTML 
+            p.addMessages.last[0].innerHTML = `${messages.map(message => '<div><span>' + metw.gui.richText(message.content) + '</span></div>').join('')}` + p.addMessages.last[0].innerHTML 
         }
         else {
             var li = d.createElement('li'); li.className = 'message' + (user.id == session.user.id ? ' from-me' : '')
@@ -170,7 +172,7 @@
         }
         p.dm.form.textarea.style.height = 'unset'
     }
-    p.dm.form.textarea.addEventListener('keypress', e => {
+    p.dm.form.textarea.addEventListener('input', e => {
         e.target.style.height = `calc(${e.target.scrollHeight}px)`
         if (e.key == 'Enter' && !e.shiftKey) {
             p.dm.form.onsubmit()

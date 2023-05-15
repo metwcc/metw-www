@@ -19,7 +19,8 @@
     --shadow-1: #0008 0 0 .125em;
 }
 
-@media (prefers-color-scheme:dark) {
+
+@media (prefers-color-scheme: dark) {
     :root {
         --color: #EDEDED;
         --color-n: #EDEDED;
