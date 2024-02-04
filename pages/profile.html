@@ -46,7 +46,7 @@
         <ul class="page"></ul>
     </div>
     <div class="follow-list">
-        <div class="bg-1 bd-1">
+        <div>
             <div class="title">
                 <span>@user kullanıcısının leri</span>
                 <button class="_inline-img" onclick="p.followList.exit()"><i class="bi bi-x"></i></button>
@@ -96,16 +96,17 @@
         .p .profile  .buttons { grid-column: 1 / 2 }
     }
 
-    .p .follow-list { display: none; width: 100%; height: 100%; max-width: 1100px; background-color: var(--bg-1a); outline: max(100vw, 100vh) solid var(--bg-1a); justify-content: center; transform: scale(.8); transform-origin: top; opacity: 0; transition: .3s; z-index: 2 }
-    .p .follow-list > div { width: calc(100% - 4em); height: fit-content; margin: 2em; padding: 1.25em; border-radius: .5em }
-    .p .follow-list  .title { display: flex; margin: 0 0 1.25em; font-size: 1.2em; justify-content: space-between; align-items: center }
-    .p .follow-list  .title button { background: var(--bg-b-1); padding: .5em; font-size: .8em }
+    .p .follow-list { display: none; width: 100%; height: 100%; max-width: 1100px; outline: max(100vw, 100vh) solid var(--bg-1a); justify-content: center; transform: scale(.8); transform-origin: top; opacity: 0; transition: .3s; z-index: 2 }
+    .p .follow-list > div { width: calc(100% - 4em); height: fit-content; margin: 2em; padding: 1.25em; border: .05em solid var(--bd-1); background-color: transparent; position: relative; border-radius: .5em }
+    .p .follow-list > div:after { content: ''; display: block; inset: 0; position: absolute; background-color: var(--bg-1a); opacity: 0.75; backdrop-filter: blur(1em) }
+    .p .follow-list  .title { z-index: 2; position: relative; display: flex; margin: 0 0 1.25em; font-size: 1.2em; justify-content: space-between; align-items: center }
+    .p .follow-list  .title button { background: var(--bg-b-1); padding: .5em; height: 2em; width: 2em }
     .p .follow-list  .title span { padding-right: .3em; word-break: break-word }
-    .p .follow-list  ul { display: grid; padding: 0; grid-template-columns: 1fr; gap: .5em }
-    .p .follow-list   li { display: flex; height: 4em; padding: .5em; border: .125em solid var(--bd-1); border-radius: .5em; list-style: none; flex-basis: 100%; overflow: hidden; align-items: center; cursor: pointer }
+    .p .follow-list  ul { z-index: 2; position: relative; display: grid; padding: 0; grid-template-columns: 1fr; gap: .5em }
+    .p .follow-list   li { display: flex; height: 4em; padding: .5em; border-radius: .5em; list-style: none; flex-basis: 100%; overflow: hidden; align-items: center; cursor: pointer }
     .p .follow-list    span { font-size: 1.25em }
     .p .follow-list    img { height: 100%; margin-right: .5em; aspect-ratio: 1; border-radius: 50% }
-    .p .follow-list  .load-more { display: none }
+    .p .follow-list  .load-more { z-index: 2; position: relative; display: none }
 
     .p .page { display: flex; width: min(600px, 100%); margin-top: 1.5em; padding: 0 2em; justify-content: center; gap: .25em .5em; flex-direction: row-reverse; user-select: none ;flex-wrap: wrap }
     .p .page li { list-style: none; color: var(--bg-b-1); cursor: pointer }

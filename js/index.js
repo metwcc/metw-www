@@ -411,6 +411,7 @@ w.onload = async () => {
     await app.load()
     
     d.getElementById('initial-load').style = 'opacity: 0'
+    pageOuter.style.paddingTop = d.querySelector('nav').offsetHeight + 'px'
     setTimeout(() => d.getElementById('initial-load').remove(), 300)
     setTimeout(() => fetch('https://www.google-analytics.com/g/collect').catch(e => alert('Reklam engelleyiciniz işe yaramış gibi görünüyor.')), 400)
 

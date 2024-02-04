@@ -82,10 +82,11 @@ button.cancel { border: .05em solid var(--bd-1) }
 #message-box button { font-size: 1.25em }
 
 /*  APP   */
-main { display: flex; flex-direction: column }
+main { display: grid }
+main > * { grid-area: 1 / 1 / 1 / 1 }
 
 nav, nav * { color: var(--color-n) }
-nav { background: var(--bg-n); user-select: none; box-shadow: var(--shadow-1); z-index: 20 }
+nav { background: var(--bg-n); backdrop-filter: blur(1em); user-select: none; height: fit-content; box-shadow: var(--shadow-1); z-index: 20 }
 nav > div { display: flex; padding: .3125em; margin: 0 auto; max-width: 1200px; justify-content: space-between; align-items: center }
 nav  .n-name { font-size: 2em; margin-left: .3125em }
 nav  .n-buttons { display: flex; align-items: center; gap: .5em }
@@ -127,7 +128,7 @@ nav  .n-buttons .count { display: none; margin: 0 !important; padding: .1em .3em
 ._load-more { width: 100%; background: var(--bg-b-1); font-size: 1.25em }
 
 ._p-c { display: flex; width: 100%; min-width: 0; padding: 1.5em; flex-direction: column; align-items: center; justify-content: center }
-._p-c li { display: flex; width: min(600px, 100%); margin-top: 1em; padding: 1.5em 2.5em; border: .05em solid var(--bd-1); border-radius: 1em }
+._p-c li { display: flex; width: min(600px, 100%); margin-top: 1em; padding: 1.5em 2.5em; border: .05em solid var(--bd-1); border-top: none; border-bottom: none }
 ._p-c  li:first-of-type { margin: 0 }
 ._p-c > * > div { flex-grow: 1; position: relative }
 ._p-c  div { flex-basis: 100% }
@@ -165,7 +166,7 @@ nav  .n-buttons .count { display: none; margin: 0 !important; padding: .1em .3em
 ._comments { width: min(600px, 100%); margin: 0 auto }
 ._comments .top h2 { font-weight: normal; font-size: 1em; margin-top: 1em }
 ._comments > div { width: 100% }
-._comments  .comment { display: flex; width: 100%; margin: 1em 0 0; padding: 1.5em 2.5em; border: .125px solid var(--bd-1); border-radius: 1em }
+._comments  .comment { display: flex; width: 100%; margin: 1em 0 0; padding: 1.5em 2.5em; border: .125px solid var(--bd-1); border-top: none; border-bottom: none }
 ._comments  .comment  .content { max-height: 250px }
 ._comments  .comment  .buttons { justify-content: flex-end; gap: 2em }
 ._comments  .add-reply { min-width: 300px; height: 0; margin: 0; padding-left: 2em; transition: .3s; overflow: hidden }

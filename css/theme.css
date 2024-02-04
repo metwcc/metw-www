@@ -25,7 +25,7 @@
         --color: #EDEDED;
         --color-n: #EDEDED;
         --bg-g: #121212; /* body */
-        --bg-n: #1F1F1F; /* nav */
+        --bg-n: #1F1F1FAA; /* nav */
 
         --bg-a-d: #2c4889; /* alert-default */
         --bg-a-s: #009b20; /* alert-success */
