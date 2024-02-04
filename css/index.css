@@ -64,7 +64,6 @@ button.cancel { border: .05em solid var(--bd-1) }
 #compose  textarea { flex-grow: 1; resize: none; background-color: var(--bg-2); border-radius: .5em }
 #compose  .buttons { display: flex; justify-content: space-between }
 #compose   .upload { height: calc(100% - .5em); margin-top: .5em; padding: .25em 1em; background-color: var(--bg-b-1) }
-#compose   .upload svg { height: 100% }
 #compose   span button { margin: .5em 0 0 .5em; padding: .25em 1em }
 #compose   span button.send { background-color: var(--bg-b-1) }
 #compose .image { display: none; width: min-content; margin-top: .5em; position: relative }
