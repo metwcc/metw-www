@@ -90,7 +90,7 @@ nav { background: var(--bg-n); backdrop-filter: blur(1em); user-select: none; he
 nav > div { display: flex; padding: .3125em; margin: 0 auto; max-width: 1200px; justify-content: space-between; align-items: center }
 nav  .n-name { font-size: 2em; margin-left: .3125em }
 nav  .n-buttons { display: flex; align-items: center; gap: .5em }
-nav  .n-buttons a { display: inline-flex; padding: .6em; position: relative; align-items: center; align-content: center; font-size: 1.25em; background: var(--bg-n); transition: .3s; border-radius: .25em }
+nav  .n-buttons a { display: inline-flex; padding: .6em; position: relative; align-items: center; align-content: center; font-size: 1.25em; transition: .3s; border-radius: .25em }
 nav  .n-buttons  a:hover { filter: brightness(110%) } nav  .n-buttons  a:active { filter: brightness(120%) }
 nav  .n-buttons a svg, nav .n-buttons a img { width: 1em; height: 1em; margin-top: .125em }
 nav  .n-buttons > a span { display: none }

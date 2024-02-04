@@ -453,6 +453,7 @@ w.onresize = () => {
     if (isNew) style = d.createElement('style'), style.className = '@resize'
     style.innerHTML = `body, body > * { height: ${window.innerHeight + 'px'} }`
     if (isNew) d.querySelector('body').appendChild(style)
+    pageOuter.style.paddingTop = d.querySelector('nav').offsetHeight + 'px'
 }
 w.onfocus = () => { session.setStatus('online') }
 w.onblur = () => { session.setStatus('offline') }
