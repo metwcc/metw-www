@@ -149,12 +149,11 @@ nav  .n-buttons .count { display: none; margin: 0 !important; padding: .1em .3em
 ._p-c  .buttons a { height: 1.25em; opacity: .5; display: inline-flex; align-items: center; transition: .3s; stroke: var(--color); user-select: none }
 ._p-c  .buttons  a:hover { transform: scale(1.05); opacity: .75; cursor: pointer }
 ._p-c  .buttons  a:active { transform: scale(1.1); opacity: 1 }
-._p-c  .buttons  .comment:hover { color: #1B8BD7; stroke: #1B8BD7 }
-._p-c  .buttons  .like:hover { color: #F91880; stroke: #F91880 }
-._p-c  .buttons  .like .count { color: inherit }
-._p-c  .buttons  .share:hover { stroke: #75bbf5 }
-._p-c  .buttons  .dots:hover { stroke: #00BA7C }
-._p-c  .buttons  .reply:hover { stroke: var(--bg-b-1) }
+._p-c  .buttons  .comment:hover { color: #1B8BD7 }
+._p-c  .buttons  .like:hover { color: #F91880 }
+._p-c  .buttons  .share:hover { color: #75bbf5 }
+._p-c  .buttons  .dots:hover { color: #00BA7C }
+._p-c  .buttons  .reply:hover { color: var(--bg-b-1) }
 ._p-c textarea { min-height: 4em; background: inherit; border: .05em solid var(--bd-1); border-width: .05em 0; resize: none }
 
 ._posts .attachment, ._posts .margin { max-width: calc(100% - 1em); margin: .5em; border-radius: .5em }
@@ -180,8 +179,8 @@ nav  .n-buttons .count { display: none; margin: 0 !important; padding: .1em .3em
 ._comments > button { margin-top: 1em }
 
 ._popup-menu { width: 0; height: 0; padding: .75em 0; position: absolute; background-color: var(--bg-1); transition: width .3s; overflow: hidden; border-radius: .5em; transform: translateX(-100%) }
-._popup-menu button { display: flex; width: 100%; padding: .5em 1.5em; justify-content: flex-start; white-space: nowrap }
-._popup-menu button svg { min-height: 1em; padding-right: .5em }
+._popup-menu button { display: flex; width: 100%; padding: .5em 1.5em; color: var(--color); justify-content: flex-start; white-space: nowrap }
+._popup-menu button i { min-height: 1em; padding-right: .5em }
 
 ._users { display: grid; padding: 1em; grid-template-columns: 1fr; gap: 1em }
 ._users li { display: flex; padding: .5em; position: relative; outline: .05em solid var(--bd-1); border-radius: .5em; font-size: 1.25em; align-items: center; overflow: hidden }

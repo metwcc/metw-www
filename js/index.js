@@ -24,8 +24,8 @@ function progress(v) {
 }
 function timeSince(date) {
     var seconds = Math.floor((new Date() - date) / 1000), response = '', c = 0
-    var interval = seconds / 31536000; if (c < 2 && interval > 1) { response += Math.floor(interval) + ' yıl '; c++ }
-    interval = seconds / 2592000; if (c < 2 && interval % 12 > 1) { response += Math.floor(interval % 12) + ' ay '; c++ }
+    var interval = seconds / 31536000
+    interval = seconds / 2592000; if (c < 2 && interval % 12 > 1) { return date.toLocaleDateString(navigator.language) }
     interval = seconds / 86400; if (c < 2 && interval % 30 > 1) { response += Math.floor(interval % 30) + ' gün '; c++ }
     interval = seconds / 3600; if (c < 2 && interval % 24 > 1) { response += Math.floor(interval % 24) + ' saat '; c++ }
     interval = seconds / 60; if (c < 2 && interval % 60 > 1) { response += Math.floor(interval % 60) + ' dakika '; c++ }
@@ -153,7 +153,7 @@ const popupMenu = ({ target }, buttons) => {
     }
     d.addEventListener('click', close, true); d.addEventListener('touch', close, true)
     w.addEventListener('resize', place, true); d.addEventListener('scroll', place, true)
-    popup.innerHTML = buttons.filter(b => b).map(v => `<button class="_inline-img">${icons[v[0]]}${v[1]}</button>`).join('')
+    popup.innerHTML = buttons.filter(b => b).map(v => `<button>${icons[v[0]]}${v[1]}</button>`).join('')
     Array.from(popup.children).forEach((button, index) => button.onclick = buttons[index][2])
     d.documentElement.appendChild(popup)
 }

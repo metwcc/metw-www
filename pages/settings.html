@@ -4,7 +4,7 @@
 </script>
 
 <template>
-    <button onclick="(async () => await askFor('Çıkış Yap', 'Çıkış yapmak istediğinizden emin misiniz?', ok = 'çıkış yap') && session.disconnect())()" class="logout ok _inline-img"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>&nbsp;Çıkış yap</button>
+    <button onclick="(async () => await askFor('Çıkış Yap', 'Çıkış yapmak istediğinizden emin misiniz?', ok = 'çıkış yap') && session.disconnect())()" class="logout ok _inline-img"><i class="bi bi-box-arrow-right"></i>&nbsp;ÇIKIŞ YAP</button>
     <div class="profile">
         <h2>Profil</h2>
         <div class="avatar">
@@ -12,8 +12,8 @@
             <div>
                 <img class="@avatar" />
                 <span>
-                    <button class="ok" onclick="session.etc.changeAvatar()">değiştir</button>
-                    <button class="cancel" onclick="(async () => await askFor('Profil Fotoğrafını Sil', 'Profil fotoğrafını silmek istediğinizden emin misiniz?', ok = 'sil') && load(async () => await session.settings([{name: 'remove_avatar'}])))()">sil</button>
+                    <button class="ok" onclick="session.etc.changeAvatar()">DEĞİŞTİR</button>
+                    <button class="cancel" onclick="(async () => await askFor('Profil Fotoğrafını Sil', 'Profil fotoğrafını silmek istediğinizden emin misiniz?', ok = 'sil') && load(async () => await session.settings([{name: 'remove_avatar'}])))()">SİL</button>
                 </span>
             </div>
         </div>
@@ -22,8 +22,8 @@
             <div>
                 <img class="@banner" />
                 <span>
-                    <button class="ok" onclick="session.etc.changeBanner()">değiştir</button>
-                    <button class="cancel" onclick="(async () => await askFor('Profil Arkaplanını Sil', 'Profil arkaplanını silmek istediğinizden emin misiniz?', ok = 'sil') && load(async () => await session.settings([{name: 'remove_banner'}])))()">sil</button>
+                    <button class="ok" onclick="session.etc.changeBanner()">DEĞİŞTİR</button>
+                    <button class="cancel" onclick="(async () => await askFor('Profil Arkaplanını Sil', 'Profil arkaplanını silmek istediğinizden emin misiniz?', ok = 'sil') && load(async () => await session.settings([{name: 'remove_banner'}])))()">SİL</button>
                 </span>
             </div>
         </div>
@@ -32,7 +32,7 @@
         <h2>Bildirimler <span>DENEYSEL</span></h2>
         <div>
             <span></span>
-            <button class="ok">bildirimleri aç</button>
+            <button class="ok">BİLDİRİMLERİ AÇ</button>
         </div>
     </div>
     <div class="password">
@@ -41,7 +41,7 @@
             <input class="old-password" placeholder="eski şifre" type="password" />
             <input class="new-password" placeholder="yeni şifre" type="password" />
             <input class="confirm-new-password" placeholder="yeni şifreyi onayla" type="password" />
-            <button class="ok">değiştir</button>
+            <button class="ok">DEĞİŞTİR</button>
         </div>
     </div>
     <div class="admin">
@@ -50,7 +50,7 @@
             <input class="message" placeholder="mesaj" />
             <input class="code" placeholder="kod" oninput="acceptInput(event, /[\d]*/g, 3)" />
             <input class="version" placeholder="versiyon" />
-            <button class="ok">gönder</button>
+            <button class="ok">GÖNDER</button>
         </div>
     </div>
 </template>
@@ -127,14 +127,14 @@
                 p.notifications.permission = ['denied', 'granted', 'default'].indexOf(Notification?.permission)
                 if (p.notifications.permission != 1) localStorage.setItem('notifications', 0)
                 p.notifications.button.style.display = ['none', 'block', 'block'][p.notifications.permission]
-                p.notifications.button.innerText = ['bildirimleri aç', 'bildirimleri kapat'][+localStorage.getItem('notifications')]
-                p.notifications.text.innerText = ['Bildirim iznini vermediniz, bildirimleri açmak için tarayıcı ayarlarınızı kullanınız', '', ''][p.notifications.permission]
+                p.notifications.button.innerText = ['BİLDİRİMLERİ AÇ', 'BİLDİRİMLERİ KAPAT'][+localstorage.getitem('notifications')]
+                p.notifications.text.innertext = ['bildirim iznini vermediniz, bildirimleri açmak için tarayıcı ayarlarınızı kullanınız', '', ''][p.notifications.permission]
             }; p.notifications.f()
             p.notifications.button.onclick = async () => {
-                await Notification.requestPermission()
-                localStorage.setItem('notifications', +!+localStorage.getItem('notifications'))
+                await notification.requestpermission()
+                localstorage.setitem('notifications', +!+localstorage.getitem('notifications'))
                 p.notifications.f()
             }
-        } else { p.querySelector('.notifications').remove() }
+        } else { p.queryselector('.notifications').remove() }
     }
 </script>

@@ -35,7 +35,7 @@
         else pinchZoom(_post.querySelector('.attachment'))
         app.formatElement(_post)
 
-        var uls = () => { _post.querySelector('.buttons .like').style = post.liked ? 'color: #F91880; stroke: #F91880' : ''; _post.querySelector('.buttons .like .count').innerText = post.likeCount }; uls()
+        var uls = () => { Array.from(_post.querySelectorAll('.buttons .like *')).forEach(v => v.style = post.liked ? 'color: #F91880 !important' : ''); _post.querySelector('.buttons .like .count').innerText = post.likeCount }; uls()
         _post.querySelector('.share').onclick = () => navigator.share({ title: 'metw', url: `http://metw.cc/g${post.id}`, text: post.content })
         if (session.logged) {
             _post.querySelector('.dots').onclick = event =>

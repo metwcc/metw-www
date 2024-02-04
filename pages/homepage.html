@@ -4,8 +4,6 @@
         p.posts = metw.gui.posts([])
         p.posts.data = await session.homepage()
         p.posts.cursor = p.posts.data[30]?.id
-        p.posts.data = p.posts.data.filter(v => v.id != 3559)
-        p.posts.data.unshift(await session.get('post', 3559))
         if (p.posts.data.length > 30) p.posts.data.pop()
         p.posts.append(p.posts.data)
     }
