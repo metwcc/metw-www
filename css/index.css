@@ -157,6 +157,7 @@ nav  .n-buttons .count { display: none; margin: 0 !important; padding: .1em .3em
 ._p-c textarea { min-height: 4em; background: inherit; border: .05em solid var(--bd-1); border-width: .05em 0; resize: none }
 
 ._posts .attachment, ._posts .margin { max-width: calc(100% - 1em); margin: .5em; border-radius: .5em }
+._posts video { max-width: calc(100% - 1em); margin: .5em; border-radius: .5em }
 
 ._comments .a-c-r { display: grid; margin-top: 1em; grid-template: 1fr auto / auto 1fr }
 ._comments .a-c-r img { height: 3em; width: 3em; margin: .5em; border-radius: 50% }

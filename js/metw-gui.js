@@ -1,8 +1,10 @@
 ﻿metw.gui = {
-    richText(raw) {
+    richText(raw, user) {
+        console.log(user)
         var _ = /(([^<>]+)(?:((?=<[^>]*>[^\<]*<\/[^>]*>))|(<[^\/]*\/>))+|[^>]*$)/g;
         return raw ? raw.replace(/\</g, '&lt;').replace(/\>/g, '&gt;')
             .replace(/(https?)\:\/\/([\w\d\.\-ğüışöç]+)(?:\/([\w\d\.\-ğüşıöç\;\,\?\:\@\&\=\+\$\!\(\)\#\/\%]*))?/g, (raw, protocol, origin, pathname) => `<a class="href" href="${raw.replace(/\&lt;/g, '<')}" target="blank">${(origin + (pathname?.length ? '/' : '') + ((pathname?.length > 16 ? pathname.substring(0, 16) + '...' : pathname) || ''))}</a>`)
+            .replace(/(video)\:\/\/([\w\d\.\-ğüışöç]+)(?:\/([\w\d\.\-ğüşıöç\;\,\?\:\@\&\=\+\$\!\(\)\#\/\%]*))?/g, (raw, protocol, origin, pathname) => user && user.hasPermissions('$ & "admin" | $ & "attachments.level_2"') ? `<video controls> <source src="${raw.replace(/\&lt;/g, '<').replace(/^video/, 'https')}"/></video>` : 'video gösterilemedi')
             .replace(_, text => text.replace(/([^\w\d]?)\@([\w\d-\.\/]+)/g, (_, text, name) => `${text}<a class="href" href="javascript:app.redirect('/@${name}')">@${name.replace(/\_/, '&#95')}</a><wbr/>`))
             .replace(_, text => text.replace(/ /g, '&nbsp;<wbr>').replace(/\_((?:(?!\_)[\s\S])+)\_/g, (raw, text) => `<u>${text}</u>`))
             .replace(/\*\*((?:(?!\*\*)[\s\S])+)\*\*/g, (raw, text) => `<b>${text}</b>`)
@@ -18,7 +20,7 @@
             <img loading="lazy" class="avatar" onclick="app.redirect('/@${post.user.name}')" src="${post.user.avatarURL}" />
             <div>
                 <a class="username a" href="/@${post.user.name}">${post.user.displayName}</a><span class="date"> · ${timeSince(post.sentOn)} ${post.hasFlag('$ & "edited"') ? '(düzenlendi)' : ''}</span>
-                <p class="content">${this.richText(post.content)}</p>
+                <p class="content">${this.richText(post.content, post.user)}</p>
                 <div class="edit">
                     <textarea></textarea>
                     <div class="edit-buttons"><button class="cancel">iptal</button><button class="ok">kaydet</button></div>
@@ -90,7 +92,7 @@
                 <img loading="lazy" class="avatar" onclick="app.redirect('/@${comment.user.name}')" src="${comment.user.avatarURL}" />
                 <div>
                     <a class="username a" href="/@${comment.user.name}">${comment.user.displayName}</a><span class="date"> · ${timeSince(comment.sentOn)}</span>
-                    <p class="content">${this.richText(comment.content)}</p>
+                    <p class="content">${this.richText(comment.content, post.user)}</p>
                     <div class="buttons">
                         <a class="reply">${icons.reply}</a>
                         <a class="dots _popup-menu-button">${icons.dots}</a>

@@ -7,6 +7,9 @@
         if (p.posts.data.length > 30) p.posts.data.pop()
         p.posts.append(p.posts.data)
     }
+    p.pinned = metw.gui.posts([])
+    p.pinned.data = await session.bulkGet('posts', [4470])
+    p.pinned.append(p.pinned.data)
 </script>
 
 <template>
@@ -55,6 +58,8 @@
         p.querySelector('.default').remove()
         if (p.posts.data.length) {
             p.innerHTML += '<h2>Ana sayfa</h2>'
+            if (p.pinned) 
+                p.appendChild(p.pinned)
             p.appendChild(p.posts)
             var loadMore = d.createElement('button')
             loadMore.innerHTML = 'devamını yükle', loadMore.className = '_load-more'
