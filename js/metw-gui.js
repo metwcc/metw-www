@@ -92,7 +92,7 @@
                 <img loading="lazy" class="avatar" onclick="app.redirect('/@${comment.user.name}')" src="${comment.user.avatarURL}" />
                 <div>
                     <a class="username a" href="/@${comment.user.name}">${comment.user.displayName}</a><span class="date"> · ${timeSince(comment.sentOn)}</span>
-                    <p class="content">${this.richText(comment.content, post.user)}</p>
+                    <p class="content">${this.richText(comment.content, comment.user)}</p>
                     <div class="buttons">
                         <a class="reply">${icons.reply}</a>
                         <a class="dots _popup-menu-button">${icons.dots}</a>
