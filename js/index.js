@@ -212,7 +212,7 @@ const app = {
         switch (this.location.pathname[0]) {
             case 'keşfet': composeEnabled(true); return await this.template.render('explore')
             case 'mesajlar': composeEnabled(false); return await this.template.render('messages')
-            case 'katıl': composeEnabled(false); return await this.template.render('signup')
+            case 'katıl': composeEnabled(false); return await this.template.render('gateway')
             case 'giriş': composeEnabled(false); return await this.template.render('gateway')
             case 'ayarlar': composeEnabled(false); return await this.template.render('settings')
             case 'gönderi': composeEnabled(true); return await this.template.render('post')
