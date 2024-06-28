@@ -32,7 +32,7 @@
         <h2>Bildirimler <span>DENEYSEL</span></h2>
         <div>
             <span></span>
-            <button class="ok">BİLDİRİMLERİ AÇ</button>
+            <button class="ok">BİLDİRIMLERİ AÇ</button>
         </div>
     </div>
     <div class="password">
@@ -127,14 +127,14 @@
                 p.notifications.permission = ['denied', 'granted', 'default'].indexOf(Notification?.permission)
                 if (p.notifications.permission != 1) localStorage.setItem('notifications', 0)
                 p.notifications.button.style.display = ['none', 'block', 'block'][p.notifications.permission]
-                p.notifications.button.innerText = ['BİLDİRİMLERİ AÇ', 'BİLDİRİMLERİ KAPAT'][+localstorage.getitem('notifications')]
-                p.notifications.text.innertext = ['bildirim iznini vermediniz, bildirimleri açmak için tarayıcı ayarlarınızı kullanınız', '', ''][p.notifications.permission]
+                p.notifications.button.innerText = ['BİLDİRIMLERİ AÇ', 'BİLDİRIMLERİ KAPAT'][+localStorage.getItem('notifications')]
+                p.notifications.text.innerText = ['Bildirim iznini vermediniz, bildirimleri açmak için tarayıcı ayarlarınızı kullanınız', '', ''][p.notifications.permission]
             }; p.notifications.f()
             p.notifications.button.onclick = async () => {
-                await notification.requestpermission()
-                localstorage.setitem('notifications', +!+localstorage.getitem('notifications'))
+                await Notification.requestPermission()
+                localStorage.setItem('notifications', +!+localStorage.getItem('notifications'))
                 p.notifications.f()
             }
-        } else { p.queryselector('.notifications').remove() }
+        } else { p.querySelector('.notifications').remove() }
     }
 </script>
