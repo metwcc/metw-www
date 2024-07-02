@@ -413,17 +413,17 @@ w.onload = async () => {
     d.getElementById('initial-load').style = 'opacity: 0'
     pageOuter.style.paddingTop = d.querySelector('nav').offsetHeight + 'px'
     setTimeout(() => d.getElementById('initial-load').remove(), 300)
-    setTimeout(() => fetch('https://www.google-analytics.com/g/collect').catch(e => alert('Reklam engelleyiciniz işe yaramış gibi görünüyor.')), 400)
+    //setTimeout(() => fetch('https://www.google-analytics.com/g/collect').catch(e => alert('Reklam engelleyiciniz işe yaramış gibi görünüyor.')), 400)
 
     var refreshable = false, refreshTouchStart, refreshElement = d.querySelector('#refresh svg'), refreshY
-    w.ontouchmove = ({ touches: [touch], touches, target }) => {
+    w.ontouchmove = ({ touches: [touch], touches }) => {
         if (touches.length > 1) refreshable = false
         if (!refreshable) return
         refreshY = -(refreshTouchStart - touch.clientY) / 200
         refreshY = quadradicBezier(0, 150, 150, refreshY > 1 ? 1 : refreshY)
         refreshElement.style = `top: calc(-2em + ${refreshY}px); rotate: ${refreshY * -2.4}deg; opacity: ${map(refreshY, 0, 150, 0, 1)}`
     }
-    w.ontouchend = async e => {
+    w.ontouchend = async _ => {
         if (refreshY == 150) {
             refreshY = 0
             refreshElement.style = refreshElement.style + '; animation: rotating 1s ease-in-out infinite; top: 60px; transition: .3s'
