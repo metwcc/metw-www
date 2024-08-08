@@ -172,7 +172,7 @@
         }
         p.dm.form.textarea.style.height = 'unset'
     }
-    p.dm.form.textarea.addEventListener('input', e => {
+    p.dm.form.textarea.addEventListener('keypress', e => {
         e.target.style.height = `calc(${e.target.scrollHeight}px)`
         if (e.key == 'Enter' && !e.shiftKey) {
             p.dm.form.onsubmit()
